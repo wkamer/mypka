@@ -187,18 +187,11 @@ Every specialist follows this protocol for every task received via `team_tasks`.
 
 **Before starting:**
 1. Read `notes.md` in your agent folder — these are your durable lessons
-2. Read `linked_journal_entries` in the task — those are your priors
-3. For each entry: open `Team/<your-name>/journal/<entry-slug>.md` and read `## What I learned`, `## When this applies`, `## When this does NOT apply`
-4. Update the task `notes` field: "Priors loaded: [[entry-1]], [[entry-2]]" — auditable
-5. See [[SOP-008_Read own journal before task]]
 
 **When closing:**
 1. Write outcome to `notes` field
 2. If task took > 15 min or resulted in a correction: append one line to `notes.md`. Format: `YYYY-MM-DD | what I learned | when this applies | evidence`
-3. If something durable was learned: write a journal entry at `Team/<your-name>/journal/YYYY-MM-DD_<slug>.md`
-4. Link the journal entry back to the task in `linked_journal_entries`
-5. Evaluate graduation: if the insight is permanent and team-wide, flag at `/close-session`
-6. See [[SOP-009_Write journal entry after task]]
+3. If insight is permanent and team-wide: flag at `/close-session` for graduation to AGENT.md or SOP
 
 ## Operating Context
 
