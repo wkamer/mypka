@@ -51,7 +51,6 @@ Present the complete write plan to the Owner:
 | `active-context.md` update | Last session + open items |
 | Open items: [X tasks / none] | Todoist + team_tasks (if applicable) |
 | Team learning: [yes / no] | team_log row (if applicable) |
-| Graduation candidates: [X proposed / none] | Per candidate (if applicable) |
 
 Ask: "Confirmed — proceed?"
 
@@ -131,34 +130,6 @@ If a new pattern or insight emerged that affects team level: INSERT one `team_lo
 
 ---
 
-## Step 6 — Graduation candidates
-
-Scan the session for insights that have reached "set-in-stone" status.
-
-**Criteria:**
-- A decision or working method stable enough to be inherited by all agents
-- A procedure that is atomic, reusable, and repeatable
-- A pattern that has repeated across multiple sessions
-
-**Determine type:**
-- Atomic procedure with fixed steps → **SOP**
-- Static reference rule read by multiple agents → **Guideline**
-- Update to existing SOP/GL → name the file
-
-**Process:**
-1. Display candidates as a numbered list:
-   ```
-   ## Graduation candidates
-   1. [Insight] → proposal: [SOP/GL name]
-      Reason: [why permanent]
-   ```
-2. Wait for confirmation per number — auto-creation is prohibited
-3. After confirmation: Larry writes the SOP or GL directly. Nolan is NOT involved — Nolan only writes AGENT.md files.
-4. Before writing: verify the rule is not already present in all relevant AGENT.md files. If it is, the GL is redundant — drop the candidate.
-5. If no candidates: skip silently
-
----
-
 ## Closing
 
 Display a short checklist:
@@ -169,7 +140,6 @@ Display a short checklist:
 ✓ active-context.md updated
 ✓ Open items: [X tasks / None]
 ✓ /improve-system: [run / skipped]
-✓ Graduation candidates: [X proposed / None]
 ```
 
 Then: no further output.
