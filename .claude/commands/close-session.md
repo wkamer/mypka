@@ -153,8 +153,9 @@ Scan the session for insights that have reached "set-in-stone" status.
       Reason: [why permanent]
    ```
 2. Wait for confirmation per number — auto-creation is prohibited
-3. After confirmation: create the document or delegate to Nolan
-4. If no candidates: skip silently
+3. After confirmation: Larry writes the SOP or GL directly. Nolan is NOT involved — Nolan only writes AGENT.md files.
+4. Before writing: verify the rule is not already present in all relevant AGENT.md files. If it is, the GL is redundant — drop the candidate.
+5. If no candidates: skip silently
 
 ---
 
