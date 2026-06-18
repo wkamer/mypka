@@ -1,25 +1,25 @@
 ---
-description: Start de dagelijkse Morning Routine — Brain Zen, Miracle Roadmap, inbox en sessie context. Goal check en Highlight → /start-daily-planning.
+description: Start the daily Morning Routine — Brain Zen, Miracle Roadmap, inbox and session context. Goal check and Highlight → /start-daily-planning.
 allowed-tools: Bash Read Write Edit mcp__todoist__get_tasks_list mcp__todoist__update_tasks mcp__todoist__get_tasks mcp__todoist__create_tasks
 ---
 
 # /start-morning-routine
 
-Begeleid de owner door de Morning Routine. Stap voor stap, wacht op input waar gevraagd. KISS.
+Guide the owner through the Morning Routine. Step by step, wait for input where asked. KISS.
 
-Toon eerst dit overzicht:
+Show this overview first:
 
 > **Morning Routine**
-> 1. 🧠 Brain Zen — hoofd leegmaken
-> 2. 🗺️ Miracle Roadmap — voortgang bijhouden
-> 3. 📥 Sessie context — laatste log + inboxen + open taken
-> 4. 📅 Planning check — highlight bevestigen of alsnog plannen voor vandaag
+> 1. 🧠 Brain Zen — clear your head
+> 2. 🗺️ Miracle Roadmap — track progress
+> 3. 📥 Session context — last log + inboxes + open tasks
+> 4. 📅 Planning check — confirm or set Highlight for today
 
-Dan direct beginnen met Stap 0.
+Then start Step 0 immediately.
 
 ---
 
-## Stap 0 — Consistentiecheck vorige routine
+## Step 0 — Consistency check previous routine
 
 Query `PKM/personal.db` → `session_logs`:
 ```sql
@@ -28,45 +28,45 @@ WHERE session_date = date('now', '-1 day') AND session_title = 'End-of-Day Routi
 LIMIT 1;
 ```
 
-**Gevonden:** kort benoemen — "Gisteren netjes afgesloten." Ga door naar Stap 1.
+**Found:** mention briefly — "Yesterday closed cleanly." Continue to Step 1.
 
-**Niet gevonden:** reflecteer kort en open:
-- Benoem dat de End-of-Day Routine gisteren niet is afgesloten.
-- Vraag: "Wat hield je gisteren tegen — geen tijd, vergeten, of voelde het niet zinvol?"
-- Wacht op antwoord. Log het antwoord als `open_items` in een korte `session_logs` rij met `session_title = 'End-of-Day Routine — gemist'`, `session_date = gisteren`, en `summary = antwoord van de owner`.
-- Ga daarna gewoon door met de Morning Routine. Geen oordeel, geen herhaling.
-
----
-
-## Stap 1 — Brain Zen
-
-Vraag: "Wat zit er in je hoofd? Dump het hier."
-
-Wacht op input. Voor elke taak die erin zit:
-1. Schat in: **Speedy** (<15 min) of **Task** (15 min – 3 uur)
-2. Toon voorstel: "→ [taaknaam] — Speedy / Task (reden)"
-3. Wacht op bevestiging van de owner (ja / corrigeer)
-4. Maak aan in Todoist `👤 PERSONAL`. Bij Speedy: voeg label `speedy` toe.
-
-Zeg daarna: "Hoofd leeg."
+**Not found:** reflect briefly and open:
+- Note that the End-of-Day Routine was not closed yesterday.
+- Ask: "What held you back yesterday — no time, forgot, or didn't feel useful?"
+- Wait for answer. Log the answer as `open_items` in a short `session_logs` row with `session_title = 'End-of-Day Routine — missed'`, `session_date = yesterday`, and `summary = owner's answer`.
+- Continue with the Morning Routine. No judgement, no repetition.
 
 ---
 
-## Stap 1b — Miracle Roadmap voortgang
+## Step 1 — Brain Zen
 
-Bereken de norm van vandaag: **84 + aantal dagen sinds 10 mei 2026**.
+Ask: "What's on your mind? Dump it here."
 
-Vraag: "Miracle Roadmap — norm vandaag: les [X]. Op welke les sta je?"
+Wait for input. For each item:
+1. Estimate: **Speedy** (<15 min) or **Task** (15 min – 3 hrs)
+2. Show proposal: "→ [task name] — Speedy / Task (reason)"
+3. Wait for owner confirmation (yes / correct)
+4. Create in Todoist `👤 PERSONAL`. For Speedy: add label `speedy`.
 
-Wacht op antwoord. Toon kort: "Stand: les [Y] van norm [X]. [Achterstand / Op schema / Voor]."
-
-Geen discussie. Gewoon registreren en door.
+Then say: "Head clear."
 
 ---
 
-## Stap 2 — Sessie context en open taken
+## Step 1b — Miracle Roadmap progress
 
-Haal recente context op uit `PKM/personal.db`:
+Calculate today's target: **84 + number of days since 10 May 2026**.
+
+Ask: "Miracle Roadmap — target today: lesson [X]. Which lesson are you on?"
+
+Wait for answer. Show briefly: "Progress: lesson [Y] of target [X]. [Behind / On track / Ahead]."
+
+No discussion. Just record and move on.
+
+---
+
+## Step 2 — Session context and open tasks
+
+Fetch recent context from `PKM/personal.db`:
 
 ```python
 import sqlite3
@@ -82,28 +82,28 @@ for row in c.fetchall():
 conn.close()
 ```
 
-Check alle inboxen:
-- `Team Inbox/Personal/` — nieuwe bestanden?
-- `Team Inbox/Kamer E-commerce/` — nieuwe bestanden?
-- `Team Inbox/Geldstroom Regie/` — nieuwe bestanden?
-- Todoist Inbox — losse items om te routeren
+Check all inboxes:
+- `Team Inbox/Personal/` — new files?
+- `Team Inbox/Kamer E-commerce/` — new files?
+- `Team Inbox/Geldstroom Regie/` — new files?
+- Todoist Inbox — loose items to route
 
-Open `team_tasks` in `PKM/personal.db` — wat loopt er nog?
+Check open `team_tasks` in `PKM/personal.db` — what is still running?
 
-Rapporteer in max 5 regels. Geen uitgebreide analyse. Laad nooit volledige session logs — gebruik expand_summary(id) alleen als de owner specifiek vraagt naar een eerdere sessie.
-
----
-
-## Stap 3 — Daily Planning check
-
-Check of er een taak bestaat met label `highlight` en Due Date vandaag in Todoist.
-
-**Highlight gevonden:** benoem hem kort — "⭐ [taaknaam] is je Highlight van vandaag." Vraag: "Klopt deze planning nog, of is er reden om bij te stellen?"
-
-**Geen highlight:** benoem dat er geen geldige planning staat voor vandaag. Voer `/start-daily-planning` uit voor vandaag. Gebruik dezelfde stappen maar met datum van vandaag in plaats van morgen.
+Report in max 5 lines. No extended analysis.
 
 ---
 
-## Afsluiting
+## Step 3 — Daily Planning check
 
-Zeg: "Type `/close-morning-routine` om de Morning Routine af te sluiten en alles weg te schrijven."
+Check whether a task with label `highlight` and Due Date today exists in Todoist.
+
+**Highlight found:** mention it briefly — "⭐ [task name] is your Highlight for today." Ask: "Does this planning still hold, or is there reason to adjust?"
+
+**No highlight:** note that no valid planning exists for today. Run `/start-daily-planning` for today. Use the same steps but with today's date instead of tomorrow.
+
+---
+
+## Closing
+
+Say: "Type `/close-morning-routine` to close the Morning Routine and write everything away."

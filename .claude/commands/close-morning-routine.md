@@ -1,19 +1,19 @@
 ---
-description: Sluit de Morning Routine af — borgt session log en Miracle Roadmap stand naar personal.db. Geen bevestiging nodig.
+description: Close the Morning Routine — write session log and Miracle Roadmap progress to personal.db. No confirmation needed.
 allowed-tools: Bash Read Write Edit
 ---
 
 # /close-morning-routine
 
-Voer direct uit zonder bevestiging te vragen. Borgt alles wat tijdens de Morning Routine is gedaan.
+Execute directly without asking for confirmation. Writes everything done during the Morning Routine.
 
 ---
 
-## Stap 1 — Borg session log
+## Step 1 — Write session log
 
-Stel de summary samen: Brain Zen items (taken aangemaakt), Miracle Roadmap stand (les X van norm Y).
+Compile the summary: Brain Zen items (tasks created), Miracle Roadmap progress (lesson X of target Y).
 
-INSERT in `PKM/personal.db` → `session_logs`:
+INSERT into `PKM/personal.db` → `session_logs`:
 
 ```python
 import sqlite3
@@ -25,41 +25,41 @@ c.execute('''INSERT OR IGNORE INTO session_logs
     (session_date, session_title, topics, summary, agent_slug)
     VALUES (?, ?, ?, ?, ?)''', (
     str(date.today()), 'Morning Routine', 'routine, morning',
-    '<samenvatting>', 'larry'
+    '<summary>', 'larry'
 ))
 conn.commit()
 print('OK, id:', c.lastrowid)
 conn.close()
 ```
 
-Als er al een Morning Routine log voor vandaag bestaat: overslaan.
+If a Morning Routine log for today already exists: skip.
 
 ---
 
-## Stap 2 — Borg Miracle Roadmap stand
+## Step 2 — Write Miracle Roadmap progress
 
-UPDATE `PKM/personal.db` → `daily_growth` voor vandaag:
-- Zet `miracle_roadmap_les` = de les waarop de owner staat (uit de Morning Routine)
-- Als de rij nog niet bestaat: INSERT met datum van vandaag
-
----
-
-## Stap 3 — Sweep Brain Zen items
-
-Controleer of alle Brain Zen items uit deze sessie als taak in Todoist staan of als Calendar event zijn aangemaakt. Zo niet: alsnog aanmaken zonder te vragen.
+UPDATE `PKM/personal.db` → `daily_growth` for today:
+- Set `miracle_roadmap_les` = the lesson the owner is on (from the Morning Routine)
+- If the row does not exist yet: INSERT with today's date
 
 ---
 
-## Afsluiting
+## Step 3 — Sweep Brain Zen items
 
-Toon een korte ✓-lijst van wat daadwerkelijk is weggeschreven, bijvoorbeeld:
+Check whether all Brain Zen items from this session are in Todoist as a task or created as a Calendar event. If not: create them without asking.
+
+---
+
+## Closing
+
+Show a short checklist of what was actually written, for example:
 - ✓ session_logs → personal.db (id X)
-- ✓ daily_growth.notes (Miracle Roadmap les X/norm Y) → personal.db
-- ✓ Brain Zen sweep: [X taken in Todoist, Y events in Calendar]
+- ✓ daily_growth.notes (Miracle Roadmap lesson X/target Y) → personal.db
+- ✓ Brain Zen sweep: [X tasks in Todoist, Y events in Calendar]
 
-Dan:
+Then:
 
-> ✅ **Morning Routine afgesloten.**
-> Type `/compact` om de context te comprimeren voor de volgende sessie.
+> ✅ **Morning Routine closed.**
+> Type `/compact` to compress context for the next session.
 
-Daarna: geen verdere output. Sessie is klaar.
+No further output after this. Session is done.
