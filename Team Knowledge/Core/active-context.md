@@ -1,11 +1,10 @@
 # Active Context
 
 ## Last session
-2026-06-18 — Karpathy-style auto-learning implemented: 16 notes.md files created, Task Discipline updated in 15 AGENT.md files, journal steps removed from active protocol, /improve-system updated with feedback propagation check.
+2026-06-18 — /improve-system audit executed (all 6 items done), all 7 Dutch skill files translated to English, /close-session and /improve-system routing corrected.
 
 ## Open items
 - Kai to remove graduation candidates step from /close-session skill (decision: session 234, still open)
-- Kai to add GL rule for Kai's infrastructure operating rules: always check service dependents before stopping
 
 ## Active goals
 - G-Scheiding volledig afgerond
