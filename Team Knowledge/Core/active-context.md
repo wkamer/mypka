@@ -4,7 +4,7 @@
 2026-06-18 — /improve-system audit executed (all 6 items done), all 7 Dutch skill files translated to English, /close-session and /improve-system routing corrected.
 
 ## Open items
-- Kai to remove graduation candidates step from /close-session skill (decision: session 234, still open)
+None
 
 ## Active goals
 - G-Scheiding volledig afgerond
