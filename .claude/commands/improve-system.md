@@ -150,7 +150,7 @@ Confirm per number. A yes on item 1 does not cover item 2.
 | Finding | Route |
 |---|---|
 | AGENT.md references dead system | Nolan updates |
-| Feedback rule missing from AGENT.md | Larry proposes, edits after confirmation |
+| Feedback rule missing from AGENT.md | Nolan updates after confirmation |
 | CLAUDE.md drift | Larry self-edits after confirmation |
 | SOP/GL dead reference | Larry proposes, edits after confirmation |
 | active-context.md stale entry | Larry edits directly, no confirmation needed for factual cleanup |
