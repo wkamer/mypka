@@ -56,3 +56,4 @@
 - [Check before stopping](feedback_check_before_stopping.md) — Always run status/list command before stopping any service — never stop blind
 - [Verify before reporting](feedback_verify_before_reporting.md) — After any build task: start services, test endpoint, confirm behavior — never just relay what an agent says it built
 - [Commit and push](feedback_commit_and_push.md) — After every successful change: always commit AND push immediately, no separate prompt
+- [Dashboard app specialist trigger](project_dashboard_app_specialist_trigger.md) — Flag hiring app developer when dashboard reaches 5+ tiles

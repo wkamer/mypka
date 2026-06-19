@@ -1,17 +1,18 @@
 # Active Context
 
 ## Last session
-2026-06-19 — improve-system: 6 gaps fixed (Sienna/Lena/Penn AGENT.md rules, UMC memory removed, SOP-013 dead path, SOP-001 Step 12 removed). /clear reminder added to close-session.
+2026-06-19 — PKA Dashboard: scaffold, auth, CF integration, team roles. dashboard.kmerbase.com live with login + Projects tile. Kai/Larry roles clarified in AGENT.md.
 
 ## Open items
 - Nolan: add communicatie_verzender rule to Sienna AGENT.md (team_task 103)
 - Nolan: add health_resources_ke rule to Lena AGENT.md (team_task 104)
-- Daily Planning niet afgerond — geen Highlight voor vandaag
-- Team Inbox: Deelmomenten MR routering (Penn of Kai?) — wacht op owner beslissing
-- G-Geldstroom Regie deadline 30 juni — on-hold intentioneel bevestigen
-- Gmail auth verlopen — re-authenticatie nodig
-- Gesprek met Rajko Acimovic — nog te voeren
-- Cloudflare Zero Trust: add dashboard.kmerbase.com route (Networks > Tunnels > Configure > Public Hostnames > http://127.0.0.1:8080)
+- Team Inbox: Deelmomenten MR routing (Penn or Kai?) — awaiting owner decision
+- G-Geldstroom Regie deadline 30 juni — on-hold confirm
+- Gmail auth expired — re-authentication needed
+- Conversation with Rajko Acimovic — still pending
+- Dashboard: change default password (admin/admin)
+- Dashboard: Key Elements tile (iteration 3)
+- Dashboard: Systemd auto-start for backend + frontend (deferred)
 
 ## Active goals
 - G-Scheiding volledig afgerond
