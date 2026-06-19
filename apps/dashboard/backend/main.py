@@ -53,5 +53,5 @@ def me(pka_token: str = Cookie(default=None)):
 
 @app.post("/api/logout")
 def logout(response: Response):
-    response.delete_cookie(key=COOKIE_NAME, samesite="lax")
+    response.delete_cookie(key=COOKIE_NAME, samesite="lax", secure=True)
     return {"ok": True}
