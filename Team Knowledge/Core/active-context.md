@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-19 — /improve-system rapport afgerond, agent_signature bevestigd in alle 16 AGENT.md's, git commit + GitHub remote setup (https://github.com/wkamer/mypka.git).
+2026-06-19 — Git repo cleanup: .gitignore built out (logs, pycache, env, credentials), all 2123 untracked files committed, credential files purged from full history via git filter-repo, /close-session now auto-commits and pushes.
 
 ## Open items
 - Nolan: add communicatie_verzender rule to Sienna AGENT.md (team_task 103)
