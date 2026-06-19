@@ -33,6 +33,7 @@ def login(body: LoginRequest, response: Response):
         value=token,
         httponly=True,
         samesite="lax",
+        secure=True,
         max_age=60 * 60 * 24 * 7,  # 7 days
     )
     return {"ok": True}
