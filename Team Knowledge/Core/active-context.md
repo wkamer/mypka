@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-19 — Git repo cleanup: .gitignore built out (logs, pycache, env, credentials), all 2123 untracked files committed, credential files purged from full history via git filter-repo, /close-session now auto-commits and pushes.
+2026-06-19 — PKA dashboard setup (https://dashboard.kmerbase.com) + Kai AGENT.md updated with GL-023 Step 3 verify plan rule (public endpoint, not localhost).
 
 ## Open items
 - Nolan: add communicatie_verzender rule to Sienna AGENT.md (team_task 103)
@@ -11,6 +11,7 @@
 - G-Geldstroom Regie deadline 30 juni — on-hold intentioneel bevestigen
 - Gmail auth verlopen — re-authenticatie nodig
 - Gesprek met Rajko Acimovic — nog te voeren
+- Cloudflare Zero Trust: add dashboard.kmerbase.com route (Networks > Tunnels > Configure > Public Hostnames > http://127.0.0.1:8080)
 
 ## Active goals
 - G-Scheiding volledig afgerond
