@@ -161,19 +161,19 @@ Team Knowledge/Core/Scripts/create_365academy_md_files.py
 ### Invoking the script
 
 ```bash
-/opt/mypka-memory/venv/bin/python "Team Knowledge/Core/Scripts/create_365academy_md_files.py"
+python3 "Team Knowledge/Core/Scripts/create_365academy_md_files.py"
 ```
 
 Optional: pass a custom folder path:
 
 ```bash
-/opt/mypka-memory/venv/bin/python "Team Knowledge/Core/Scripts/create_365academy_md_files.py" --folder "/opt/myPKA/Team Inbox/2. AndereModule"
+python3 "Team Knowledge/Core/Scripts/create_365academy_md_files.py" --folder "/opt/myPKA/Team Inbox/2. AndereModule"
 ```
 
 ### Requirements
 
 - `ANTHROPIC_API_KEY` in environment, or set in `memory_config` (loaded automatically)
-- Python packages: `anthropic`, `html2text` — both present in `/opt/mypka-memory/venv/`
+- Python packages: `anthropic`, `html2text` — install if missing: `pip3 install anthropic html2text`
 - All `.srt` and `.txt` files must be present in the folder (already guaranteed after Step 1)
 
 ### Error handling
@@ -203,13 +203,13 @@ Team Knowledge/Core/Scripts/generate_365academy_pdfs.py
 ### Invoking the script
 
 ```bash
-/opt/mypka-memory/venv/bin/python "Team Knowledge/Core/Scripts/generate_365academy_pdfs.py"
+python3 "Team Knowledge/Core/Scripts/generate_365academy_pdfs.py"
 ```
 
 Optional: pass a custom folder path:
 
 ```bash
-/opt/mypka-memory/venv/bin/python "Team Knowledge/Core/Scripts/generate_365academy_pdfs.py" --folder "/opt/myPKA/Team Inbox/2. AndereModule"
+python3 "Team Knowledge/Core/Scripts/generate_365academy_pdfs.py" --folder "/opt/myPKA/Team Inbox/2. AndereModule"
 ```
 
 ### Engine detection (automatic)
@@ -224,7 +224,7 @@ No manual configuration needed. The script detects and uses the best available e
 
 ### Requirements
 
-- Python package `reportlab` — installed in `/opt/mypka-memory/venv/` (`pip install reportlab`)
+- Python package `reportlab` — install if missing: `pip3 install reportlab`
 - Samenvatting and Opdracht `.md` files must be present (guaranteed after Step 2)
 - Optional: DejaVu fonts at `/usr/share/fonts/truetype/dejavu/` — used automatically for full Unicode support
 
@@ -251,7 +251,7 @@ Converteer het `.txt` bronbestand (HTML) naar Markdown via `html2text` — zelfd
 ### PDF aanmaken
 
 ```bash
-/opt/mypka-memory/venv/bin/python "Team Knowledge/Core/Scripts/generate_365academy_pdfs.py" --intro --folder "/opt/myPKA/Team Inbox/<module folder>"
+python3 "Team Knowledge/Core/Scripts/generate_365academy_pdfs.py" --intro --folder "/opt/myPKA/Team Inbox/<module folder>"
 ```
 
 ### PDF-layout intro

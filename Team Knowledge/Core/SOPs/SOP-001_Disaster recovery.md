@@ -295,109 +295,6 @@ Flows to configure:
 
 ---
 
-## Step 12 — Unified Memory Core (Pi / Linux only)
-
-De memory-db container en Python venv leven buiten myPKA en moeten handmatig worden hersteld.
-
-**12a — Service directory aanmaken:**
-```bash
-sudo mkdir -p /opt/mypka-memory
-sudo chown $USER:$USER /opt/mypka-memory
-```
-
-**12b — Bestanden kopiëren vanuit myPKA:**
-```bash
-cp "Team Knowledge/Core/Integrations/memory-db/docker-compose.yml" /opt/mypka-memory/
-cp "Team Knowledge/Core/Integrations/memory-db/init.sql" /opt/mypka-memory/
-cp "Team Knowledge/Core/Integrations/memory-db/.env.template" /opt/mypka-memory/
-```
-
-**12c — Recreate `.env` and lock permissions (B-021C-A):**
-
-Copy the template to create a fresh `.env`:
-```bash
-cp /opt/mypka-memory/.env.template /opt/mypka-memory/.env
-```
-
-Open `.env` in a local text editor:
-```bash
-nano /opt/mypka-memory/.env
-```
-
-Retrieve the credential values from Bitwarden entry **"memory-db / PostgreSQL"** controlled by Owner Walter Kamer. Fill in all required fields and save the file. Enter or paste credential values only inside the local `.env` editor. Do not print, paste, echo, `cat`, `grep`, log, or share secret values in terminal commands, chat, documents, session logs, team_log, SOPs, Guidelines, Workstreams, or deliverables.
-
-Set owner-only permissions immediately after saving:
-```bash
-chmod 600 /opt/mypka-memory/.env
-```
-
-Verify permissions (metadata only — no file content is read or printed):
-```bash
-stat /opt/mypka-memory/.env
-```
-
-Expected: `Access: (0600/-rw-------)  Uid: ( 1000/ admin)  Gid: ( 1000/ admin)`
-
-Do not proceed to Step 12d until `stat` confirms mode `0600` and owner `admin`. If the mode is incorrect, re-run `chmod 600` and verify again.
-
-**12d — Container starten:**
-```bash
-cd /opt/mypka-memory
-docker compose --env-file .env up -d
-# Verifieer: docker exec memory-db psql -U mypka -d mypka_memory -c "\dt"
-# Verwacht: 5 tabellen (tool_logs, memory_summaries, conversational_memory, memory_entities, memory_knowledge)
-```
-
-**12e — Python venv aanmaken:**
-```bash
-python3 -m venv /opt/mypka-memory/venv
-/opt/mypka-memory/venv/bin/pip install psycopg2-binary pgvector sentence-transformers
-```
-
-**12f — Bestaande sessie logs backfillen:**
-```bash
-export MEMORY_DB_DSN="postgresql://mypka:<wachtwoord>@localhost:5433/mypka_memory"
-cd "/opt/myPKA/Team Knowledge/Core/Integrations/memory-db"
-/opt/mypka-memory/venv/bin/python3 backfill_session_logs.py
-# Verwacht: "Backfill klaar: X nieuw, 0 overgeslagen"
-```
-
-**12f-2 — Knowledge base indexeren (Fase 2):**
-```bash
-cd "/opt/myPKA/Team Knowledge/Core/Integrations/memory-db"
-/opt/mypka-memory/venv/bin/python3 knowledge_indexer.py
-# Verwacht: X bestanden, Y chunks opgeslagen
-```
-
-**12f-3 — Entity backfill (Fase 2):**
-```bash
-cd "/opt/myPKA/Team Knowledge/Core/Integrations/memory-db"
-/opt/mypka-memory/venv/bin/python3 entity_backfill.py
-# Verwacht: X bestanden verwerkt, entiteiten per type getoond
-```
-
-**Credentials:**
-| Systeem | Credential | Waar |
-|---|---|---|
-| memory-db PostgreSQL | wachtwoord | Bitwarden: "memory-db / PostgreSQL" |
-| memory-db DSN | `postgresql://mypka:<ww>@localhost:5433/mypka_memory` | `/opt/mypka-memory/.env` |
-
-**12g — Ollama (lokale LLM voor MemoryManager):**
-```bash
-sudo mkdir -p /opt/mypka-ollama && sudo chown $USER:$USER /opt/mypka-ollama
-cp "Team Knowledge/Core/Integrations/mypka-ollama/docker-compose.yml" /opt/mypka-ollama/
-cd /opt/mypka-ollama && docker compose up -d
-docker exec ollama ollama pull llama3.2:3b
-```
-
-Verificeer:
-```bash
-docker exec ollama ollama list
-# Verwacht: llama3.2:3b in de lijst
-```
-
----
-
 ## Step 13 — Verify Everything
 
 | Check | Command | Expected |
@@ -410,11 +307,6 @@ docker exec ollama ollama list
 | Databases | `python3 "Team Knowledge/Core/Scripts/session_open.py"` | Open tasks listed |
 | Shopify (Windows) | `shopify store execute --store ynmuzt-xm.myshopify.com --query 'query { shop { name } }'` | "Tricolarae" |
 | n8n (server) | `http://<ip>:5678` | UI loads |
-| memory-db | `docker exec memory-db psql -U mypka -d mypka_memory -c "\dt"` | 5 tabellen |
-| memory venv | `/opt/mypka-memory/venv/bin/python3 -c "import psycopg2, pgvector, sentence_transformers"` | geen error |
-| knowledge base | `docker exec memory-db psql -U mypka -d mypka_memory -c "SELECT count(*) FROM memory_knowledge"` | >0 rows |
-| entity memory | `docker exec memory-db psql -U mypka -d mypka_memory -c "SELECT count(*) FROM memory_entities"` | >0 rows |
-| Ollama | `docker exec ollama ollama list` | `llama3.2:3b` |
 
 ---
 
@@ -451,7 +343,6 @@ The backup infrastructure below was introduced in B-001 (Stabilization Package v
 | `0 2 * * *` | `/home/admin/.config/rclone/local-backup.sh` | `/home/admin/backups/myPKA/YYYYMMDD/` | 30 days |
 | `30 2 * * *` | `Team Knowledge/Core/Scripts/backup_sqlite_dbs.sh` | `/home/admin/backups/sqlite/YYYYMMDD/` | 7 days |
 | `45 2 * * *` | `Team Knowledge/Core/Integrations/n8n/backup_n8n.sh` | `/home/admin/backups/n8n/` | 7 days |
-| `0 3 * * *` | `Team Knowledge/Core/Integrations/memory-db/backup_memory_db.sh` | `/home/admin/backups/memory-db/` | 7 days |
 
 Google Drive sync (every 5 minutes, one-way):
 
@@ -481,21 +372,9 @@ Google Drive sync (every 5 minutes, one-way):
 - **Canonical B-001 managed backup: `/home/admin/backups/n8n/`**
 - Pre-existing separate backup: `/opt/n8n/backup-n8n.sh` → `/opt/n8n/backups/` — pre-dates B-001, currently active. No decommissioning is approved.
 
-**4. memory-db PostgreSQL/pgvector backup**
-- Script: `Team Knowledge/Core/Integrations/memory-db/backup_memory_db.sh`
-- Target: `/home/admin/backups/memory-db/YYYYMMDD_memory-db.dump`
-- What: daily `pg_dump` of the memory-db/pgvector database
-- Retention: 7 days
-
 ### Rclone Re-Authentication
 
 rclone may require re-authentication on new hardware or after token expiry. This requires device access and an OAuth flow (browser or device-auth URL). See Step 1 for the initial rclone setup procedure.
-
-### `/opt/mypka-memory/.env` — Sensitive Credential File
-
-The `.env` file at `/opt/mypka-memory/` contains sensitive service credentials for memory-db. It is **not** covered by any regular backup path — it lives outside `/opt/myPKA/` and is not included in the myPKA rsync snapshot, rclone sync, or any other B-001 backup mechanism. This file must not be added to regular myPKA, rclone or Google Drive backups.
-
-In a DR scenario, credentials must be recovered manually from a secure source controlled by Owner Walter Kamer (Bitwarden entry: "memory-db / PostgreSQL"). The full recovery procedure, including permission lock and pre-start verification, is documented in **Step 12c** of this SOP.
 
 ### Google Drive Remote Validation
 
