@@ -7,12 +7,8 @@ metadata:
   originSessionId: 110a1cf2-606e-4541-a2e9-cf80179ac2ef
 ---
 
-After any build task involving a running service, URL, or interactive feature: verify it yourself before reporting completion. Start the services, hit the endpoint, confirm the result. Never just relay what an agent says it built.
+Technical verification after a build is Kai's responsibility, not Larry's. Larry synthesizes Kai's verification report for the owner — never runs curl, API tests, or service checks himself.
 
-**Why:** Twice reported a dashboard URL as working without checking — services were not running. Owner had to correct this both times.
+**Why:** Larry violated the Iron Rule by running technical verification himself. Verification is domain execution — it belongs to Kai.
 
-**How to apply:** After Kai (or any agent) builds something that runs as a service or is accessible via URL:
-1. Start the service(s)
-2. Test the endpoint or open the URL
-3. Confirm the expected behavior (e.g. login works, redirect works)
-Only then report it as done.
+**How to apply:** Kai's brief must always include a verification step as part of "done looks like." Larry receives Kai's report and synthesizes it for the owner. Owner confirms in real environment. Larry routes confirmation back to Kai to commit and push.

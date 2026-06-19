@@ -55,3 +55,4 @@
 - [Audit deliverables location](reference_audit_deliverables_location.md) — All audit execution reports go to `Deliverables/20260603_Core_AI Team Audit Report/`, never per-item folders
 - [Check before stopping](feedback_check_before_stopping.md) — Always run status/list command before stopping any service — never stop blind
 - [Verify before reporting](feedback_verify_before_reporting.md) — After any build task: start services, test endpoint, confirm behavior — never just relay what an agent says it built
+- [Commit and push](feedback_commit_and_push.md) — After every successful change: always commit AND push immediately, no separate prompt
