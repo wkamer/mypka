@@ -66,7 +66,17 @@ No discussion. Just record and move on.
 
 ## Step 2 — Session context and open tasks
 
-Fetch recent context from `PKM/personal.db`:
+**Sienna runs her proactive session start first.** Invoke the `sienna` subagent with this brief:
+
+> Run your Session Start protocol as defined in your AGENT.md:
+> 1. Personal Gmail inbox — search unread threads (is:unread in:inbox), categorize, report.
+> 2. Team Inbox/ — list any files present, propose one action per item.
+> 3. Active goals baseline — read PKM/My Life/Goals/, list active goals as your reference point for this session.
+> Report back concisely. This is your opening move.
+
+Wait for Sienna's report before continuing.
+
+Then fetch recent session context from `PKM/personal.db`:
 
 ```python
 import sqlite3
@@ -82,15 +92,9 @@ for row in c.fetchall():
 conn.close()
 ```
 
-Check all inboxes:
-- `Team Inbox/Personal/` — new files?
-- `Team Inbox/Kamer E-commerce/` — new files?
-- `Team Inbox/Geldstroom Regie/` — new files?
-- Todoist Inbox — loose items to route
-
 Check open `team_tasks` in `PKM/personal.db` — what is still running?
 
-Report in max 5 lines. No extended analysis.
+Report open tasks in max 3 lines. No extended analysis.
 
 ---
 

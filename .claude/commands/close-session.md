@@ -130,6 +130,18 @@ If a new pattern or insight emerged that affects team level: INSERT one `team_lo
 
 ---
 
+## Step 6 — Git commit and push
+
+Stage all changes, commit with the session title, and push to remote:
+
+```bash
+cd /opt/myPKA && git add -A && git commit -m "Session close: <session_title>" && git push
+```
+
+If there is nothing to commit (`git status` shows clean), skip silently.
+
+---
+
 ## Closing
 
 Display a short checklist:
@@ -140,6 +152,7 @@ Display a short checklist:
 ✓ active-context.md updated
 ✓ Open items: [X tasks / None]
 ✓ /improve-system: [run / skipped]
+✓ Git: committed + pushed (or: nothing to commit)
 ```
 
 Then: no further output.

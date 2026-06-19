@@ -1,0 +1,299 @@
+2026/05/21 09:23:01 CRITICAL: Failed to create file system for "dropbox:/Recorded Audio": didn't find section in config file ("dropbox")
+2026/05/21 09:23:24 INFO  : There was nothing to transfer
+2026/05/21 09:23:24 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 3
+Elapsed time:         0.2s
+
+2026/05/21 09:23:24 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:23:25 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:24:02 INFO  : There was nothing to transfer
+2026/05/21 09:24:02 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 3
+Elapsed time:         0.2s
+
+2026/05/21 09:24:02 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:24:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:25:02 INFO  : There was nothing to transfer
+2026/05/21 09:25:02 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 3
+Elapsed time:         0.2s
+
+2026/05/21 09:25:02 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:25:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:26:02 INFO  : There was nothing to transfer
+2026/05/21 09:26:02 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 3
+Elapsed time:         0.2s
+
+2026/05/21 09:26:02 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:26:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:27:03 INFO  : There was nothing to transfer
+2026/05/21 09:27:03 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 3
+Elapsed time:         0.2s
+
+2026/05/21 09:27:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:27:04 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:28:03 INFO  : There was nothing to transfer
+2026/05/21 09:28:03 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 3
+Elapsed time:         0.2s
+
+2026/05/21 09:28:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:28:04 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:29:03 INFO  : There was nothing to transfer
+2026/05/21 09:29:03 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 3
+Elapsed time:         0.2s
+
+2026/05/21 09:29:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:29:04 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:30:03 INFO  : There was nothing to transfer
+2026/05/21 09:30:03 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 3
+Elapsed time:         0.2s
+
+2026/05/21 09:30:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:30:04 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:47:04 INFO  : Audio Recording 2026-05-21 at 09.46.24.m4a: Copied (new)
+2026/05/21 09:47:04 INFO  : 
+Transferred:   	  102.768 KiB / 102.768 KiB, 100%, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 5
+Transferred:            1 / 1, 100%
+Elapsed time:         1.0s
+
+2026/05/21 09:47:04 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:47:06 INFO  : Audio Recording 2026-05-21 at 09.46.24.m4a: Deleted
+2026/05/21 09:47:06 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:54:04 INFO  : Audio Recording 2026-05-21 at 09.53.19.m4a: Copied (new)
+2026/05/21 09:54:04 INFO  : 
+Transferred:   	  102.586 KiB / 102.586 KiB, 100%, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 5
+Transferred:            1 / 1, 100%
+Elapsed time:         1.1s
+
+2026/05/21 09:54:04 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 09:54:06 INFO  : Audio Recording 2026-05-21 at 09.53.19.m4a: Deleted
+2026/05/21 09:54:06 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 10:06:03 INFO  : Audio Recording 2026-05-21 at 10.05.52.m4a: Copied (new)
+2026/05/21 10:06:03 INFO  : 
+Transferred:   	  108.176 KiB / 108.176 KiB, 100%, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 6
+Transferred:            1 / 1, 100%
+Elapsed time:         0.9s
+
+2026/05/21 10:06:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 10:06:05 INFO  : Audio Recording 2026-05-21 at 10.05.52.m4a: Deleted
+2026/05/21 10:06:05 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 10:30:05 INFO  : Audio Recording 2026-05-21 at 10.29.25.m4a: Copied (new)
+2026/05/21 10:30:05 INFO  : 
+Transferred:   	  172.105 KiB / 172.105 KiB, 100%, 63.999 KiB/s, ETA 0s
+Checks:                 0 / 0, -, Listed 7
+Transferred:            1 / 1, 100%
+Elapsed time:         2.0s
+
+2026/05/21 10:30:05 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 10:30:07 INFO  : Audio Recording 2026-05-21 at 10.29.25.m4a: Deleted
+2026/05/21 10:30:07 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 10:46:04 INFO  : Audio Recording 2026-05-21 at 10.45.06.m4a: Copied (new)
+2026/05/21 10:46:04 INFO  : 
+Transferred:   	  119.564 KiB / 119.564 KiB, 100%, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 1
+Transferred:            1 / 1, 100%
+Elapsed time:         1.5s
+
+2026/05/21 10:46:04 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+Thu 21 May 10:46:05 CEST 2026: transcribing Audio Recording 2026-05-21 at 10.45.06.m4a
+2026-05-21 10:46:05,080  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 10.45.06.m4a
+2026-05-21 10:46:05,296  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 10:46:05,656  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+[2026-05-21 10:46:06.412] [ctranslate2] [thread 373498] [warning] The compute type inferred from the saved model is float16, but the target device or backend do not support efficient float16 computation. The model weights have been automatically converted to use the float32 compute type instead.
+2026-05-21 10:46:06,517  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 10.45.06.m4a
+2026-05-21 10:46:06,567  INFO      Processing audio with duration 00:04.899
+2026-05-21 10:46:06,573  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 10:46:21,022  INFO      Transcription complete — 42 characters
+2026-05-21 10:46:21,054  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_104621_voice-memo.md
+/opt/myPKA/Team Inbox/20260521_104621_voice-memo.md
+Thu 21 May 10:46:21 CEST 2026: transcription OK — removing Audio Recording 2026-05-21 at 10.45.06.m4a from Dropbox
+2026/05/21 10:46:22 INFO  : Audio Recording 2026-05-21 at 10.45.06.m4a: Deleted
+2026/05/21 10:46:22 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+Thu 21 May 10:46:22 CEST 2026: removed local copy /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 10.45.06.m4a
+2026/05/21 10:50:05 INFO  : Audio Recording 2026-05-21 at 10.49.33.m4a: Copied (new)
+2026/05/21 10:50:05 INFO  : 
+Transferred:   	  117.465 KiB / 117.465 KiB, 100%, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 1
+Transferred:            1 / 1, 100%
+Elapsed time:         1.5s
+
+2026/05/21 10:50:05 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+Thu 21 May 10:50:05 CEST 2026: transcribing Audio Recording 2026-05-21 at 10.49.33.m4a
+2026-05-21 10:50:05,423  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 10.49.33.m4a
+2026-05-21 10:50:05,657  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 10:50:06,028  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+[2026-05-21 10:50:06.843] [ctranslate2] [thread 374704] [warning] The compute type inferred from the saved model is float16, but the target device or backend do not support efficient float16 computation. The model weights have been automatically converted to use the float32 compute type instead.
+2026-05-21 10:50:06,976  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 10.49.33.m4a
+2026-05-21 10:50:07,032  INFO      Processing audio with duration 00:04.644
+2026-05-21 10:50:07,038  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 10:50:22,971  INFO      Transcription complete — 46 characters
+2026-05-21 10:50:23,004  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_105023_voice-memo.md
+/opt/myPKA/Team Inbox/20260521_105023_voice-memo.md
+Thu 21 May 10:50:23 CEST 2026: transcription OK — removing Audio Recording 2026-05-21 at 10.49.33.m4a from Dropbox
+2026/05/21 10:50:24 INFO  : Audio Recording 2026-05-21 at 10.49.33.m4a: Deleted
+2026/05/21 10:50:24 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+Thu 21 May 10:50:24 CEST 2026: removed local copy /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 10.49.33.m4a
+2026/05/21 10:52:04 INFO  : Audio Recording 2026-05-21 at 10.50.52.m4a: Copied (new)
+2026/05/21 10:52:04 INFO  : 
+Transferred:   	  180.417 KiB / 180.417 KiB, 100%, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 1
+Transferred:            1 / 1, 100%
+Elapsed time:         1.5s
+
+2026/05/21 10:52:04 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+Thu 21 May 10:52:04 CEST 2026: transcribing Audio Recording 2026-05-21 at 10.50.52.m4a
+2026-05-21 10:52:04,849  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 10.50.52.m4a
+2026-05-21 10:52:05,059  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 10:52:05,425  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+[2026-05-21 10:52:06.228] [ctranslate2] [thread 375024] [warning] The compute type inferred from the saved model is float16, but the target device or backend do not support efficient float16 computation. The model weights have been automatically converted to use the float32 compute type instead.
+2026-05-21 10:52:06,333  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 10.50.52.m4a
+2026-05-21 10:52:06,406  INFO      Processing audio with duration 00:09.079
+2026-05-21 10:52:06,416  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 10:52:25,585  INFO      Transcription complete — 93 characters
+2026-05-21 10:52:25,617  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_105225_voice-memo.md
+/opt/myPKA/Team Inbox/20260521_105225_voice-memo.md
+Thu 21 May 10:52:25 CEST 2026: transcription OK — removing Audio Recording 2026-05-21 at 10.50.52.m4a from Dropbox
+2026/05/21 10:52:27 INFO  : Audio Recording 2026-05-21 at 10.50.52.m4a: Deleted
+2026/05/21 10:52:27 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+Thu 21 May 10:52:27 CEST 2026: removed local copy /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 10.50.52.m4a
+2026/05/21 11:13:04 INFO  : Audio Recording 2026-05-21 at 11.12.47.m4a: Copied (new)
+2026/05/21 11:13:04 INFO  : Audio Recording 2026-05-21 at 11.12.30.m4a: Copied (new)
+2026/05/21 11:13:04 INFO  : 
+Transferred:   	  285.451 KiB / 285.451 KiB, 100%, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 2
+Transferred:            2 / 2, 100%
+Elapsed time:         1.5s
+
+2026/05/21 11:13:04 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+Thu 21 May 11:13:05 CEST 2026: transcribing Audio Recording 2026-05-21 at 11.12.30.m4a
+2026-05-21 11:13:05,210  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 11.12.30.m4a
+2026-05-21 11:13:05,420  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 11:13:05,766  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+[2026-05-21 11:13:06.515] [ctranslate2] [thread 378810] [warning] The compute type inferred from the saved model is float16, but the target device or backend do not support efficient float16 computation. The model weights have been automatically converted to use the float32 compute type instead.
+2026-05-21 11:13:06,618  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 11.12.30.m4a
+2026-05-21 11:13:06,673  INFO      Processing audio with duration 00:06.687
+2026-05-21 11:13:06,680  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 11:13:22,561  INFO      Transcription complete — 55 characters
+2026-05-21 11:13:22,595  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_111322_voice-memo.md
+/opt/myPKA/Team Inbox/20260521_111322_voice-memo.md
+Thu 21 May 11:13:22 CEST 2026: transcription OK — removing Audio Recording 2026-05-21 at 11.12.30.m4a from Dropbox
+2026/05/21 11:13:24 INFO  : Audio Recording 2026-05-21 at 11.12.30.m4a: Deleted
+2026/05/21 11:13:24 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+Thu 21 May 11:13:24 CEST 2026: removed local copy /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 11.12.30.m4a
+Thu 21 May 11:13:24 CEST 2026: transcribing Audio Recording 2026-05-21 at 11.12.47.m4a
+2026-05-21 11:13:24,344  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 11.12.47.m4a
+2026-05-21 11:13:24,550  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 11:13:24,908  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+[2026-05-21 11:13:25.650] [ctranslate2] [thread 378869] [warning] The compute type inferred from the saved model is float16, but the target device or backend do not support efficient float16 computation. The model weights have been automatically converted to use the float32 compute type instead.
+2026-05-21 11:13:25,754  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 11.12.47.m4a
+2026-05-21 11:13:25,808  INFO      Processing audio with duration 00:06.316
+2026-05-21 11:13:25,814  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 11:13:39,689  INFO      Transcription complete — 47 characters
+2026-05-21 11:13:39,723  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_111339_voice-memo.md
+/opt/myPKA/Team Inbox/20260521_111339_voice-memo.md
+Thu 21 May 11:13:39 CEST 2026: transcription OK — removing Audio Recording 2026-05-21 at 11.12.47.m4a from Dropbox
+2026/05/21 11:13:41 INFO  : Audio Recording 2026-05-21 at 11.12.47.m4a: Deleted
+2026/05/21 11:13:41 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+Thu 21 May 11:13:41 CEST 2026: removed local copy /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 11.12.47.m4a
+2026/05/21 12:43:05 INFO  : Audio Recording 2026-05-21 at 12.41.48.m4a: Copied (new)
+2026/05/21 12:43:05 INFO  : 
+Transferred:   	  263.521 KiB / 263.521 KiB, 100%, 0 B/s, ETA -
+Checks:                 0 / 0, -, Listed 1
+Transferred:            1 / 1, 100%
+Elapsed time:         1.5s
+
+2026/05/21 12:43:05 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+Thu 21 May 12:43:05 CEST 2026: transcribing Audio Recording 2026-05-21 at 12.41.48.m4a
+2026-05-21 12:43:05,558  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 12.41.48.m4a
+2026-05-21 12:43:05,770  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 12:43:06,177  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+[2026-05-21 12:43:06.918] [ctranslate2] [thread 394194] [warning] The compute type inferred from the saved model is float16, but the target device or backend do not support efficient float16 computation. The model weights have been automatically converted to use the float32 compute type instead.
+2026-05-21 12:43:07,021  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 12.41.48.m4a
+2026-05-21 12:43:07,098  INFO      Processing audio with duration 00:15.163
+2026-05-21 12:43:07,113  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 12:43:28,384  INFO      Transcription complete — 104 characters
+2026-05-21 12:43:28,416  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_124328_voice-memo.md
+/opt/myPKA/Team Inbox/20260521_124328_voice-memo.md
+Thu 21 May 12:43:28 CEST 2026: transcription OK — removing Audio Recording 2026-05-21 at 12.41.48.m4a from Dropbox
+2026/05/21 12:43:30 INFO  : Audio Recording 2026-05-21 at 12.41.48.m4a: Deleted
+2026/05/21 12:43:30 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+Thu 21 May 12:43:30 CEST 2026: removed local copy /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 12.41.48.m4a
+2026/05/21 18:50:25 INFO  : There was nothing to transfer
+2026/05/21 18:50:25 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Elapsed time:         0.2s
+
+2026/05/21 18:50:25 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+Thu 21 May 18:51:01 CEST 2026: sync already running, skipping
+Thu 21 May 18:52:01 CEST 2026: sync already running, skipping
+Thu 21 May 18:53:01 CEST 2026: sync already running, skipping
+Thu 21 May 18:54:01 CEST 2026: sync already running, skipping
+Thu 21 May 18:55:01 CEST 2026: sync already running, skipping
+Thu 21 May 18:56:01 CEST 2026: sync already running, skipping
+Thu 21 May 18:57:01 CEST 2026: sync already running, skipping
+Thu 21 May 18:57:19 CEST 2026: sync already running, skipping
+Thu 21 May 18:58:01 CEST 2026: sync already running, skipping
+2026/05/21 18:58:39 INFO  : There was nothing to transfer
+2026/05/21 18:58:39 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Elapsed time:         0.3s
+
+2026/05/21 18:58:39 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 18:59:04 INFO  : There was nothing to transfer
+2026/05/21 18:59:04 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Elapsed time:         0.2s
+
+2026/05/21 18:59:04 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 19:00:03 INFO  : There was nothing to transfer
+2026/05/21 19:00:03 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Elapsed time:         0.2s
+
+2026/05/21 19:00:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 19:01:03 INFO  : There was nothing to transfer
+2026/05/21 19:01:03 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Elapsed time:         0.2s
+
+2026/05/21 19:01:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 19:02:03 INFO  : There was nothing to transfer
+2026/05/21 19:02:03 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Elapsed time:         0.2s
+
+2026/05/21 19:02:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 19:03:04 INFO  : There was nothing to transfer
+2026/05/21 19:03:04 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Elapsed time:         0.2s
+
+2026/05/21 19:03:04 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 19:04:03 INFO  : There was nothing to transfer
+2026/05/21 19:04:03 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Elapsed time:         0.2s
+
+2026/05/21 19:04:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...
+2026/05/21 19:05:03 INFO  : There was nothing to transfer
+2026/05/21 19:05:03 INFO  : 
+Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -
+Elapsed time:         0.2s
+
+2026/05/21 19:05:03 INFO  : Dropbox root 'Recorded Audio': Committing uploads - please wait...

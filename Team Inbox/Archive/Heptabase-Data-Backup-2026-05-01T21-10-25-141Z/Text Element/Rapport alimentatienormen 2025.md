@@ -1,0 +1,1 @@
+[Rapport alimentatienormen 2025](https://www.echtscheidingswinkel.nl/application/files/2317/5638/0380/Tremanormen_2025.pdf)

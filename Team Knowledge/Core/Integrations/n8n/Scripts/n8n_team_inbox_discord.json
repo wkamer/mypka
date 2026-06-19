@@ -1,0 +1,60 @@
+{
+  "name": "Team Inbox → Discord Notificatie",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "/opt/myPKA/Team Inbox/",
+        "events": ["add"],
+        "recursive": false,
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-0001-0001-a1b2c3d40001",
+      "name": "Watch Team Inbox",
+      "type": "n8n-nodes-base.localFileTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://discord.com/api/v10/channels/1505520574024388691/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bot MTUwNTM2Mjk2MTAwOTc0MTk1NA.G84JiG.gbFxz7XZJ1af1m2uSZhyWlTKuzraLECOZQwQF0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"📥 Nieuw item in Team Inbox: **{{ $json.name }}**\\n`{{ $json.path }}`\"\n}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0002-0002-0002-a1b2c3d40002",
+      "name": "Post naar Discord",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [480, 300]
+    }
+  ],
+  "connections": {
+    "Watch Team Inbox": {
+      "main": [
+        [
+          {
+            "node": "Post naar Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

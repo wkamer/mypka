@@ -1,0 +1,30 @@
+services:
+  ollama:
+    image: ollama/ollama
+    # ARM64 verified: ollama/ollama publishes linux/arm64 manifests
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_KEEP_ALIVE=30m
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+          cpus: "1.50"
+        reservations:
+          memory: 512m
+    networks:
+      - internal
+
+networks:
+  internal:
+    name: ollama_internal
+    driver: bridge
+
+volumes:
+  ollama_data:
+    name: ollama_data

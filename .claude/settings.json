@@ -1,0 +1,37 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /opt/myPKA/.claude/hooks/notify_new_doc.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/opt/myPKA/Team Knowledge/Core/Scripts/umc_index_hook.sh'"
+          }
+        ]
+      },
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/opt/myPKA/Team Knowledge/Core/Scripts/umc_offload_hook.sh'"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash /home/admin/.claude/hooks/statusline.sh"
+  }
+}

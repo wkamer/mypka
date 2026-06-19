@@ -1,0 +1,72 @@
+2026-05-21 10:46:05,080  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 10.45.06.m4a
+2026-05-21 10:46:05,296  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 10:46:05,656  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+2026-05-21 10:46:06,517  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 10.45.06.m4a
+2026-05-21 10:46:06,567  INFO      Processing audio with duration 00:04.899
+2026-05-21 10:46:06,573  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 10:46:21,022  INFO      Transcription complete — 42 characters
+2026-05-21 10:46:21,054  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_104621_voice-memo.md
+2026-05-21 10:50:05,423  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 10.49.33.m4a
+2026-05-21 10:50:05,657  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 10:50:06,028  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+2026-05-21 10:50:06,976  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 10.49.33.m4a
+2026-05-21 10:50:07,032  INFO      Processing audio with duration 00:04.644
+2026-05-21 10:50:07,038  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 10:50:22,971  INFO      Transcription complete — 46 characters
+2026-05-21 10:50:23,004  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_105023_voice-memo.md
+2026-05-21 10:52:04,849  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 10.50.52.m4a
+2026-05-21 10:52:05,059  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 10:52:05,425  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+2026-05-21 10:52:06,333  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 10.50.52.m4a
+2026-05-21 10:52:06,406  INFO      Processing audio with duration 00:09.079
+2026-05-21 10:52:06,416  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 10:52:25,585  INFO      Transcription complete — 93 characters
+2026-05-21 10:52:25,617  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_105225_voice-memo.md
+2026-05-21 11:13:05,210  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 11.12.30.m4a
+2026-05-21 11:13:05,420  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 11:13:05,766  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+2026-05-21 11:13:06,618  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 11.12.30.m4a
+2026-05-21 11:13:06,673  INFO      Processing audio with duration 00:06.687
+2026-05-21 11:13:06,680  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 11:13:22,561  INFO      Transcription complete — 55 characters
+2026-05-21 11:13:22,595  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_111322_voice-memo.md
+2026-05-21 11:13:24,344  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 11.12.47.m4a
+2026-05-21 11:13:24,550  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 11:13:24,908  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+2026-05-21 11:13:25,754  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 11.12.47.m4a
+2026-05-21 11:13:25,808  INFO      Processing audio with duration 00:06.316
+2026-05-21 11:13:25,814  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 11:13:39,689  INFO      Transcription complete — 47 characters
+2026-05-21 11:13:39,723  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_111339_voice-memo.md
+2026-05-21 12:43:05,558  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 12.41.48.m4a
+2026-05-21 12:43:05,770  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 12:43:06,177  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+2026-05-21 12:43:07,021  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 12.41.48.m4a
+2026-05-21 12:43:07,098  INFO      Processing audio with duration 00:15.163
+2026-05-21 12:43:07,113  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 12:43:28,384  INFO      Transcription complete — 104 characters
+2026-05-21 12:43:28,416  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_124328_voice-memo.md
+2026-05-21 20:46:04,775  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 20.45.11.m4a
+2026-05-21 20:46:04,983  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 20:46:05,368  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+2026-05-21 20:46:06,220  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 20.45.11.m4a
+2026-05-21 20:46:06,267  INFO      Processing audio with duration 00:03.947
+2026-05-21 20:46:06,282  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 20:46:18,246  INFO      Transcription complete — 37 characters
+2026-05-21 20:46:18,280  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_204618_voice-memo.md
+2026-05-21 20:47:04,024  INFO      Starting transcription pipeline for: Audio Recording 2026-05-21 at 20.46.47.m4a
+2026-05-21 20:47:04,232  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-21 20:47:04,596  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+2026-05-21 20:47:05,491  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-21 at 20.46.47.m4a
+2026-05-21 20:47:05,551  INFO      Processing audio with duration 00:07.338
+2026-05-21 20:47:05,566  INFO      Detected language 'nl' with probability 1.00
+2026-05-21 20:47:21,649  INFO      Transcription complete — 65 characters
+2026-05-21 20:47:21,682  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260521_204721_voice-memo.md
+2026-05-23 22:57:04,416  INFO      Starting transcription pipeline for: Audio Recording 2026-05-23 at 22.55.55.m4a
+2026-05-23 22:57:04,640  INFO      Loading WhisperModel(model=small, device=cpu)
+2026-05-23 22:57:04,998  INFO      HTTP Request: GET https://huggingface.co/api/models/Systran/faster-whisper-small/revision/main "HTTP/1.1 200 OK"
+2026-05-23 22:57:05,890  INFO      Transcribing: /opt/myPKA/Team Inbox/Recorded Audio/Audio Recording 2026-05-23 at 22.55.55.m4a
+2026-05-23 22:57:05,950  INFO      Processing audio with duration 00:07.407
+2026-05-23 22:57:05,957  INFO      Detected language 'nl' with probability 1.00
+2026-05-23 22:57:21,975  INFO      Transcription complete — 51 characters
+2026-05-23 22:57:22,008  INFO      Transcript written to: /opt/myPKA/Team Inbox/20260523_225722_voice-memo.md

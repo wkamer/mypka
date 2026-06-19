@@ -1,0 +1,57 @@
+# Memory Index
+
+- [Owner profile](user_profile.md) — Walter Kamer, wkamer@gmail.com
+- [Family](user_family.md) — Daughters: Kyara and Ylana; brother Remko Kamer (Paris, b. 1971, married to Ana, sons Mathias and Nils)
+- [Tone of voice](user_tone_of_voice.md) — Warm, direct, matter-of-fact; short sentences; personal but not vague; no formal language
+- [Todoist personal tasks project](reference_todoist_personal.md) — Personal tasks → Todoist "👤 PERSONAL" project (id: 6cFcm2MpmHvc2F3H)
+- [Todoist business tasks project](reference_todoist_business.md) — Two 💼 projects: KAMER E-COMMERCE (6fC99W283Jw2cjV2) and GELDSTROOM REGIE (6gfFMpHcMCQvPQpc), each with PROJECTS submap
+- [Todoist API endpoint](reference_todoist_api.md) — Always use https://api.todoist.com/api/v1/ — old /rest/v2/ returns 410 Gone
+- [Google API via google_helper.py](reference_google_api.md) — All Google calls via scripts with google_helper.py; never MCP integrations
+- [Finance overview file](reference_finance_data.md) — PKM/My Life/Key Elements/KE-Finance data.md — income/expenses per GR methodology
+- [Clipchamp for audio transcription](reference_clipchamp_transcription.md) — Clipchamp works perfectly for ogg and other audio files
+- [Email setup](reference_email_setup.md) — send_email.py via Gmail API; MD to HTML; signature automatic; draft as plaintext codeblock
+- [Plan before execute](feedback_plan_before_execute.md) — Always show plan and wait for confirmation before building or executing
+- [Discord channel naming](feedback_discord_channel_naming.md) — Always use `┃` (U+2503) as separator, never `|` (pipe)
+- [Discord fixed-width icons](feedback_discord_fixed_width_icons.md) — Always use fixed-width icons so channel names stay aligned
+- [Kamer E-commerce full name](feedback_ke_abbreviation.md) — Never abbreviate as "KE" — that prefix is reserved for Key Element files
+- [Todoist project folder link](reference_todoist_project_folder_link.md) — 📂 Resources task: clean name in content, `[Open](file://...)` in description
+- [Project domain routing](feedback_project_domain_routing.md) — Always determine domain when creating a project; ask if unclear
+- [Penn auto-journaling](feedback_penn_auto_journal.md) — Always capture what is relevant for growth and improvement without asking
+- [No dashes](feedback_geen_koppelteken.md) — Never use dashes or em dashes in any text or communication
+- [Language hard rule](feedback_language_hard_rule.md) — System files and console output always EN; owner input EN or NL accepted
+- [Email confirmation required](feedback_email_bevestiging.md) — Never send an email without explicit confirmation from the owner
+- [Email sender by name](feedback_communicatie_verzender.md) — In email descriptions always use the sender's name, never the organization as subject
+- [Shopify Admin navigation](reference_shopify_admin_nav.md) — Create Custom App: Settings → Apps → Build apps in Dev Dashboard
+- [WhatsApp archiving](feedback_whatsapp_borging.md) — Always save full text including quoted messages; reply-quotes are context, not duplication → see [[GL-008_WhatsApp conversatie borging]]
+- [Workflow archiving in GL](feedback_werkwijze_borging.md) — Always archive workflows in a GL file, not just in memory — agents do not read memory
+- [Walter initiates before acting](feedback_walter_reflectie_voor_actie.md) — Never ask if he wants to respond — he takes initiative himself when ready
+- [Show inbox suggestions](feedback_inbox_show_suggestions.md) — Always show proposals per item (action + routing) and wait for confirmation before executing
+- [SSOT project content](feedback_ssot_project_content.md) — Project content always in project folder, also after closing — inbox archive is not SSOT
+- [One Highlight per day](feedback_one_highlight.md) — Never bundle or propose multiple options — exactly one, full stop
+- [Todoist move task](reference_todoist_move_task.md) — POST /api/v1/tasks/{id}/move with project_id + section_id; PATCH/POST on task does not work for project_id
+- [Brain Zen project check](feedback_brain_zen_project_check.md) — Always check existing projects before assigning, never blindly to 👤 PERSONAL
+- [System names in English](feedback_system_names_english.md) — Scripts, files, variables, functions always in English — never Dutch at system level
+- [Integration handler structure](feedback_integration_handler_structure.md) — Handlers at root level of integration folder, no Scripts/ subfolder — pattern from meta integration
+- [Daily planning open state 22-05](project_daily_planning_state.md) — PPM done, BPM open: Must-Do proposal for Borg template Tricolarae pending, Support Tasks BPM not yet chosen
+- [Daily planning target date](feedback_daily_planning_target_date.md) — Started directly without routine = always today, never ask
+- [Daily planning interaction](feedback_daily_planning_interaction.md) — Step by step, not everything at once — interaction must come from owner, one question at a time
+- [No own interpretations](feedback_no_own_interpretations.md) — When unclear, always ask; never fill in and execute based on own conclusions
+- [Script output verbatim](feedback_script_output_verbatim.md) — Never introduce, directly use stdout as own text — no preamble, no "here is the output"
+- [SSOT memory verification](feedback_ssot_memory_verification.md) — Memory with file path? Always read the file itself before answering — never answer directly from memory
+- [Daily planning title](feedback_daily_planning_title.md) — Not `[Daily Planning — target: DD-MM]` but `Planning voor [weekdag] DD maand` as start title
+- [Mail links in timeline](feedback_mail_links_in_project.md) — Mail IDs in project.md timeline always as clickable link: `[id](https://mail.google.com/mail/u/0/#all/id)` via wkamer@gmail.com
+- [Email draft format](feedback_email_draft_format.md) — Metadata in table, message body always outside the table as readable text
+- [Email salutation](feedback_email_aanhef.md) — Always start with "Beste <naam>," followed by blank line and message text
+- [Always archive reflections](feedback_reflections_always_borg.md) — Always archive via Penn without asking — owner never reflects for nothing
+- [Spar conversations always journal](feedback_spar_always_journal.md) — Sparring on personal topics always goes to Penn immediately, no confirmation needed
+- [WhatsApp UMC lookup](feedback_whatsapp_umc_lookup.md) — Use mm.get_latest_whatsapp("wendy-opdam", n_days=1) — never file discovery, this is < 0.2s
+- [Team hiring confirmation](feedback_team_hiring_confirmation.md) — Sparring or observation is not an instruction; always wait for explicit confirmation before hiring
+- [Agent signature](feedback_agent_signature.md) — Every response starts with agent name in bold: **Lena —**, **Larry —**, etc.
+- [Continuous system improvement](feedback_continuous_system_improvement.md) — Larry proactively flags and proposes improvements to efficiency and structure without being asked
+- [Draft only when asked](feedback_draft_only_when_asked.md) — Sharing a message text = sparring, not a request to create a draft — wait for explicit instruction
+- [Bulk file ops use script not agent](feedback_file_merge_use_script.md) — Template filling / batch merging = Python script via Bash, never a Read/Write agent loop (41 min vs 10 sec)
+- [GL-017 cleanup cycle G2 rule](feedback_gl017_cleanup_cycle_g2.md) — Batch proposals, correction notes, execution plans in a cleanup cycle are G2 — file inside active control folder, never standalone
+- [Health resources in KE-Health](feedback_health_resources_ke.md) — Fitness, exercise, nutrition, sleep resources belong in KE-Health.md, not as new Topic files
+- [Context window discipline](feedback_context_window_discipline.md) — Run /compact after each completed task block; max 2-3 items per session
+- [Audit deliverables location](reference_audit_deliverables_location.md) — All audit execution reports go to `Deliverables/20260603_Core_AI Team Audit Report/`, never per-item folders
+- [Check before stopping](feedback_check_before_stopping.md) — Always run status/list command before stopping any service — never stop blind
