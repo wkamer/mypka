@@ -155,4 +155,8 @@ Display a short checklist:
 ✓ Git: committed + pushed (or: nothing to commit)
 ```
 
-Then: no further output.
+Then output exactly one line:
+
+```
+Type /clear to start a fresh session and stop growing the token count.
+```
