@@ -21,4 +21,5 @@ export const api = {
     request("POST", "/api/login", { username, password }),
   me: () => request("GET", "/api/me"),
   logout: () => request("POST", "/api/logout"),
+  get: (path) => request("GET", path),
 };

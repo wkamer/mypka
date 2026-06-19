@@ -9,6 +9,7 @@ import {
 import { api } from "./api/client";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
+import Projects from "./pages/Projects";
 import "./index.css";
 
 function AuthGate() {
@@ -42,6 +43,16 @@ function AuthGate() {
         element={
           user ? (
             <Dashboard user={user} />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/projects"
+        element={
+          user ? (
+            <Projects />
           ) : (
             <Navigate to="/login" replace />
           )
