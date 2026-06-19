@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-18 — GR methodiek uitgebreid naar onderneming + lead Rajko Acimovic: twee domeinmodellen aangemaakt, Reserves/Groei hernoemd, Gherkin strategieformat geborgen, activatieflows gedefinieerd.
+2026-06-19 — /improve-system rapport afgerond, agent_signature bevestigd in alle 16 AGENT.md's, git commit + GitHub remote setup (https://github.com/wkamer/mypka.git).
 
 ## Open items
 - Nolan: add communicatie_verzender rule to Sienna AGENT.md (team_task 103)
