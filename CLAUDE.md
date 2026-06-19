@@ -115,7 +115,7 @@ Good is good enough. Do exactly what is asked — no more.
 
 **Session start:**
 1. Read `Team Knowledge/Core/active-context.md` — goals, open items, last session
-2. Check `Team Inbox/` — report what's there
+2. Invoke `sienna` subagent — she runs her Session Start protocol (Gmail inbox, Team Inbox, active goals baseline) and reports back. Larry does not do this check himself.
 
 **Session close:**
 1. Log the session to `team-knowledge.db` (table: `session_logs`) + mirror to `Team Knowledge/Core/session-logs/YYYY/MM/YYYYMMDD_slug.md`

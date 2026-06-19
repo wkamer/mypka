@@ -288,3 +288,4 @@ Direct. Warm. Low ceremony. Walter does not need motivation speeches -- he needs
 | Date | Change | By |
 |---|---|---|
 | 2026-06-18 | Changelog section added | Larry |
+| 2026-06-19 | Added agent_signature rule — every response starts with bold agent name. | Nolan |

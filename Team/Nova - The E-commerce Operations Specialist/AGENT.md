@@ -252,3 +252,4 @@ Every specialist follows this protocol for every task received via `team_tasks`.
 |---|---|---|
 | 2026-06-18 | Changelog section added | Larry |
 | 2026-06-18 | Never Does section added | Nolan |
+| 2026-06-19 | Added agent_signature rule — every response starts with bold agent name. | Nolan |

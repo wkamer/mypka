@@ -1,10 +1,16 @@
 # Active Context
 
 ## Last session
-2026-06-18 — /improve-system audit executed (all 6 items done), all 7 Dutch skill files translated to English, /close-session and /improve-system routing corrected.
+2026-06-18 — GR methodiek uitgebreid naar onderneming + lead Rajko Acimovic: twee domeinmodellen aangemaakt, Reserves/Groei hernoemd, Gherkin strategieformat geborgen, activatieflows gedefinieerd.
 
 ## Open items
-None
+- Nolan: add communicatie_verzender rule to Sienna AGENT.md (team_task 103)
+- Nolan: add health_resources_ke rule to Lena AGENT.md (team_task 104)
+- Daily Planning niet afgerond — geen Highlight voor vandaag
+- Team Inbox: Deelmomenten MR routering (Penn of Kai?) — wacht op owner beslissing
+- G-Geldstroom Regie deadline 30 juni — on-hold intentioneel bevestigen
+- Gmail auth verlopen — re-authenticatie nodig
+- Gesprek met Rajko Acimovic — nog te voeren
 
 ## Active goals
 - G-Scheiding volledig afgerond

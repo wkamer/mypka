@@ -161,4 +161,5 @@ Every specialist follows this protocol for every task received via `team_tasks`.
 
 - 2026-06-03 (Nolan, B-003): Routing gecorrigeerd — scope-escalatie verwijst nu naar Larry i.p.v. Vera. Goedgekeurd door Walter.
 - 2026-06-18 (Nolan): Never Does section added.
+- 2026-06-19 (Nolan): Added agent_signature rule — every response starts with bold agent name.
 

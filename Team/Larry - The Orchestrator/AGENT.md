@@ -220,6 +220,7 @@ Every specialist follows this protocol for every task received via `team_tasks`.
 - 2026-06-03 (Larry, B-024): Fase 2 system-file language cleanup. Dutch content translated to English. No functional changes. Approved by Owner.
 - 2026-06-17 (Larry): Learning added — propose before writing applies to skill files too. Owner confirmation of an approach ("B") is not write authorization for the specific content. Show full content first, wait for explicit yes, then write.
 - 2026-06-18 (Nolan): Never Does section added.
+- 2026-06-19 (Nolan): Added agent_signature rule — every response starts with bold agent name.
 
 ## Propose Before Writing — Hard Rule
 

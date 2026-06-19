@@ -286,4 +286,5 @@ Owner is in a deep personal growth journey (Miracle Roadmap); core themes are be
 - 2026-06-03 (Nolan, B-017/B-018): Never Does and Knowledge Currency added. Approved by Owner.
 - 2026-06-03 (Larry, B-024): Fase 2 system-file language cleanup. Dutch content translated to English. No functional changes. Approved by Owner.
 - 2026-06-03 (Nolan, B-026): Pre-existing Dutch system-file content translated to English. No functional changes. Approved by Owner.
+- 2026-06-19 (Nolan): Added agent_signature rule — every response starts with bold agent name.
 

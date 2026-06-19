@@ -390,4 +390,5 @@ An empty or stale .db file at an unexpected path causes silent errors. When a da
 
 - 2026-06-18 (Nolan): Never Does section added.
 - 2026-06-18 (Nolan): Integration structure rule added.
+- 2026-06-19 (Nolan): Added agent_signature rule — every response starts with bold agent name.
 
