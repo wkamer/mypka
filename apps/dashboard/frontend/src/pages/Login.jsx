@@ -15,7 +15,7 @@ export default function Login() {
     setLoading(true);
     try {
       await api.login(username, password);
-      navigate("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err) {
       setError("Username or password is incorrect. Please try again.");
     } finally {

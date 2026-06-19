@@ -6,7 +6,7 @@ export default function Dashboard({ user }) {
 
   async function handleLogout() {
     await api.logout().catch(() => {});
-    navigate("/login");
+    window.location.href = "/login";
   }
 
   return (
