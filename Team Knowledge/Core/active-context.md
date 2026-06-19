@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-19 — PKA dashboard setup (https://dashboard.kmerbase.com) + Kai AGENT.md updated with GL-023 Step 3 verify plan rule (public endpoint, not localhost).
+2026-06-19 — improve-system: 6 gaps fixed (Sienna/Lena/Penn AGENT.md rules, UMC memory removed, SOP-013 dead path, SOP-001 Step 12 removed). /clear reminder added to close-session.
 
 ## Open items
 - Nolan: add communicatie_verzender rule to Sienna AGENT.md (team_task 103)
