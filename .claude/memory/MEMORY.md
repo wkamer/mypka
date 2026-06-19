@@ -44,7 +44,6 @@
 - [Email salutation](feedback_email_aanhef.md) — Always start with "Beste <naam>," followed by blank line and message text
 - [Always archive reflections](feedback_reflections_always_borg.md) — Always archive via Penn without asking — owner never reflects for nothing
 - [Spar conversations always journal](feedback_spar_always_journal.md) — Sparring on personal topics always goes to Penn immediately, no confirmation needed
-- [WhatsApp UMC lookup](feedback_whatsapp_umc_lookup.md) — Use mm.get_latest_whatsapp("wendy-opdam", n_days=1) — never file discovery, this is < 0.2s
 - [Team hiring confirmation](feedback_team_hiring_confirmation.md) — Sparring or observation is not an instruction; always wait for explicit confirmation before hiring
 - [Agent signature](feedback_agent_signature.md) — Every response starts with agent name in bold: **Lena —**, **Larry —**, etc.
 - [Continuous system improvement](feedback_continuous_system_improvement.md) — Larry proactively flags and proposes improvements to efficiency and structure without being asked
