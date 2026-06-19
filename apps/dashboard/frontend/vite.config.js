@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    allowedHosts: ['raspberrypi.local'],
+    allowedHosts: ['raspberrypi.local', 'dashboard.kmerbase.com'],
     proxy: {
       '/api': 'http://localhost:8000',
     },
