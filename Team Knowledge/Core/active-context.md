@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-22 — PKA Dashboard: Key Elements tile gebouwd en geverifieerd. 7 KEs via backend, lijst + detail pagina in frontend. Backend herstard na code-update.
+2026-06-22 — Dashboard Topics tile (tile 3) gebouwd en geverifieerd. Mobile grid fix. rclone.conf uit git. Procesverbeteringen: plan-before-execute en Karpathy-verificatie memory bijgewerkt.
 
 ## Open items
 - Nolan: add communicatie_verzender rule to Sienna AGENT.md (team_task 103)
@@ -12,7 +12,7 @@
 - Conversation with Rajko Acimovic — still pending
 - Dashboard: change default password (admin/admin)
 - Dashboard: Systemd auto-start for backend + frontend (deferred)
-- Dashboard: visuele verificatie niet mogelijk (geen Playwright/Chromium op systeem)
+- Dashboard: rclone.conf history rewrite — optioneel als repo publiek wordt
 
 ## Active goals
 - G-Scheiding volledig afgerond
