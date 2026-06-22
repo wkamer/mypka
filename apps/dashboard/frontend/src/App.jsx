@@ -12,6 +12,8 @@ import KeyElementDetail from "./pages/KeyElementDetail";
 import KeyElements from "./pages/KeyElements";
 import Login from "./pages/Login";
 import Projects from "./pages/Projects";
+import TopicDetail from "./pages/TopicDetail";
+import Topics from "./pages/Topics";
 import "./index.css";
 
 function AuthGate() {
@@ -61,6 +63,14 @@ function AuthGate() {
       <Route
         path="/key-elements/:slug"
         element={user ? <KeyElementDetail /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/topics"
+        element={user ? <Topics /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/topics/:slug"
+        element={user ? <TopicDetail /> : <Navigate to="/login" replace />}
       />
       <Route
         path="*"

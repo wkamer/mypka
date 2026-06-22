@@ -165,6 +165,37 @@ def key_element_detail(slug: str, pka_token: str = Cookie(default=None)):
     raise HTTPException(status_code=404, detail="Key Element not found")
 
 
+TOPICS_DIR = Path("/opt/myPKA/PKM/My Life/Topics")
+
+
+def _topic_items() -> list[dict]:
+    result = []
+    for f in sorted(TOPICS_DIR.glob("T-*.md")):
+        if "_ARCHIVE_" in f.name:
+            continue
+        display = f.stem[2:]
+        slug = display.lower().replace(" ", "-")
+        result.append({"name": display, "slug": slug, "file": f})
+    return result
+
+
+@app.get("/api/topics")
+def topics(pka_token: str = Cookie(default=None)):
+    _require_auth(pka_token)
+    items = [{"name": i["name"], "slug": i["slug"]} for i in _topic_items()]
+    return {"items": items}
+
+
+@app.get("/api/topics/{slug}")
+def topic_detail(slug: str, pka_token: str = Cookie(default=None)):
+    _require_auth(pka_token)
+    for item in _topic_items():
+        if item["slug"] == slug.lower():
+            content = item["file"].read_text(encoding="utf-8")
+            return {"name": item["name"], "content": content}
+    raise HTTPException(status_code=404, detail="Topic not found")
+
+
 @app.post("/api/logout")
 def logout(response: Response):
     response.delete_cookie(key=COOKIE_NAME, samesite="lax", secure=True)

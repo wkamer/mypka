@@ -67,6 +67,27 @@ export default function Dashboard({ user }) {
             </svg>
             <span className="text-sm font-medium">Key Elements</span>
           </button>
+
+          <button
+            onClick={() => { window.location.href = "/topics"; }}
+            className="bg-slate-800 hover:bg-slate-700 rounded-lg p-6 flex flex-col items-center gap-3 text-slate-100 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-8 h-8 text-amber-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"
+              />
+            </svg>
+            <span className="text-sm font-medium">Topics</span>
+          </button>
         </div>
       </main>
     </div>
