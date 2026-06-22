@@ -112,6 +112,59 @@ def projects(pka_token: str = Cookie(default=None)):
     return {"personal": personal, "business": business}
 
 
+KE_DIR = Path("/opt/myPKA/PKM/My Life/Key Elements")
+
+
+def _active_ke_names() -> set[str]:
+    index_path = KE_DIR / "key-element-index.md"
+    names: set[str] = set()
+    for line in index_path.read_text(encoding="utf-8").splitlines():
+        if not line.startswith("|"):
+            continue
+        cols = [c.strip() for c in line.split("|")]
+        if len(cols) < 4:
+            continue
+        name, status = cols[1], cols[3]
+        if name and name not in ("Name", "") and status == "Active":
+            names.add(name.upper())
+    return names
+
+
+def _ke_items() -> list[dict]:
+    active = _active_ke_names()
+    result = []
+    for f in sorted(KE_DIR.glob("KE-*.md")):
+        if " " in f.stem:
+            continue
+        ke_name = f.stem[3:].upper()
+        if ke_name in active:
+            display = f.stem[3:]
+            result.append({"name": display, "slug": display.lower(), "file": f})
+    return result
+
+
+def _require_auth(pka_token: str | None) -> None:
+    if pka_token is None or decode_token(pka_token) is None:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+
+@app.get("/api/key-elements")
+def key_elements(pka_token: str = Cookie(default=None)):
+    _require_auth(pka_token)
+    items = [{"name": i["name"], "slug": i["slug"]} for i in _ke_items()]
+    return {"items": items}
+
+
+@app.get("/api/key-elements/{slug}")
+def key_element_detail(slug: str, pka_token: str = Cookie(default=None)):
+    _require_auth(pka_token)
+    for item in _ke_items():
+        if item["slug"] == slug.lower():
+            content = item["file"].read_text(encoding="utf-8")
+            return {"name": item["name"], "content": content}
+    raise HTTPException(status_code=404, detail="Key Element not found")
+
+
 @app.post("/api/logout")
 def logout(response: Response):
     response.delete_cookie(key=COOKIE_NAME, samesite="lax", secure=True)

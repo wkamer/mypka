@@ -8,6 +8,8 @@ import {
 } from "react-router-dom";
 import { api } from "./api/client";
 import Dashboard from "./pages/Dashboard";
+import KeyElementDetail from "./pages/KeyElementDetail";
+import KeyElements from "./pages/KeyElements";
 import Login from "./pages/Login";
 import Projects from "./pages/Projects";
 import "./index.css";
@@ -50,13 +52,15 @@ function AuthGate() {
       />
       <Route
         path="/projects"
-        element={
-          user ? (
-            <Projects />
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
+        element={user ? <Projects /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/key-elements"
+        element={user ? <KeyElements /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/key-elements/:slug"
+        element={user ? <KeyElementDetail /> : <Navigate to="/login" replace />}
       />
       <Route
         path="*"
