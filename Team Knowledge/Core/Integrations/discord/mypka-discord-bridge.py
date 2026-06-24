@@ -446,9 +446,17 @@ async def handle_inbox_upload(message):
     async with aiohttp.ClientSession() as session:
         for attachment in message.attachments:
             dest = TEAM_INBOX_PATH / attachment.filename
-            async with session.get(attachment.url) as resp:
-                data = await resp.read()
-            dest.write_bytes(data)
+            try:
+                async with session.get(attachment.url) as resp:
+                    if resp.status != 200:
+                        print(f"[inbox-upload] CDN download failed for {attachment.filename}: HTTP {resp.status}")
+                        continue
+                    data = await resp.read()
+                dest.write_bytes(data)
+                print(f"[inbox-upload] saved: {attachment.filename} ({len(data)} bytes)")
+            except Exception as e:
+                print(f"[inbox-upload] error downloading {attachment.filename}: {e}")
+                continue
             try:
                 await message.delete()
             except Exception:
