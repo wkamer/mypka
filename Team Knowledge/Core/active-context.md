@@ -1,13 +1,14 @@
 # Active Context
 
 ## Last session
-2026-06-22 — Dashboard Topics tile (tile 3) gebouwd en geverifieerd. Mobile grid fix. rclone.conf uit git. Procesverbeteringen: plan-before-execute en Karpathy-verificatie memory bijgewerkt.
+2026-06-24 — Jesse Voerman (leerplicht) email gelezen. Alinea over Ylana's verblijfssituatie herschreven: tussenfase en scheiding als bijdragende factor, niet hoofdoorzaak. Reply naar Jesse nog niet verstuurd.
 
 ## Open items
 - Nolan: add communicatie_verzender rule to Sienna AGENT.md (team_task 103)
 - Nolan: add health_resources_ke rule to Lena AGENT.md (team_task 104)
 - Team Inbox: Deelmomenten MR routing (Penn or Kai?) — awaiting owner decision
 - G-Geldstroom Regie deadline 30 juni — on-hold confirm
+- Reply Jesse Voerman (leerplicht) nog versturen — Sienna-review vereist (Wendy in CC)
 - Gmail auth expired — re-authentication needed
 - Conversation with Rajko Acimovic — still pending
 - Dashboard: change default password (admin/admin)
