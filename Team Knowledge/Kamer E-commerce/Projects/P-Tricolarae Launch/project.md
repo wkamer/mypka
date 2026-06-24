@@ -49,6 +49,11 @@ Editorial store: seizoensgebonden Edits (The Spring Edit, The Summer Edit, etc.)
 | S5 SYNTHESIZE | — | ⏳ Open |
 
 Documenten: `Venture Analysis/`
+- `01_concept_brief.md` — S1 FRAME
+- `02_market_read.md` — S2 VALIDATE (Dana)
+- `04_stress_test.md` — S4 STRESS-TEST (Casey)
+- `handoff_prompt_A.md` — synthese + open taken
+- `positionering_supply_chain.md` — drie wegen supply chain positionering
 
 ## Kritieke bevindingen
 
