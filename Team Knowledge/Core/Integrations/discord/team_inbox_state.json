@@ -618,5 +618,25 @@
     "message_id": "1510941264969859102",
     "filepath": "/opt/myPKA/Team Inbox/mypka-scaffold-latest.zip",
     "channel_id": "1505992336616849568"
+  },
+  "01_concept_brief.md": {
+    "message_id": "1519366125924647034",
+    "filepath": "/opt/myPKA/Team Inbox/01_concept_brief.md",
+    "channel_id": "1505992336616849568"
+  },
+  "02_market_read.md": {
+    "message_id": "1519366127422013510",
+    "filepath": "/opt/myPKA/Team Inbox/02_market_read.md",
+    "channel_id": "1505992336616849568"
+  },
+  "04_stress_test.md": {
+    "message_id": "1519366129582215289",
+    "filepath": "/opt/myPKA/Team Inbox/04_stress_test.md",
+    "channel_id": "1505992336616849568"
+  },
+  "handoff_prompt_A.md": {
+    "message_id": "1519366131029246132",
+    "filepath": "/opt/myPKA/Team Inbox/handoff_prompt_A.md",
+    "channel_id": "1505992336616849568"
   }
 }

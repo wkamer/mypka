@@ -21,3 +21,4 @@ Details live in CRM: `PKM/CRM/People/Kamer, Remko.md`
 - **Remko Kamer** — born 21 May 1971, lives in Paris
 - Married to **Ana**
 - Two sons: Mathias (4 May 2011) and Nils (26 December 2013)
+- Vacation house: 3 Imp. Colmar, 14910 Blonville-sur-Mer, France
