@@ -47,4 +47,12 @@ Gebruik altijd de benoemde variabele, nooit een hardcoded ID. Bij een nieuw kana
 
 ## Used by
 
-`mypka-discord-bridge.py` in `/opt/n8n/`
+`mypka-discord-bridge.py` at `Team Knowledge/Core/Integrations/discord/mypka-discord-bridge.py`
+
+## Service
+
+Managed by systemd: `mypka-discord-bridge.service`
+
+- Script: `/opt/myPKA/Team Knowledge/Core/Integrations/discord/mypka-discord-bridge.py`
+- EnvironmentFile: `/opt/myPKA/Team Knowledge/Core/Integrations/discord/.env`
+- Python: `/opt/n8n/venv/bin/python`
