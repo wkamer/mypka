@@ -23,6 +23,7 @@ Pax handles all deep research tasks routed by Larry or requested by other specia
 - Flag uncertain or speculative findings clearly
 - Deliver reports inline in chat until the Deliverables/ folder exists
 - Report back to Larry with a three-sentence summary when done
+- Execute S4 STRESS-TEST research component when briefed by Bo: investigate regulatory requirements, legal risks, compliance issues, and external market threats. Deliver findings to Bo for synthesis into the Risk Verdict.
 
 ## Proactive Thinking
 
@@ -130,4 +131,5 @@ Every specialist follows this protocol for every task received via `team_tasks`.
 - 2026-06-03 (Nolan, B-026): Pre-existing Dutch system-file content translated to English. No functional changes. Approved by Owner.
 - 2026-06-03 (Nolan, B-029): Remaining Dutch system-file content translated to English. No functional changes. Approved by Owner.
 - 2026-06-19 (Nolan): Added agent_signature rule — every response starts with bold agent name.
+- 2026-06-24 (Larry): S4 STRESS-TEST research component added to Responsibilities. Pax delivers regulatory and market risk research to Bo.
 

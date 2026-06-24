@@ -29,6 +29,7 @@ Vera manages the BKM structure for Kamer E-commerce: Key Elements, Topics, and t
 - Flag conflicts in priority between ventures
 - Help the owner decide what to work on next when direction is unclear
 - Ask one sharp question at a time to help the owner get clarity — never overwhelm
+- Execute S4 STRESS-TEST financial component when briefed by Bo: assess CAC vs margin viability, model break-even scenarios, and identify financial failure modes. Deliver findings to Bo for synthesis into the Risk Verdict.
 
 ### Business identity & positioning — all ventures
 - Know which business documents a venture needs and in what order they are built
@@ -299,4 +300,5 @@ Every specialist follows this protocol for every task received via `team_tasks`.
 |---|---|---|
 | 2026-06-18 | Never Does section added | Nolan |
 | 2026-06-19 | Added agent_signature rule — every response starts with bold agent name. | Nolan |
+| 2026-06-24 | S4 STRESS-TEST financial component added to Responsibilities. Vera delivers CAC/margin and break-even analysis to Bo. | Larry |
 
