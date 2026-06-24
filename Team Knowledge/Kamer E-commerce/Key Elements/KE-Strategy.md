@@ -160,15 +160,31 @@ Trendsi ondersteunt het volledige traject van fase 1 naar fase 3 binnen één pl
 
 ---
 
+## Tricolarae — Doelklant
+
+| Attribuut | Profiel |
+|-----------|---------|
+| Leeftijd | 32–52 jaar |
+| Inkomen | $65.000–$130.000 HHI |
+| Locatie | US urban/suburban, coast-geconcentreerd |
+| Gedrag | Bewuste koper, koopt 3–6x per jaar, minimalistische garderobe |
+| Inspiratie | Pinterest (primair), Instagram, editorial newsletters |
+| Frustratie | Amazon, Shein, trend-overload, te veel keuze |
+| Betaalbereidheid | $45–$85 top / $75–$140 layer / $60–$110 pants |
+
+*Bron: Venture Studio analyse S2 VALIDATE — 2026-06-24*
+
+---
+
 ## Huidige status Kamer E-commerce
 
 **Fase:** 1 — Generic Dropshipping (opbouwfase)
 **Brand:** Tricolarae
 **Markt:** Verenigde Staten
 **Supplier:** Trendsi (US-gebaseerd)
-**Doelstelling:** eerste 10-15 producten live, eerste sale behalen, bestsellers identificeren voor private labeling
+**Doelstelling:** 200 email subscribers pre-launch, micro-influencer gifting, organisch kanaal opbouwen
 **Eerste mijlpaal:** $100/dag omzet
-**Laatste update:** 2026-05-19
+**Laatste update:** 2026-06-24
 
 ---
 
