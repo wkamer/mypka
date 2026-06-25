@@ -1,13 +1,11 @@
 # Active Context
 
 ## Last session
-2026-06-25 — WhatsApp pipeline gefixt (Python venv pad kapot, commit f73396d). 8 nieuwe WA-dagen verwerkt (17–24 juni). Scheiding financiën geanalyseerd: deo/dextro/lactose = dagelijks levensonderhoud, geen overkosten. Vera: coulance niet abrupt stoppen voor huisoverdracht. WA bericht naar Wendy gedraft door Sienna, Walter laat het rusten.
+2026-06-25 — System fix: alle 42 feedback rules gesynchroniseerd naar 15 AGENT.md files via Nolan. CLAUDE.md bijgewerkt met verplichte feedback sync bij elke session close en wekelijkse vrijdag scan. Larry bezit de feedback loop voortaan zonder owner request.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
 - Huisoverdracht afronden — sleutelmoment voor stoppen coulance en starten formele alimentatie
-- Nolan: add communicatie_verzender rule to Sienna AGENT.md (team_task 103)
-- Nolan: add health_resources_ke rule to Lena AGENT.md (team_task 104)
 - Team Inbox: Deelmomenten MR routing (Penn or Kai?) — awaiting owner decision
 - G-Geldstroom Regie deadline 30 juni — on-hold confirm
 - Reply Jesse Voerman (leerplicht) nog versturen — Sienna-review vereist (Wendy in CC)
