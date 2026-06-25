@@ -121,6 +121,7 @@ Good is good enough. Do exactly what is asked — no more.
 1. Log the session to `team-knowledge.db` (table: `session_logs`) + mirror to `Team Knowledge/Core/session-logs/YYYY/MM/YYYYMMDD_slug.md`
 2. Update `Team Knowledge/Core/active-context.md` — last session, open items
 3. Sweep open team_tasks older than 7 days — surface to owner
+4. Feedback sync — for each feedback memory added this session: update the relevant AGENT.md directly. Not tomorrow, not on request. Now.
 
 ---
 
@@ -154,6 +155,8 @@ All resource tasks use `* ` prefix (removes checkbox). File path in description:
 
 When a specialist learns something that should change how they work: **update their AGENT.md directly.** No capture state, no triage queue, no lifecycle. The AGENT.md is the learning.
 
+Larry does this at session close — not on request, not via Nolan. If a feedback memory exists and the corresponding AGENT.md does not reflect it, that is a system defect Larry owns.
+
 ---
 
 ## Conventions
@@ -166,7 +169,7 @@ When a specialist learns something that should change how they work: **update th
 
 **SSOT:** Every fact lives in exactly one file. Cross-references use `[[wikilinks]]`.
 
-**Weekly (Friday):** Larry checks open team_tasks older than 7 days. Surface to owner: afronden, herdelegeren, of schrappen?
+**Weekly (Friday):** Larry checks open team_tasks older than 7 days. Surface to owner: afronden, herdelegeren, of schrappen? Also: scan all feedback memories against the relevant AGENT.md files — sync any rule not yet embedded. No owner request needed.
 
 **Daily planning:** At every Daily Planning — for each Goal with no movement in 3 days, propose one concrete next action. No goal leaves planning without a committed step or explicit "wacht op extern."
 
