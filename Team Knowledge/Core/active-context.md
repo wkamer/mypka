@@ -1,9 +1,11 @@
 # Active Context
 
 ## Last session
-2026-06-24 — Tricolarae onafhankelijke audit uitgevoerd. Meta advertising gecorrigeerd: BEROAS 2.86 kill-grens maakt het inzetbaar als product-tester. "Geen publiek" blocker vervalt bij paid acquisition. A3 risico bijgesteld naar Groen. Advisory board concept geïntroduceerd als oplossing voor ongevalideerde agentkennis.
+2026-06-25 — WhatsApp pipeline gefixt (Python venv pad kapot, commit f73396d). 8 nieuwe WA-dagen verwerkt (17–24 juni). Scheiding financiën geanalyseerd: deo/dextro/lactose = dagelijks levensonderhoud, geen overkosten. Vera: coulance niet abrupt stoppen voor huisoverdracht. WA bericht naar Wendy gedraft door Sienna, Walter laat het rusten.
 
 ## Open items
+- WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
+- Huisoverdracht afronden — sleutelmoment voor stoppen coulance en starten formele alimentatie
 - Nolan: add communicatie_verzender rule to Sienna AGENT.md (team_task 103)
 - Nolan: add health_resources_ke rule to Lena AGENT.md (team_task 104)
 - Team Inbox: Deelmomenten MR routing (Penn or Kai?) — awaiting owner decision
