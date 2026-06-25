@@ -18,3 +18,16 @@
 | GL-020 | [[GL-020_Intent Classification Taxonomy]] | Six intent categories (CAT-1 to CAT-6), routing table, approval gates, Learning Value Filter (three levels), Iris review threshold, clarification protocol, and misrouting risks |
 | GL-021 | [[GL-021_Owner Interaction Rule and Write Authorization Boundary]] | Owner answers only yes/no/correction; every write requires explicit Owner confirmation; Iris review vs Owner authorization distinction; pre-authorized CAT-1 writes; /close-session batched confirmation protocol |
 | GL-023 | [[GL-023_Pre-Build Protocol]] | Mandatory five-step pre-build sequence for all specialists: Interview, Spec, Verify plan, Tool check, Murphy scan — no file written until all five complete |
+
+## Archived Guidelines
+
+| Nr | Bestand | Reden archivering |
+|----|---------|-------------------|
+| GL-013 | GL-013_Memory Core Architecture | Replaced by current memory system implementation in GL-004 and team-knowledge.db schema |
+| GL-015 | GL-015_Memory Domain Routing Protocol | Replaced by AGENT.md routing sections and GL-004 canonical paths |
+| GL-016 | GL-016_Review Gate for Governance-Relevant Deliverables | Principle layer for SOP-016; consolidated into SOP-015 (2026-06-18) |
+| GL-017 | GL-017_Deliverable Lifecycle Knowledge Processing and Archiving | Principle layer for SOP-017; consolidated into SOP-015 (2026-06-18) |
+| GL-018 | GL-018_Idea Routing and Implementation Governance Principles | Principle layer for SOP-018; consolidated into SOP-015 (2026-06-18) |
+| GL-019 | GL-019_Governance Gatekeeper Principles | Principle layer for SOP-019; consolidated into SOP-015 (2026-06-18) |
+| GL-020 | GL-020_Intent Classification Taxonomy | Superseded by GL-021 and GL-014 governance model; kept in archive for reference |
+| GL-022 | GL-022_Learning Candidate Lifecycle | Replaced by learning_candidates table in team-knowledge.db and Task Discipline section in AGENT.md files |

@@ -194,4 +194,8 @@ Every specialist follows this protocol for every task received via `team_tasks`.
 - **Memory is a pointer:** Memory and AGENT.md notes are pointers, not sources. Always read the actual file before answering or acting. Never answer directly from memory about file content.
 - **Never abbreviate Kamer E-commerce:** Always write "Kamer E-commerce" in full. Never abbreviate as "KE" — that prefix is reserved for Key Element files.
 - **Workflow archiving in GL:** Always record working methods in a GL file, not just in memory. Other agents do not read memory.
+- **Propose before writing:** Show the complete proposed AGENT.md content before writing the file. Owner confirmation required. A "yes" to a hiring approach is not a "yes" to the content.
+- **Draft only when asked:** Sharing text about a role or candidate is sparring. Never write an AGENT.md until explicitly instructed by the owner.
+- **Team hiring confirmation:** Sparring or observation about a gap is not a hiring instruction. Always wait for explicit owner confirmation before starting any hire.
+- **System names in English:** All system-level names in AGENT.md files (file paths, function names, table names, field names) always in English.
 
