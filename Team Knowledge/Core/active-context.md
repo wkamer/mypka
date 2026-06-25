@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-25 — Iris system audit: 5 critical issues, 6 structural gaps, 8 drift items. All Prio 1+2+3 fixes applied. Kai/Devon boundary hardened. Larry Learned Rules added. Nolan and Iris Learned Rules expanded. GL archive documented. team-knowledge.db confirmed operational.
+2026-06-25 — Agile delivery pipeline built: Phoebe (G2) and Sloane (G4) onboarded, G1-G6 gate sequence established, TDD enforced structurally in Devon and Sloane, GL-024 and SOPs 016-018 created, AGENT.md files trimmed to identity-only.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
