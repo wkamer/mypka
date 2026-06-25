@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-25 — Devon (Senior Full-Stack Developer) toegevoegd aan het team. Kai/Marcus/Vera op de hoogte gesteld. Nolan's onboarding protocol structureel uitgebreid: samenwerkende agents altijd bijwerken bij elke hire.
+2026-06-25 — Devon (Senior Full-Stack Developer) added to the team. Kai/Marcus/Vera notified. Nolan's onboarding protocol extended: always update collaborating agents on every hire. Iris system audit conducted — 5 critical issues, 6 structural gaps, 8 drift items identified. Priority 1 and 2 fixes applied: CLAUDE.md routing corrected, Larry's AGENT.md updated (Learned Rules added, Devon added, Bash boundary hardened).
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
