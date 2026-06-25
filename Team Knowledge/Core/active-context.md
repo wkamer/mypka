@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-25 — Devon (Senior Full-Stack Developer) added to the team. Kai/Marcus/Vera notified. Nolan's onboarding protocol extended: always update collaborating agents on every hire. Iris system audit conducted — 5 critical issues, 6 structural gaps, 8 drift items identified. Priority 1 and 2 fixes applied: CLAUDE.md routing corrected, Larry's AGENT.md updated (Learned Rules added, Devon added, Bash boundary hardened).
+2026-06-25 — Iris system audit: 5 critical issues, 6 structural gaps, 8 drift items. All Prio 1+2+3 fixes applied. Kai/Devon boundary hardened. Larry Learned Rules added. Nolan and Iris Learned Rules expanded. GL archive documented. team-knowledge.db confirmed operational.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -18,6 +18,7 @@
 - Tricolarae: S3 MODEL — wacht op Meta product-test data
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
+- Email inbox viewer — standalone app, Devon (team_task 106, not started)
 
 ## Active goals
 - G-Scheiding volledig afgerond
