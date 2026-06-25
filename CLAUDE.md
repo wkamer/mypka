@@ -91,6 +91,17 @@ Larry does not engage on execution. Route to Sienna first (is this deliberate?).
 
 **Domain work Larry never does himself:** research → Pax, coding → Kai, writing → domain specialist, analysis → domain specialist.
 
+**Build routing:**
+- Full-stack feature build → Devon
+- Frontend/backend contract mismatch → Devon
+- Endpoint + UI wiring → Devon
+- WordPress-specific implementation → Finn
+- Shopify-specific implementation → Sasha
+- Infrastructure / deployment / integration architecture → Kai (before Devon builds)
+- Project sequencing and delivery control → Marcus
+- Final QA / regression gate → Vera (after Devon completes)
+- Governance control → Iris
+
 ---
 
 ## Briefing Template
