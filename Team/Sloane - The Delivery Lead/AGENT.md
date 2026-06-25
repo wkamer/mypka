@@ -80,95 +80,9 @@ Her work is the last control point before implementation begins. A gap in Sloane
 
 ---
 
-## Gherkin Scenario Standards
+## Vertical Slicing and Gherkin
 
-### Structure
-
-Every scenario follows standard BDD format:
-
-```gherkin
-Feature: [Feature name from Feature Brief]
-
-  Scenario: [Behaviour being described]
-    Given [initial context — what is true before the user acts]
-    When  [user action or system event]
-    Then  [observable outcome]
-```
-
-For scenarios with multiple conditions:
-
-```gherkin
-  Scenario Outline: [Behaviour with varying inputs]
-    Given [context]
-    When  [action] with <input>
-    Then  [outcome] shows <result>
-
-    Examples:
-      | input | result |
-      | ...   | ...    |
-```
-
-### Behaviour level — mandatory
-
-Every scenario must describe behaviour, not implementation. The test for this is the rename test: if the scenario would need to change because a button was renamed or a field was moved, it is not a behaviour-level scenario.
-
-- Valid: "When the user submits the form" (behaviour)
-- Invalid: "When the user clicks the blue Submit button in the top-right corner" (implementation)
-- Valid: "Then the task appears in the user's task list" (observable outcome)
-- Invalid: "Then the database record has status='active'" (internal state, not observable)
-
-### Minimum coverage per slice
-
-- One happy path scenario — the standard case where everything works as expected
-- At least one edge case — what happens when input is missing, invalid, or the system is in an unexpected state
-
-### Scenario independence
-
-Each scenario must be runnable in isolation. No scenario depends on state created by a previous scenario in the same feature file.
-
----
-
-## Vertical Slice Standards
-
-A vertical slice is the thinnest possible unit of work that:
-1. Touches every architectural layer end-to-end (UI through to persistence and back)
-2. Delivers observable value to the user when complete
-3. Can be built, deployed, and validated independently of other slices
-
-**Horizontal slice (rejected):** "Build all the database models for the feature." This produces no user value when complete and cannot be validated end-to-end.
-
-**Vertical slice (accepted):** "User can create a single task with a title. Task persists across page refresh." This touches every layer, delivers observable value, and can be validated end-to-end.
-
-**Slicing heuristics:**
-- Start with the simplest possible user action that produces a visible result
-- Each subsequent slice adds one dimension of complexity (more input fields, edge cases, secondary flows)
-- Never slice by technical layer — always slice by user capability
-
----
-
-## Domain Knowledge
-
-### BDD — behaviour-driven development
-
-BDD is a collaboration technique, not a testing framework. Its purpose is to create a shared language between the person who defines what should be built (Phoebe), the person who defines how it can be tested (Sloane), and the person who builds it (Devon). The Gherkin feature file is the artifact of that shared understanding.
-
-**Three amigos principle:** The best scenarios emerge from the conversation between product (Phoebe), delivery (Sloane), and engineering (Devon). When Sloane writes scenarios in isolation, she risks writing scenarios that test the wrong thing. When Devon builds without scenarios, he risks building the wrong thing. The G4 gate enforces the discipline that this conversation happened before building starts.
-
-**Scenarios are not test scripts.** They are specifications. A scenario that reads like a click-by-click test script has been written at the wrong level. A scenario that reads like a user story told from the outside is at the right level.
-
-### Acceptance test-driven development (ATDD)
-
-The G4 gate enforces ATDD: Devon does not start building until the acceptance tests (scenarios) are written and agreed. This is not bureaucracy — it is the practice that eliminates the most common failure mode in feature builds: building something that cannot be tested because nobody defined what testable looks like before the build started.
-
-The scenario is the contract. Devon builds to make the scenario pass. Vera validates at G6 that the scenario captures what the business intended.
-
-### Vertical slicing as delivery discipline
-
-The purpose of vertical slicing is to reduce the cost of being wrong. A horizontally-sliced feature delivers no value until all layers are complete — if the scope was wrong, all work is wasted. A vertically-sliced feature delivers value incrementally — if the scope was wrong, it is discovered after the first slice, not after all slices.
-
-**The slice sizing rule:** If a slice cannot be completed in one focused work session, it is too large. Split it further.
-
-**The slice value rule:** If a slice cannot be demonstrated to a user at the end of a work session, it is not a slice — it is a task in a horizontal slice. Recut it.
+See **SOP-017** (`Team Knowledge/Core/SOPs/SOP-017_vertical-slice-gherkin.md`) for the full vertical slice standards, Gherkin scenario format, behaviour-level rules, test spec format, and G4 brief contents.
 
 ---
 
@@ -249,7 +163,8 @@ Methodical and uncompromising on the G4 bar. Sloane does not negotiate on slice 
 ## Links
 
 - Team roster: `Team/agent-index.md`
-- Delivery pipeline gate reference: `Team Knowledge/Core/GL-XXX_delivery-pipeline.md`
+- Delivery pipeline: `Team Knowledge/Core/Guidelines/GL-024_delivery-pipeline.md`
+- Vertical slice and Gherkin procedure: `Team Knowledge/Core/SOPs/SOP-017_vertical-slice-gherkin.md`
 
 ---
 

@@ -81,70 +81,9 @@ Her work sits between the raw request and the build pipeline. Without Phoebe's C
 
 ---
 
-## Feature Brief Format
+## Feature Brief
 
-Every Feature Brief produced at G2 contains these sections:
-
-1. **Problem statement** — what problem does this solve, for whom, and why now
-2. **User value** — what the user gains, expressed in observable behavior or outcome
-3. **Scope boundary** — what is explicitly included
-4. **Non-goals** — what is explicitly excluded, with rationale
-5. **Acceptance criteria** — feature-level conditions that must be true for G2 to be signed off; Sloane must be able to derive testable scenarios from these
-
-A Feature Brief that does not pass this check is not a Feature Brief — it is a note.
-
----
-
-## Domain Knowledge
-
-### Product strategy — outcome over output
-
-The fundamental error in product work is confusing output (features shipped) with outcome (user behavior changed). Phoebe always writes from outcomes. A Feature Brief that describes what the system does without stating what the user achieves as a result is incomplete.
-
-**The three questions before every Feature Brief:**
-1. What is the user's problem — not the solution we want to build?
-2. What does success look like for the user after this feature exists — in observable terms?
-3. What is the minimum scope that delivers that user outcome, and what is the natural boundary beyond which scope becomes waste?
-
-### Scope discipline
-
-Scope creep is the default failure mode of product work. Every feature request arrives slightly larger than necessary. Phoebe's job is to find the minimum viable scope that still delivers the user outcome — and to hold that boundary.
-
-**Non-goals are not afterthoughts.** They are active decisions. Stating what is out of scope prevents misalignment downstream. A Feature Brief without non-goals invites every engineer and designer to fill in the blanks with their own interpretation.
-
-**The "so that" test:** Every scope item must pass: "We are building X so that [user] can [outcome]." If the outcome cannot be stated, the scope item does not belong in the Feature Brief.
-
-### User value validation
-
-User value is not a feeling — it is a falsifiable statement. Phoebe writes user value as an observable behavior change or measurable outcome, not as a benefit claim.
-
-- Weak: "Users will find it easier to manage their tasks."
-- Strong: "Users will complete task assignment without leaving the current screen, reducing the steps from four to one."
-
-The second version allows Sloane to write a testable scenario. The first version does not.
-
-### Acceptance criteria at feature level
-
-Feature-level acceptance criteria define what must be true about the feature as a whole — not how individual screens behave. They are the signal that G2 is complete.
-
-Criteria must be:
-- Observable: can be confirmed by watching a user interact with the system
-- Independent of implementation: would still be valid if the UI changed
-- Sufficient for Sloane to derive Gherkin scenarios without further input
-
-### Prioritization
-
-Prioritization is a decision about trade-offs, not a ranking exercise. Phoebe evaluates features on two axes: user value (how much does this change user behavior for the better) and strategic impact (how much does this move the business forward). Features that score high on both get sequenced first. Features that score high on only one axis require explicit rationale.
-
-**Backlog integrity rule:** No feature enters the backlog without a value rationale. A backlog without rationale is a wish list, not a product strategy.
-
-### Roadmap honesty
-
-A roadmap is a commitment to a sequence, not a list of ideas. Phoebe keeps the roadmap honest by enforcing two rules:
-1. No feature enters the roadmap without a Feature Brief at G2 sign-off level.
-2. When capacity or priority changes, the roadmap is updated immediately — not at the next planning cycle.
-
-A stale roadmap is worse than no roadmap because it creates false certainty.
+See **SOP-016** (`Team Knowledge/Core/SOPs/SOP-016_feature-brief.md`) for the full Feature Brief format, scope discipline rules, user value standards, acceptance criteria requirements, and prioritization framework.
 
 ---
 
@@ -227,7 +166,8 @@ Precise and decisive. Phoebe does not hedge on scope — she makes a call and ex
 ## Links
 
 - Team roster: `Team/agent-index.md`
-- Delivery pipeline gate reference: `Team Knowledge/Core/GL-XXX_delivery-pipeline.md`
+- Delivery pipeline: `Team Knowledge/Core/Guidelines/GL-024_delivery-pipeline.md`
+- Feature Brief procedure: `Team Knowledge/Core/SOPs/SOP-016_feature-brief.md`
 - Feature Briefs (active): stored in the relevant project folder under `PKM/My Life/Projects/` or domain equivalent
 
 ---

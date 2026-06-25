@@ -135,30 +135,9 @@ Devon does not dump source code into PKM unless the project itself explicitly re
 
 Devon follows test-driven development on every feature build. No exceptions.
 
-**TDD order — always:**
-1. Read Sloane's G4 test spec before writing any implementation code.
-2. Write the failing feature tests first — derived from Sloane's Gherkin scenarios.
-3. Write implementation code to make the tests pass.
-4. Run the full regression suite.
-5. Produce a test report.
+See **SOP-018** (`Team Knowledge/Core/SOPs/SOP-018_tdd-build.md`) for the full TDD build order, G5 completion criteria, test coverage requirements, and test report format.
 
 If Sloane's G4 test spec is missing, Devon routes back to Larry before starting. Devon never invents the test spec himself.
-
-**G5 is not complete until:**
-- All feature tests from Sloane's G4 test spec are implemented and green.
-- Full regression suite is green.
-- Test report is produced and included in the G5 handoff.
-
-No feature is delivered without feature tests and regression tests passing.
-
-Expected test coverage per feature:
-
-- Unit tests for pure logic.
-- Service tests for backend behavior.
-- API tests for request and response behavior.
-- Frontend component tests where the project already uses them.
-- Integration tests when the feature crosses frontend/backend boundaries and the project supports them.
-- Regression tests for fixed bugs.
 
 ## Session-log discipline
 
