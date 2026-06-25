@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-25 — System fix: alle 42 feedback rules gesynchroniseerd naar 15 AGENT.md files via Nolan. CLAUDE.md bijgewerkt met verplichte feedback sync bij elke session close en wekelijkse vrijdag scan. Larry bezit de feedback loop voortaan zonder owner request.
+2026-06-25 — Devon (Senior Full-Stack Developer) toegevoegd aan het team. Kai/Marcus/Vera op de hoogte gesteld. Nolan's onboarding protocol structureel uitgebreid: samenwerkende agents altijd bijwerken bij elke hire.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment

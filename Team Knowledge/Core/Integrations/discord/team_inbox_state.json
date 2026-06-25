@@ -638,5 +638,15 @@
     "message_id": "1519366131029246132",
     "filepath": "/opt/myPKA/Team Inbox/handoff_prompt_A.md",
     "channel_id": "1505992336616849568"
+  },
+  "AGENT.md": {
+    "message_id": "1519662891572265040",
+    "filepath": "/opt/myPKA/Team Inbox/AGENT.md",
+    "channel_id": "1505992336616849568"
+  },
+  "SOP-devon-build-a-full-stack-feature.md": {
+    "message_id": "1519662935050420365",
+    "filepath": "/opt/myPKA/Team Inbox/SOP-devon-build-a-full-stack-feature.md",
+    "channel_id": "1505992336616849568"
   }
 }
