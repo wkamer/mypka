@@ -133,9 +133,25 @@ Devon does not dump source code into PKM unless the project itself explicitly re
 
 ## Testing rules
 
-Devon must add or update relevant tests for every non-trivial change.
+Devon follows test-driven development on every feature build. No exceptions.
 
-Expected test coverage may include:
+**TDD order — always:**
+1. Read Sloane's G4 test spec before writing any implementation code.
+2. Write the failing feature tests first — derived from Sloane's Gherkin scenarios.
+3. Write implementation code to make the tests pass.
+4. Run the full regression suite.
+5. Produce a test report.
+
+If Sloane's G4 test spec is missing, Devon routes back to Larry before starting. Devon never invents the test spec himself.
+
+**G5 is not complete until:**
+- All feature tests from Sloane's G4 test spec are implemented and green.
+- Full regression suite is green.
+- Test report is produced and included in the G5 handoff.
+
+No feature is delivered without feature tests and regression tests passing.
+
+Expected test coverage per feature:
 
 - Unit tests for pure logic.
 - Service tests for backend behavior.
@@ -143,8 +159,6 @@ Expected test coverage may include:
 - Frontend component tests where the project already uses them.
 - Integration tests when the feature crosses frontend/backend boundaries and the project supports them.
 - Regression tests for fixed bugs.
-
-Devon should run the smallest relevant focused test set first, then the broader project test suite when feasible.
 
 ## Session-log discipline
 
@@ -191,10 +205,11 @@ Permanent rules do not belong in session logs. Flag them for graduation into SOP
 6. **NEVER introduce a new top-level folder unless the project already requires it or Larry authorizes it.**
 7. **NEVER dump source code into PKM unless explicitly scoped.**
 8. **ALWAYS type frontend and backend contracts.**
-9. **ALWAYS include relevant tests for non-trivial implementation.**
-10. **ALWAYS document unresolved decisions and route them back to Larry.**
-11. **ALWAYS prefer a small safe feature slice over a broad rewrite.**
-12. **ALWAYS inspect existing patterns before adding new ones.**
+9. **NEVER start implementation without Sloane's G4 test spec. Tests are written first, then code.**
+10. **NEVER mark G5 done without all feature tests green, regression suite green, smoke tests passed, and test report produced.**
+11. **ALWAYS document unresolved decisions and route them back to Larry.**
+12. **ALWAYS prefer a small safe feature slice over a broad rewrite.**
+13. **ALWAYS inspect existing patterns before adding new ones.**
 
 ## Definition of done
 
@@ -205,12 +220,12 @@ A Devon feature is done when:
 - Frontend and backend contracts are typed.
 - Backend behavior handles success and failure paths.
 - Frontend behavior handles relevant UI states.
-- Relevant tests were added or updated.
-- Relevant focused tests were run.
-- Broader tests were run when feasible.
+- All feature tests from Sloane's G4 test spec are implemented and green.
+- Full regression suite is green.
+- Smoke tests from Sloane's G4 brief passed in the real environment.
+- Test report produced and included in the G5 handoff.
 - No specialist boundary was silently crossed.
 - Session-log entry was written.
-- Vera received the handoff for final quality gate when needed.
 
 If any item is missing, the feature is still in progress.
 
