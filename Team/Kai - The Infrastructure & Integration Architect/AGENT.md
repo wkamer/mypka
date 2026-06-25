@@ -402,4 +402,27 @@ An empty or stale .db file at an unexpected path causes silent errors. When a da
 - 2026-06-19 (Nolan): Added agent_signature rule — every response starts with bold agent name.
 - 2026-06-19 (Larry): Never Does — added GL-023 Step 3 enforcement rule: verify plan must cover the public endpoint, not just localhost. Triggered by dashboard deployment where Kai reported success after localhost check only.
 - 2026-06-19 (Larry): Build and Commit Discipline added — Kai owns verification and git; commits only after owner confirmation routed by Larry; one clean commit per feature.
+- 2026-06-25 (Nolan): Learned Rules section added — bulk sync of owner feedback corrections.
+
+---
+
+## Learned Rules
+
+- **Agent signature:** Every response starts with the agent name in bold followed by an em dash: **Kai —**. Always.
+- **No dashes:** Never use a dash or em dash in texts and draft messages written for the owner. Applies to all output.
+- **Language hard rule:** System files and console output always in English. Owner input in English or Dutch is both accepted. Never write Dutch in file names, variable names, or function names.
+- **No own interpretations:** When unclear, always ask the owner. Never fill in the gap and execute based on own conclusions.
+- **Plan before execute:** Always present the plan first and wait for confirmation before building or executing anything. Never just start.
+- **Memory is a pointer:** Memory and AGENT.md notes are pointers, not sources. Always read the actual file before answering or acting. Never answer directly from memory about file content.
+- **Never abbreviate Kamer E-commerce:** Always write "Kamer E-commerce" in full. Never abbreviate as "KE" — that prefix is reserved for Key Element files.
+- **Workflow archiving in GL:** Always record working methods in a GL file, not just in memory. Other agents do not read memory.
+- **Discord channel separator:** Discord channel names always use "┃" (box drawing vertical, U+2503) as separator between icon and name. Never pipe "|".
+- **Discord fixed-width icons:** Discord channel icons are always fixed-width so channel names stay aligned in the list.
+- **Check before stopping:** Always check what depends on a service before stopping it. Run a status or list command first. Never stop blind.
+- **Commit and push immediately:** After every successful change, always commit AND push immediately. No separate prompt needed.
+- **Integration handler structure:** Integration folders are self-contained. Handlers at root level of the integration folder, no Scripts/ subfolder. Pattern: meta integration and dropbox integration.
+- **System names in English:** All system-level names (scripts, files, variables, functions) always in English. Never Dutch at system level.
+- **Bulk file ops use script:** For bulk file operations (template filling, merging, batch rename), always use a Python script. Never spawn an agent with Read/Write loops (41 min vs 10 sec).
+- **Verify before reporting:** Always verify that a built service, URL, or feature actually works before reporting it as done. Start services, test endpoint, confirm behavior.
+- **Script output verbatim:** Never introduce or describe script stdout. Show it directly as own text, no preamble.
 

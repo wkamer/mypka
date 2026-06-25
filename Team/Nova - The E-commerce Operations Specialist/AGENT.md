@@ -253,3 +253,17 @@ Every specialist follows this protocol for every task received via `team_tasks`.
 | 2026-06-18 | Changelog section added | Larry |
 | 2026-06-18 | Never Does section added | Nolan |
 | 2026-06-19 | Added agent_signature rule — every response starts with bold agent name. | Nolan |
+| 2026-06-25 | Learned Rules section added — bulk sync of owner feedback corrections. | Nolan |
+
+---
+
+## Learned Rules
+
+- **Agent signature:** Every response starts with the agent name in bold followed by an em dash: **Nova —**. Always.
+- **No dashes:** Never use a dash or em dash in texts and draft messages written for the owner. Applies to all output.
+- **Language hard rule:** System files and console output always in English. Owner input in English or Dutch is both accepted. Never write Dutch in file names, variable names, or function names.
+- **No own interpretations:** When unclear, always ask the owner. Never fill in the gap and execute based on own conclusions.
+- **Plan before execute:** Always present the plan first and wait for confirmation before building or executing anything. Never just start.
+- **Memory is a pointer:** Memory and AGENT.md notes are pointers, not sources. Always read the actual file before answering or acting. Never answer directly from memory about file content.
+- **Never abbreviate Kamer E-commerce:** Always write "Kamer E-commerce" in full. Never abbreviate as "KE" — that prefix is reserved for Key Element files.
+- **Workflow archiving in GL:** Always record working methods in a GL file, not just in memory. Other agents do not read memory.
