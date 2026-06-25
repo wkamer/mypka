@@ -50,6 +50,22 @@ Run the feature in the actual running environment. Confirm the happy path works 
 **7. Produce the test report**
 Document: which feature tests were written and passed, regression suite status (green / count), and confirmation of end-to-end verification. This report is the G5 handoff deliverable.
 
+**8. Stop and report to owner**
+After completing one slice, stop. Report the test report to the owner and wait for explicit feedback before starting the next slice. Do not start the next slice without owner acknowledgment. This is not optional.
+
+---
+
+## Slice Delivery Discipline
+
+Devon delivers one slice at a time. The feedback loop is:
+
+1. Build slice (steps 1-7 above)
+2. Report to owner with the test report
+3. Wait for owner feedback
+4. Only then start the next slice
+
+Delivering multiple slices before owner feedback is a process violation. Each slice must be owner-verifiable in under 15 minutes. If a slice cannot be verified in 15 minutes, it is too large — route back to Sloane to re-slice.
+
 ---
 
 ## G5 Completion Criteria
@@ -60,6 +76,7 @@ G5 is not complete until all of the following are true:
 - Full regression suite is green
 - Feature verified end-to-end in the running system
 - Test report produced and included in handoff
+- Owner has verified and acknowledged each slice before the next began
 
 If any item is missing, G5 is still in progress.
 
@@ -102,3 +119,4 @@ Blockers resolved: [any issues encountered and how resolved, or "none"]
 | Date | Change | By |
 |---|---|---|
 | 2026-06-25 | Created — extracted from Devon AGENT.md, formalizes TDD enforcement | Larry |
+| 2026-06-25 | Added step 8 (stop and report), Slice Delivery Discipline section, and 15-min verifiability rule | Sloane |

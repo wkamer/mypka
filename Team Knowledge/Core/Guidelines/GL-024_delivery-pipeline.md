@@ -52,8 +52,10 @@ No gate may be skipped. No gate advances without the required output from the pr
 
 **Input required:** G4 brief (slice plan + Gherkin feature file + test spec)
 **Implementer routing:** Devon (full-stack), Sasha (Shopify), Finn (WordPress) — Larry specifies in G1 brief
-**Output:** Working feature + test report (see SOP-018)
+**Output:** Working feature + test report per slice (see SOP-018)
 **Passes when:** All feature tests from Sloane's test spec are green, regression suite is green, feature verified end-to-end in the running system, test report produced
+**Slice delivery rule:** The implementer delivers one slice at a time. After each slice: stop, report to owner, wait for feedback before starting the next slice. Batching slices is not permitted.
+**Slice size:** Each slice must be owner-verifiable in under 15 minutes. If a slice cannot be verified in 15 minutes, it is too large — re-slice before building.
 
 ### G6 — Owner (Acceptance)
 
@@ -70,6 +72,7 @@ No gate may be skipped. No gate advances without the required output from the pr
 - G4 never begins without G2 and G3 complete
 - G5 never begins without G4 complete
 - The domain implementer at G5 is determined by Larry at G1 — Sloane does not choose
+- G5 delivers one slice at a time. Owner verifies each slice before Devon continues.
 
 ---
 
@@ -78,3 +81,4 @@ No gate may be skipped. No gate advances without the required output from the pr
 | Date | Change | By |
 |---|---|---|
 | 2026-06-25 | Created — delivery pipeline gate reference for myPKA product builds | Larry |
+| 2026-06-25 | G5: added slice-at-a-time delivery rule, 15-min verifiability size guideline, and Hard Rule | Sloane |
