@@ -1,0 +1,359 @@
+import { useEffect, useState, useCallback } from "react";
+import { api } from "../api/client";
+
+// ── Badge helpers ──
+
+function ClassificationBadge({ value }) {
+  if (!value) return null;
+  const isAction = value === "Action";
+  return (
+    <span
+      className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
+        isAction
+          ? "bg-amber-900 text-amber-200"
+          : "bg-blue-900 text-blue-200"
+      }`}
+    >
+      {value}
+    </span>
+  );
+}
+
+function TriageStatusBadge({ value }) {
+  const styles = {
+    pending: "bg-slate-700 text-slate-300",
+    approved: "bg-green-900 text-green-200",
+    declined: "bg-slate-600 text-slate-400",
+    triage_error: "bg-red-900 text-red-300",
+  };
+  const label = {
+    pending: "Pending",
+    approved: "Approved",
+    declined: "Declined",
+    triage_error: "Error",
+  };
+  const cls = styles[value] || "bg-slate-700 text-slate-400";
+  return (
+    <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${cls}`}>
+      {label[value] || value}
+    </span>
+  );
+}
+
+function ActionTypeBadge({ value }) {
+  const styles = {
+    todoist: "bg-red-900 text-red-200",
+    calendar: "bg-indigo-900 text-indigo-200",
+    archive: "bg-slate-600 text-slate-300",
+  };
+  return (
+    <span
+      className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
+        styles[value] || "bg-slate-700 text-slate-400"
+      }`}
+    >
+      {value}
+    </span>
+  );
+}
+
+function ActionStatusBadge({ value, externalId }) {
+  const styles = {
+    pending: "bg-slate-700 text-slate-300",
+    executed: "bg-green-900 text-green-200",
+    failed: "bg-red-900 text-red-300",
+    declined: "bg-slate-600 text-slate-400",
+  };
+  const label = {
+    pending: "Pending",
+    executed: externalId ? `Executed (${externalId})` : "Executed",
+    failed: "Failed",
+    declined: "Declined",
+  };
+  const cls = styles[value] || "bg-slate-700 text-slate-400";
+  return (
+    <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${cls}`}>
+      {label[value] || value}
+    </span>
+  );
+}
+
+// ── Action row ──
+
+function ActionRow({ action, onStatusChange }) {
+  const [loading, setLoading] = useState(false);
+
+  const handle = async (newStatus) => {
+    setLoading(true);
+    try {
+      const updated = await api.patch(
+        `/api/email-triage/actions/${action.id}`,
+        { status: newStatus }
+      );
+      onStatusChange(updated);
+    } catch (e) {
+      console.error("Action update failed:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex items-start gap-3 bg-slate-900 rounded px-3 py-2 text-sm">
+      <div className="mt-0.5">
+        <ActionTypeBadge value={action.action_type} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-slate-200 font-medium truncate">{action.suggested_title}</p>
+        <p className="text-slate-500 text-xs mt-0.5 truncate">{action.description}</p>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        {action.status === "pending" ? (
+          <>
+            <button
+              onClick={() => handle("approved")}
+              disabled={loading}
+              className="text-xs text-green-400 hover:text-green-300 disabled:opacity-50 transition-colors"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => handle("declined")}
+              disabled={loading}
+              className="text-xs text-slate-500 hover:text-slate-400 disabled:opacity-50 transition-colors"
+            >
+              Decline
+            </button>
+          </>
+        ) : (
+          <ActionStatusBadge value={action.status} externalId={action.external_id} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Email row ──
+
+function EmailRow({ email, onTriageStatusChange }) {
+  const [actions, setActions] = useState(null);
+  const [actionsLoading, setActionsLoading] = useState(false);
+  const [actionError, setActionError] = useState(null);
+  const [triageLoading, setTriageLoading] = useState(false);
+
+  const showActions =
+    email.triage_status === "approved" && email.classification === "Action";
+
+  useEffect(() => {
+    if (!showActions) return;
+    setActionsLoading(true);
+    api
+      .get(`/api/email-triage/emails/${email.id}/actions`)
+      .then((d) => setActions(d.actions))
+      .catch((e) => setActionError(e.message))
+      .finally(() => setActionsLoading(false));
+  }, [showActions, email.id]);
+
+  const handleTriage = async (newStatus) => {
+    setTriageLoading(true);
+    try {
+      const updated = await api.patch(`/api/email-triage/emails/${email.id}`, {
+        triage_status: newStatus,
+      });
+      onTriageStatusChange(updated);
+    } catch (e) {
+      console.error("Triage update failed:", e);
+    } finally {
+      setTriageLoading(false);
+    }
+  };
+
+  const handleActionUpdate = (updated) => {
+    setActions((prev) =>
+      prev ? prev.map((a) => (a.id === updated.id ? updated : a)) : prev
+    );
+  };
+
+  const receivedDate = email.received_at
+    ? new Date(email.received_at).toLocaleDateString("nl-NL", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "";
+
+  return (
+    <div className="bg-slate-800 rounded-lg overflow-hidden">
+      <div className="px-4 py-3">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <p className="text-slate-100 font-medium text-sm truncate">
+              {email.subject || "(no subject)"}
+            </p>
+            <p className="text-slate-400 text-xs mt-0.5 truncate">{email.sender}</p>
+            {email.ai_summary && (
+              <p className="text-slate-400 text-xs mt-1 line-clamp-2">
+                {email.ai_summary}
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col items-end gap-1 shrink-0">
+            <span className="text-slate-600 text-xs">{receivedDate}</span>
+            <div className="flex gap-1 flex-wrap justify-end">
+              <ClassificationBadge value={email.classification} />
+              <TriageStatusBadge value={email.triage_status} />
+            </div>
+          </div>
+        </div>
+
+        {email.triage_status === "pending" && (
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={() => handleTriage("approved")}
+              disabled={triageLoading}
+              className="px-3 py-1 text-xs rounded bg-green-800 hover:bg-green-700 text-green-200 disabled:opacity-50 transition-colors"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => handleTriage("declined")}
+              disabled={triageLoading}
+              className="px-3 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600 text-slate-300 disabled:opacity-50 transition-colors"
+            >
+              Decline
+            </button>
+          </div>
+        )}
+      </div>
+
+      {showActions && (
+        <div className="border-t border-slate-700 px-4 py-3 space-y-2">
+          <p className="text-slate-500 text-xs uppercase tracking-wide font-medium">
+            Actions
+          </p>
+          {actionsLoading && (
+            <p className="text-slate-600 text-xs">Loading actions...</p>
+          )}
+          {actionError && (
+            <p className="text-red-400 text-xs">{actionError}</p>
+          )}
+          {actions &&
+            actions.map((action) => (
+              <ActionRow
+                key={action.id}
+                action={action}
+                onStatusChange={handleActionUpdate}
+              />
+            ))}
+          {actions && actions.length === 0 && (
+            <p className="text-slate-600 text-xs">No actions extracted.</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main page ──
+
+export default function EmailTriage() {
+  const [emails, setEmails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [runLoading, setRunLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [runResult, setRunResult] = useState(null);
+
+  const loadEmails = useCallback(() => {
+    return api
+      .get("/api/email-triage/emails")
+      .then((d) => setEmails(d.emails))
+      .catch((e) => setError(e.message));
+  }, []);
+
+  useEffect(() => {
+    loadEmails().finally(() => setLoading(false));
+  }, [loadEmails]);
+
+  const handleRunTriage = async () => {
+    setRunLoading(true);
+    setRunResult(null);
+    setError(null);
+    try {
+      const result = await api.post("/api/email-triage/run", {});
+      setRunResult(result);
+      await loadEmails();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setRunLoading(false);
+    }
+  };
+
+  const handleEmailStatusChange = (updated) => {
+    setEmails((prev) =>
+      prev ? prev.map((e) => (e.id === updated.id ? { ...e, ...updated } : e)) : prev
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-900 p-6">
+      <header className="flex items-center gap-4 mb-8">
+        <button
+          onClick={() => { window.location.href = "/dashboard"; }}
+          className="text-sm text-slate-400 hover:text-slate-200 transition-colors"
+        >
+          &larr; Back
+        </button>
+        <h1 className="text-xl font-semibold text-slate-100">Email Triage</h1>
+      </header>
+
+      <main className="max-w-2xl mx-auto">
+        <div className="flex items-center gap-4 mb-6">
+          <button
+            onClick={handleRunTriage}
+            disabled={runLoading}
+            className="px-4 py-2 text-sm rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-100 disabled:opacity-50 transition-colors font-medium"
+          >
+            {runLoading ? "Running..." : "Run Triage"}
+          </button>
+          {runResult && (
+            <span className="text-slate-400 text-xs">
+              Processed: {runResult.processed} | Skipped: {runResult.skipped} | Errors:{" "}
+              {runResult.errors}
+            </span>
+          )}
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-red-900 border border-red-700 text-red-200 text-sm">
+            {error}
+          </div>
+        )}
+
+        {loading && (
+          <p className="text-slate-500 text-sm">Loading...</p>
+        )}
+
+        {!loading && emails && emails.length === 0 && !error && (
+          <div className="text-center py-16">
+            <p className="text-slate-500 text-sm">
+              No emails yet. Click Run Triage to start.
+            </p>
+          </div>
+        )}
+
+        {emails && emails.length > 0 && (
+          <div className="space-y-3">
+            {emails.map((email) => (
+              <EmailRow
+                key={email.id}
+                email={email}
+                onTriageStatusChange={handleEmailStatusChange}
+              />
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}

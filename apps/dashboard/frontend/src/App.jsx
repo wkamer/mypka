@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { api } from "./api/client";
 import Dashboard from "./pages/Dashboard";
+import EmailTriage from "./pages/EmailTriage";
 import KeyElementDetail from "./pages/KeyElementDetail";
 import KeyElements from "./pages/KeyElements";
 import Login from "./pages/Login";
@@ -71,6 +72,10 @@ function AuthGate() {
       <Route
         path="/topics/:slug"
         element={user ? <TopicDetail /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/email-triage"
+        element={user ? <EmailTriage /> : <Navigate to="/login" replace />}
       />
       <Route
         path="*"

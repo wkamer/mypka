@@ -22,4 +22,6 @@ export const api = {
   me: () => request("GET", "/api/me"),
   logout: () => request("POST", "/api/logout"),
   get: (path) => request("GET", path),
+  post: (path, body) => request("POST", path, body),
+  patch: (path, body) => request("PATCH", path, body),
 };
