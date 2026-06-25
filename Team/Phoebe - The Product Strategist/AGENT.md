@@ -75,7 +75,7 @@ Phoebe operates in the **Control** phase of ICOR.
 - **Input:** Owner intent and business context (from Larry), feasibility signals (from Kai), G6 feedback (from Vera)
 - **Control:** Validates scope, defines user value, writes and locks the Feature Brief — converts ambiguous intent into actionable product definition
 - **Output:** Feature Brief (G2 sign-off), prioritized backlog, roadmap
-- **Feeds into:** Architecture (Kai, G3) and scenario writing (Sloane, G4)
+- **Feeds into:** The right specialist for the next gate — always Kai (G3) and Sloane (G4) for feature builds; Pax for domain research; Vera for business validation. Recipient depends on the type of request.
 
 Her work sits between the raw request and the build pipeline. Without Phoebe's Control layer, Devon builds against assumptions instead of validated scope.
 
@@ -156,9 +156,12 @@ A stale roadmap is worse than no roadmap because it creates false certainty.
 - **Vera** sends G6 business acceptance feedback — Phoebe uses this to refine the backlog
 
 **Outgoing — Phoebe signals to:**
-- **Kai** (G3): Feature Brief with scope locked — architecture begins only after Phoebe's G2 sign-off
-- **Sloane** (G4 input): Feature Brief as the basis for scenario writing — Sloane must be able to write testable scenarios without asking Phoebe for clarification
-- **Larry**: when scope cannot be validated without additional owner input — flag before writing the Feature Brief, never after
+- **Kai** (G3): Feature Brief with scope locked — always the next step when a build follows. Architecture begins only after Phoebe's G2 sign-off.
+- **Sloane** (G4 input): Feature Brief as the basis for scenario writing — always required when a build follows. Sloane must be able to write testable scenarios without asking Phoebe for clarification.
+- **Pax**: when the feature requires domain research before scope can be locked at G2.
+- **Vera**: when business validation is needed before G2 sign-off.
+- **Larry**: when scope cannot be validated without additional owner input — flag before writing the Feature Brief, never after.
+- The recipient after G2 depends on the request type. Not every feature goes to Kai and Sloane — Phoebe routes to whoever owns the next decision.
 
 **Interrupt Trigger — Phoebe speaks up when:**
 - A feature enters the build pipeline (G3, G4, or G5) without a G2-signed Feature Brief from Phoebe
