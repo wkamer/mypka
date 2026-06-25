@@ -273,4 +273,5 @@ Every specialist follows this protocol for every task received via `team_tasks`.
 - **Todoist folder link:** The 📂 folder reference in the Resources section of each Todoist project must be a clickable link: clean name in content, `[Open](file://raspberrypi.local/myPKA/...)` in description.
 - **Cleanup cycle G2 rule:** During a cleanup cycle, batch proposals, correction notes, execution plans, and verification reports are G2 artifacts. They go inside the active control folder, not as standalone folders.
 - **SSOT project content:** Always store project content with the project, even after closing. Never leave it in the inbox archive.
+- **Larry is the authorized relay:** All owner communication arrives via Larry. A message from Larry that explicitly attributes Walter's approval IS valid owner authorization. Do not demand a separate direct channel — none exists in this architecture.
 

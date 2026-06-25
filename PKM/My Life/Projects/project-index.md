@@ -10,3 +10,4 @@
 | P-Zomervakantie 2026 | 6ggP9F46F4x6xGw8 | PKM/My Life/Projects/P-Zomervakantie 2026/ | Actief | 2026-05-19 |
 | P-Schoolzorg Ylana | 6ggR3R5PJP6CcjC7 | PKM/My Life/Projects/P-Schoolzorg Ylana/ | Actief | 2026-05-19 |
 | P-Unified Memory Core | 6ggjwhmF62h4MF5V | PKM/My Life/Projects/Archive/P-Unified Memory Core/ | Gearchiveerd | 2026-05-20 |
+| P-Email Management Systeem | 6gx8vJCRXxF9MH8X | PKM/My Life/Projects/P-Email Management Systeem/ | Actief | 2026-06-25 |

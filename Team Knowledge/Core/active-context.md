@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-25 — Agile delivery pipeline built: Phoebe (G2) and Sloane (G4) onboarded, G1-G6 gate sequence established, TDD enforced structurally in Devon and Sloane, GL-024 and SOPs 016-018 created, AGENT.md files trimmed to identity-only.
+2026-06-25 — Email Management System delivery pipeline opgestart: G1-G4 compleet, G5 eerste build met bugs, UX-feedback verwerkt, Gmail=SSOT beslissing, feedbackloop geborgd in GL-024/SOP-018. Devon start S1 volgende sessie.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -9,7 +9,6 @@
 - Team Inbox: Deelmomenten MR routing (Penn or Kai?) — awaiting owner decision
 - G-Geldstroom Regie deadline 30 juni — on-hold confirm
 - Reply Jesse Voerman (leerplicht) nog versturen — Sienna-review vereist (Wendy in CC)
-- Gmail auth expired — re-authentication needed
 - Conversation with Rajko Acimovic — still pending
 - Dashboard: change default password (admin/admin)
 - Dashboard: Systemd auto-start for backend + frontend (deferred)
@@ -18,7 +17,10 @@
 - Tricolarae: S3 MODEL — wacht op Meta product-test data
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
-- Email inbox viewer — standalone app, Devon (team_task 106, not started)
+- Email triage S1: Devon fix bestaande backend (DB migratie + Gmail fetch) — wacht op owner akkoord
+- Email triage S2: Frontend twee-regels inbox-weergave — na S1 akkoord
+- Email triage S3: Accordion triage-info + action buttons — na S2 akkoord
+- Kai: email-triage.db toevoegen aan backup script voor go-live
 
 ## Active goals
 - G-Scheiding volledig afgerond
@@ -26,6 +28,7 @@
 - G-Ylana weer stabiel naar school
 - G-Geldstroom Regie gevalideerd met 3 betalende klanten
 - G-Broederweekend 2026 georganiseerd en beleefd
+- G-Persoonlijk systeem volledig geautomatiseerd
 
 ## Active projects
 

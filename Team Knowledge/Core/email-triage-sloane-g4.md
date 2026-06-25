@@ -5,7 +5,22 @@
 **Author:** Sloane
 **Date:** 2026-06-25
 **Implementer:** Devon
-**Status:** Ready — Devon starts from this document without asking Sloane for clarification
+**Status:** Ready — Devon fixes the existing code from this document without asking Sloane for clarification
+
+---
+
+## Architectural decision (SSOT — owner confirmed 2026-06-25)
+
+Gmail is the single source of truth for email content. The DB stores triage state only.
+
+| Stored where | What |
+|---|---|
+| Gmail (live) | sender, subject, body, received_at, thread_id — all email content |
+| SQLite DB | email_id (Gmail message ID as FK), classification, ai_summary, triage_status, actions |
+
+The dashboard fetches emails live from Gmail on every page load. The DB is joined in-memory to add triage state. Email content is never written to the DB.
+
+**Devon's existing implementation violated this rule.** The `emails` table stores subject, sender, body_text, snippet, received_at, thread_id. This must be corrected. Fix the existing code — do not rebuild from scratch.
 
 ---
 
@@ -24,80 +39,184 @@ Do not start the next slice without explicit owner acknowledgment. Each slice is
 
 ## Slice Plan
 
-Three vertical slices. Each is independently buildable and owner-verifiable.
+Three slices. S1 corrects the backend. S2 builds the email list. S3 builds the accordion with triage display.
 
 | Slice | Delivers | ACs covered |
 |---|---|---|
-| S1 | Gmail inbox endpoint — owner can see raw email data from their inbox | Backend only |
-| S2 | Two-line email list on the dashboard page | AC-1, AC-2, AC-3, AC-4, AC-5 |
-| S3 | Accordion expand/collapse on email rows | AC-6, AC-7, AC-8, AC-9, AC-10, AC-11 |
+| S1 | Backend SSOT fix — DB schema corrected, live Gmail endpoint, run endpoint stores triage state only | Backend only |
+| S2 | Two-line inbox list on the dashboard page | AC-1, AC-2, AC-3, AC-4, AC-5 |
+| S3 | Accordion with triage classification and action approve/decline | AC-6, AC-7, AC-8, AC-9, AC-11, AC-12, AC-13 |
 
 Build in order. S2 depends on the S1 endpoint. S3 adds interactivity on top of S2. Stop after each slice.
 
+**Note on AC-10:** Product brief v0.2 AC-10 states the accordion panel is empty in MVP. This is superseded by the owner's architectural decision (2026-06-25): the accordion shows triage classification and action approve/decline buttons. AC-10 is replaced by AC-12 and AC-13 in this brief.
+
 ---
 
-## Slice 1 — Gmail inbox endpoint
+## Slice 1 — Backend SSOT fix
 
 ### Owner verification (target: under 10 minutes)
 
-Navigate to `https://raspberrypi.local/api/email-triage/emails` while logged in. The browser returns a JSON array of email objects. Each object contains: `id`, `sender`, `subject`, `received_at`. List is ordered newest first. That confirms S1 is done.
+Navigate to `https://raspberrypi.local/api/email-triage/emails` while logged in. The browser returns a JSON array of live Gmail inbox emails. Each object contains: `id`, `sender` (display name or raw address), `subject`, `received_at` (ISO 8601), `classification` (null if not yet triaged), `triage_status` (null if not yet triaged), `ai_summary` (null if not yet triaged). List is ordered newest first. No stale DB content. That confirms S1 is done.
 
-### What Devon builds
+### What Devon fixes
 
-**Backend (`backend/email_triage.py` — create new):**
+**`backend/email_triage.py` — modify existing.**
 
-- `GET /api/email-triage/emails` — fetch the 30 most recent INBOX messages from Gmail using `get_credentials()` via `google_helper.py`. Return them as a JSON array ordered by `received_at` descending. Each item: `id` (Gmail message ID), `sender` (display name from From header if available, raw address as fallback), `subject`, `received_at` (ISO 8601 string).
-- Use `_require_auth(pka_token)` from `auth.py` for auth. Cookie name: `pka_token`.
-- Import `google_helper.py` via `sys.path.insert(0, "/opt/myPKA/Team Knowledge/Core/Integrations/google")`.
+#### Fix 1 — DB schema migration
 
-**Mount in `backend/main.py`:**
-```python
-from email_triage import router as email_triage_router
-app.include_router(email_triage_router)
+The `emails` table currently stores email content. Strip it to triage state only.
+
+New `emails` schema (replace the existing CREATE TABLE):
+
+```sql
+CREATE TABLE IF NOT EXISTS emails (
+    id             TEXT PRIMARY KEY,
+    classification TEXT,
+    ai_summary     TEXT,
+    triage_status  TEXT NOT NULL DEFAULT 'pending',
+    created_at     TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at     TEXT NOT NULL DEFAULT (datetime('now'))
+)
 ```
-Add after existing route definitions. Do not modify any existing route.
 
-**No DB. No AI calls. No new env vars. No Docker or Traefik changes.**
+The `actions` table schema is correct — keep it unchanged.
+
+Add a `_migrate_db()` function that runs before `_init_db()`:
+
+```python
+def _migrate_db() -> None:
+    """Drop old bloated emails table if it contains content columns (SSOT violation)."""
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    cols = [row[1] for row in c.execute("PRAGMA table_info(emails)").fetchall()]
+    if "body_text" in cols or "subject" in cols:
+        # Old schema violates SSOT — drop and recreate. Data loss is intentional.
+        c.execute("DROP TABLE IF EXISTS emails")
+        conn.commit()
+    conn.close()
+```
+
+Call order at module level:
+```python
+_migrate_db()
+_init_db()
+```
+
+#### Fix 2 — `GET /api/email-triage/emails` returns live Gmail + triage state
+
+Replace the existing `get_emails` function body entirely. Remove the DB SELECT. Replace with:
+
+1. Fetch Gmail inbox: `service.users().messages().list(userId="me", labelIds=["INBOX"], maxResults=30).execute()`
+2. For each message ref: call `.get(userId="me", id=msg_id, format="metadata", metadataHeaders=["From","Subject","Date"])` to get headers only (faster than full format for the list view)
+3. Extract sender: parse `From` header. If format is `Name <address>`, use `Name`. If bare address, use the address.
+4. Extract subject from `Subject` header. Extract received_at from `internalDate` (milliseconds to UTC ISO 8601).
+5. Load triage state from DB in one query: `SELECT id, classification, ai_summary, triage_status FROM emails WHERE id IN (?, ?, ...)` using the message IDs. Build a dict keyed by id.
+6. Merge: for each Gmail message, attach triage state from the dict (or null fields if not yet triaged).
+7. Sort by received_at descending.
+8. Return list of objects: `{id, sender, subject, received_at, classification, ai_summary, triage_status}`.
+
+Return shape:
+```json
+{
+  "emails": [
+    {
+      "id": "gmail_message_id",
+      "sender": "Alice Example",
+      "subject": "Invoice #123",
+      "received_at": "2026-06-25T10:30:00+00:00",
+      "classification": "Action",
+      "ai_summary": "Invoice from supplier...",
+      "triage_status": "pending"
+    }
+  ]
+}
+```
+
+#### Fix 3 — `POST /api/email-triage/run` stores only triage state
+
+The run endpoint currently inserts subject, sender, body_text, snippet, received_at, thread_id into the DB. Remove those inserts.
+
+Fix the INSERT in the run loop:
+
+```python
+conn.execute(
+    """INSERT INTO emails
+       (id, classification, ai_summary, triage_status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+           classification = excluded.classification,
+           ai_summary = excluded.ai_summary,
+           triage_status = excluded.triage_status,
+           updated_at = excluded.updated_at""",
+    (msg_id, classification, ai_summary, triage_status, now, now),
+)
+```
+
+Body text still flows in-memory from Gmail to the AI call — it is never written to DB. Remove the `body_text` column from the run INSERT entirely.
+
+The `skip` logic (`SELECT id FROM emails WHERE id = ?`) still works — a previously triaged email will be found in the DB by id and skipped.
+
+#### Fix 4 — `PATCH /api/email-triage/emails/{email_id}` return value
+
+The existing PATCH returns subject/sender/snippet from the DB query. Those columns no longer exist. Fix the return SELECT:
+
+```python
+updated = conn.execute(
+    "SELECT id, classification, ai_summary, triage_status, updated_at FROM emails WHERE id = ?",
+    (email_id,),
+).fetchone()
+return dict(updated)
+```
+
+No other changes needed in patch_email.
+
+#### No changes needed
+
+- `get_actions` — actions table is correct, no changes
+- `patch_action` — action execution helpers are correct, no changes
+- `execute_todoist_action`, `execute_calendar_action`, `execute_archive_action` — correct, no changes
+- `_call_ai` — correct, no changes
+- `_extract_body` — still needed for the run endpoint AI call, no changes
 
 ### Stop point — S1
 
-After S1: run tests, verify endpoint in browser, report to owner. Do not start S2 until owner confirms.
+After S1: run tests, verify endpoint in browser returns live Gmail data, report to owner. Do not start S2 until owner confirms.
 
 ---
 
-## Slice 2 — Two-line email list
+## Slice 2 — Two-line inbox list
 
 ### Owner verification (target: under 15 minutes)
 
-Open the dashboard. Navigate to Email Triage. See the inbox email list. Check:
-- Each email is two lines: line 1 = sender name, line 2 = subject with date on the right
+Open the dashboard. Navigate to Email Triage. Check:
+- Each email is two lines: line 1 = sender name (or address), line 2 = subject with date/time on the right
 - List is sorted newest first
-- No horizontal scrollbar appears on a standard desktop browser window
-- When sender name is not available, the raw email address appears on line 1
+- No horizontal scrollbar on a standard desktop browser window
+- When a display name is available it appears on line 1, not the raw address
 
 ### What Devon builds
 
-**Frontend (`frontend/src/pages/EmailTriage.jsx` — create new):**
+**`frontend/src/pages/EmailTriage.jsx` — create new.**
 
-- On page load: call `GET /api/email-triage/emails`. Show loading state during fetch.
+- On page load: call `GET /api/email-triage/emails`. Show loading spinner during fetch.
 - Render results as a scrollable list. One row per email.
 - Row structure (exactly two visible lines):
-  - Line 1: sender name (from `sender` field)
-  - Line 2: subject (left-aligned) + received date/time (right-aligned or appended)
-- No actions on the row (no buttons, no click handler yet — that is S3).
+  - Line 1: sender (from `sender` field)
+  - Line 2: subject (left-aligned) + received date/time formatted as `DD-MM HH:mm` (right-aligned)
+- No click handler yet — that is S3.
 - Empty state (API returns empty array): display "No emails in inbox."
 - Error state (fetch fails): display "Could not load emails."
 - Layout must not produce horizontal scroll on a standard desktop viewport (1280px+ width).
 
-**Register route in `frontend/src/App.jsx`:**
+**`frontend/src/App.jsx` — add route only:**
 ```jsx
 import EmailTriage from "./pages/EmailTriage";
-// inside AuthGate <Routes>:
+// Inside AuthGate <Routes>:
 <Route path="/email-triage" element={user ? <EmailTriage /> : <Navigate to="/login" replace />} />
 ```
 
-**`frontend/src/api/client.js`:**
-If `get` method does not already exist with the right signature, add it following the existing `request()` pattern. Do not remove or modify existing methods.
+**`frontend/src/api/client.js` — add `get` method if missing.** Follow the existing `request()` pattern. Do not remove or modify existing methods.
 
 Page layout and styling: follow the pattern of existing pages (see `KeyElements.jsx`). Match existing font, spacing, and color conventions exactly.
 
@@ -107,36 +226,56 @@ After S2: run tests, verify list renders correctly in the browser, report to own
 
 ---
 
-## Slice 3 — Accordion expand/collapse
+## Slice 3 — Accordion with triage info and action buttons
 
 ### Owner verification (target: under 15 minutes)
 
 On the email list page:
-1. Click an email row — an accordion panel opens below it (AC-6)
-2. Click the same row again — the panel closes (AC-7)
-3. Click a second email row while one is open — the first closes and the second opens (AC-8)
-4. The open panel looks visually distinct from the list rows — indented or bordered (AC-9)
-5. The panel content area is empty — no fields, no text (AC-10)
-6. All of the above happen without any page reload (AC-11)
+1. Click an email row — an accordion panel opens below it
+2. Click the same row again — the panel closes
+3. Click a second email row while one is open — the first closes and the second opens
+4. The open panel is visually distinct from the list rows (indented or bordered)
+5. If the email has been triaged: classification and ai_summary are visible in the panel
+6. If the email has actions: each action card shows description, suggested title, and Approve / Decline buttons
+7. All of the above happen without any page reload
 
 ### What Devon builds
 
-**Frontend (`EmailTriage.jsx` — modify existing):**
+**`EmailTriage.jsx` — modify existing:**
 
 - Add click handler to each email row.
-- Track which row is expanded in component state (store the email `id` of the open row, or `null` if none).
-- Clicking a collapsed row: set it as the open row (closes any previously open row automatically — state holds only one ID at a time).
-- Clicking the already-open row: set state to `null` (collapse).
-- Render the accordion panel directly below the clicked row, inside the list — not at the bottom of the page.
-- Panel content: empty `<div>` with a placeholder comment. No triage fields, no text.
-- Panel visual treatment: add a border or indentation that distinguishes it from the list rows. Match existing design system spacing and color.
-- Expand/collapse must not trigger a page reload or a new API call.
+- Track expanded row in component state: store the `id` of the open row or `null`.
+- Clicking a collapsed row: set it as open (closes any previously open row — state holds one ID).
+- Clicking the open row: set state to `null` (collapse).
+- Render accordion panel directly below the clicked row, inside the list — not at the bottom.
+- Panel visual treatment: border or indentation that distinguishes it from list rows. Match existing design system.
+
+Panel content when email has `classification` set (triaged):
+- Show classification as a badge or label ("Information" or "Action")
+- Show ai_summary as a short text block
+- For each action (fetched from `GET /api/email-triage/emails/{email_id}/actions`): render an action card with:
+  - `description` (main label)
+  - `suggested_title` (sub-label)
+  - `due_date` if present
+  - Approve button and Decline button
+  - On Approve: call `PATCH /api/email-triage/actions/{action_id}` with `{"status": "approved"}`
+  - On Decline: call `PATCH /api/email-triage/actions/{action_id}` with `{"status": "declined"}`
+  - After response: update local state to reflect new action status (executed / declined / failed)
+  - Disable buttons after action is taken
+
+Panel content when email has `classification = null` (not yet triaged):
+- Show "Not yet triaged" label. No buttons.
+
+Panel content when `triage_status = "triage_error"`:
+- Show "Triage failed" label. No buttons.
+
+Fetch actions lazily: call `GET /api/email-triage/emails/{email_id}/actions` when the row is first expanded (not on initial page load). Cache the result in component state to avoid re-fetching on re-expand.
 
 No backend changes in S3.
 
 ### Stop point — S3
 
-After S3: run tests, verify all accordion behaviors in the browser, report to owner. S3 completes the MVP. Route back to Sloane if any AC is not met.
+After S3: run tests, verify all accordion and action behaviors in the browser, report to owner. S3 completes the build. Route back to Sloane if any AC is not met.
 
 ---
 
@@ -145,15 +284,27 @@ After S3: run tests, verify all accordion behaviors in the browser, report to ow
 ```gherkin
 Feature: Email Triage inbox list and accordion
 
-  # ── SLICE 1: Gmail inbox endpoint ──
+  # ── SLICE 1: Backend SSOT fix ──
 
-  Scenario: Authenticated user fetches inbox emails
+  Scenario: Authenticated user fetches inbox emails live from Gmail
     Given the user is authenticated
     When the user requests GET /api/email-triage/emails
     Then the response is 200
-    And the response body is a JSON array
-    And each item contains id, sender, subject, and received_at
+    And the response body contains an "emails" array
+    And each item contains id, sender, subject, received_at
     And items are ordered newest first by received_at
+
+  Scenario: Triage state is merged into live Gmail response
+    Given the user is authenticated
+    And email "abc123" has been triaged with classification "Action"
+    When the user requests GET /api/email-triage/emails
+    Then the item with id "abc123" includes classification "Action"
+
+  Scenario: Untriaged email has null classification in response
+    Given the user is authenticated
+    And email "xyz789" has not been triaged
+    When the user requests GET /api/email-triage/emails
+    Then the item with id "xyz789" has classification null
 
   Scenario: Sender with display name returns name not address
     Given the Gmail inbox contains an email with From "Alice Example <alice@example.com>"
@@ -164,6 +315,12 @@ Feature: Email Triage inbox list and accordion
     Given the Gmail inbox contains an email with From "bob@example.com"
     When the user requests GET /api/email-triage/emails
     Then the sender field for that email is "bob@example.com"
+
+  Scenario: Run triage stores only triage state in DB
+    Given the user is authenticated
+    When the user calls POST /api/email-triage/run
+    Then the emails table contains only id, classification, ai_summary, triage_status
+    And the emails table does not contain subject, sender, body_text, or received_at
 
   Scenario: Unauthenticated request is rejected
     Given the user has no valid session cookie
@@ -191,7 +348,7 @@ Feature: Email Triage inbox list and accordion
 
   Scenario: List renders without horizontal scroll on desktop (AC-4)
     Given the user is authenticated and on the Email Triage page
-    And the browser viewport is at standard desktop width
+    And the browser viewport is at standard desktop width (1280px or wider)
     Then no horizontal scrollbar is visible
 
   Scenario: Sender name is preferred over raw address (AC-5)
@@ -204,7 +361,7 @@ Feature: Email Triage inbox list and accordion
     And the Gmail inbox has no messages
     Then the page shows "No emails in inbox."
 
-  # ── SLICE 3: Accordion expand/collapse ──
+  # ── SLICE 3: Accordion with triage info and action buttons ──
 
   Scenario: Clicking a collapsed row expands the accordion panel (AC-6)
     Given the user is authenticated and on the Email Triage page
@@ -232,16 +389,27 @@ Feature: Email Triage inbox list and accordion
     And one accordion panel is open
     Then the panel has a visible border or indentation that distinguishes it from the list rows
 
-  Scenario: The accordion panel content area is empty (AC-10)
-    Given the user is authenticated and on the Email Triage page
-    And one accordion panel is open
-    Then the panel contains no text, fields, or buttons
-
   Scenario: Accordion works without page reload (AC-11)
     Given the user is authenticated and on the Email Triage page
     When the user expands and collapses accordion panels
     Then no page reload occurs
     And the URL does not change
+
+  Scenario: Triaged email shows classification and summary in accordion (AC-12)
+    Given the user is authenticated and on the Email Triage page
+    And an email has been triaged with classification "Action" and a summary
+    When the user clicks that email row
+    Then the accordion panel shows the classification label
+    And the accordion panel shows the ai_summary text
+
+  Scenario: Action card renders with approve and decline buttons (AC-13)
+    Given the user is authenticated and on the Email Triage page
+    And a triaged email has one or more actions
+    When the user expands the accordion for that email
+    Then each action is shown as a card with Approve and Decline buttons
+    And clicking Approve calls PATCH /api/email-triage/actions/{action_id} with status "approved"
+    And clicking Decline calls PATCH /api/email-triage/actions/{action_id} with status "declined"
+    And the buttons are disabled after the action is taken
 ```
 
 ---
@@ -252,39 +420,39 @@ Devon writes failing tests first. Implementation follows to make them pass. This
 
 ### Slice 1 — Automated tests
 
-**Backend (pytest, `backend/test_email_triage.py` — create new):**
+**Backend (pytest, `backend/test_email_triage.py` — create new if not exists):**
 
 | Test | What to verify |
 |---|---|
-| `test_get_emails_requires_auth` | `GET /api/email-triage/emails` without cookie returns 401 |
-| `test_get_emails_returns_list` | With mocked Gmail returning 3 messages, response is 200 and body is a list of 3 items |
-| `test_get_emails_fields_present` | Each item in the list contains `id`, `sender`, `subject`, `received_at` |
-| `test_get_emails_ordered_newest_first` | Items are ordered by `received_at` descending |
-| `test_get_emails_sender_name_from_display_name` | Gmail message with `From: Alice <alice@example.com>` produces `sender = "Alice"` |
-| `test_get_emails_sender_fallback_to_address` | Gmail message with `From: bob@example.com` produces `sender = "bob@example.com"` |
-| `test_get_emails_empty_inbox` | With mocked Gmail returning 0 messages, response is 200 and body is `[]` |
-
-**Frontend (manual verification for S1):**
-Visit `https://raspberrypi.local/api/email-triage/emails` while logged in — browser shows JSON array with correct fields.
+| `test_get_emails_requires_auth` | GET /api/email-triage/emails without cookie returns 401 |
+| `test_get_emails_returns_live_list` | With mocked Gmail returning 3 messages, response is 200 and "emails" array has 3 items |
+| `test_get_emails_fields_present` | Each item contains id, sender, subject, received_at |
+| `test_get_emails_ordered_newest_first` | Items are ordered by received_at descending |
+| `test_get_emails_merges_triage_state` | DB has triage row for msg_id "abc": response item for "abc" includes classification |
+| `test_get_emails_null_triage_for_untriaged` | DB has no row for msg_id "xyz": response item for "xyz" has classification null |
+| `test_get_emails_sender_display_name` | From "Alice <alice@example.com>" produces sender "Alice" |
+| `test_get_emails_sender_fallback` | From "bob@example.com" produces sender "bob@example.com" |
+| `test_run_does_not_store_content` | After POST /run with mocked Gmail and AI: emails table row for processed msg_id has no subject column |
+| `test_db_migration_drops_old_schema` | DB with old body_text column: after _migrate_db() and _init_db(), table has no body_text column |
 
 ### Slice 2 — Automated tests
 
-**Frontend (pytest-playwright or equivalent, append to test file):**
+**Frontend (pytest-playwright or equivalent):**
 
 | Test | What to verify |
 |---|---|
 | `test_email_list_renders_two_lines_per_row` | Each list row contains exactly two visible text lines (AC-1) |
 | `test_email_list_line2_contains_date` | Line 2 of each row includes a date or time string (AC-2) |
 | `test_email_list_sorted_newest_first` | With mocked API returning emails at t1 < t2, t2 appears before t1 in the DOM (AC-3) |
-| `test_email_list_no_horizontal_overflow` | At 1280px viewport, no element has `scrollWidth > clientWidth` at document level (AC-4) |
+| `test_email_list_no_horizontal_overflow` | At 1280px viewport, no element has scrollWidth > clientWidth at document level (AC-4) |
 | `test_email_list_sender_name_preferred` | When sender has display name, line 1 shows the name not the address (AC-5) |
-| `test_email_list_empty_state` | With mocked API returning `[]`, page shows "No emails in inbox." |
+| `test_email_list_empty_state` | With mocked API returning empty array, page shows "No emails in inbox." |
 
 **Manual verification for S2:** Open dashboard, navigate to Email Triage, confirm list renders as two-line rows with date visible and newest email first.
 
 ### Slice 3 — Automated tests
 
-**Frontend (pytest-playwright or equivalent, append to test file):**
+**Frontend (pytest-playwright or equivalent):**
 
 | Test | What to verify |
 |---|---|
@@ -292,25 +460,28 @@ Visit `https://raspberrypi.local/api/email-triage/emails` while logged in — br
 | `test_accordion_click_again_closes_panel` | Clicking the expanded row removes the panel from the DOM (AC-7) |
 | `test_accordion_second_click_closes_first` | With row A open, clicking row B closes row A and opens row B (AC-8) |
 | `test_accordion_panel_has_distinct_style` | Expanded panel has a CSS class, border, or indentation attribute (AC-9) |
-| `test_accordion_panel_content_is_empty` | Expanded panel contains no text content and no form elements (AC-10) |
 | `test_accordion_no_page_reload` | Accordion interactions do not trigger navigation events (AC-11) |
+| `test_accordion_shows_classification` | Triaged email panel shows classification text (AC-12) |
+| `test_accordion_action_buttons_present` | Panel for email with actions shows Approve and Decline buttons (AC-13) |
+| `test_accordion_approve_calls_api` | Clicking Approve sends PATCH with status "approved" (AC-13) |
+| `test_accordion_buttons_disabled_after_action` | Approve/Decline buttons are disabled after one is clicked (AC-13) |
 
-**Manual verification for S3:** Click through all accordion behaviors listed in the owner verification section above.
+**Manual verification for S3:** Click through all accordion behaviors. Approve one action, confirm it executes (Todoist task or Calendar event created). Decline one action, confirm status shows declined.
 
 ### Regression suite (all slices)
 
-After mounting the email_triage router, verify these existing endpoints remain unaffected:
+After fixing the router, verify these existing endpoints remain unaffected:
 
 | Endpoint | Expected |
 |---|---|
-| `POST /api/login` | Returns 200 with valid credentials |
-| `GET /api/me` | Returns username with valid cookie |
-| `POST /api/logout` | Clears cookie |
-| `GET /api/projects` | Returns personal and business project lists |
-| `GET /api/key-elements` | Returns key element list |
-| `GET /api/key-elements/{slug}` | Returns key element content |
-| `GET /api/topics` | Returns topic list |
-| `GET /api/topics/{slug}` | Returns topic content |
+| POST /api/login | Returns 200 with valid credentials |
+| GET /api/me | Returns username with valid cookie |
+| POST /api/logout | Clears cookie |
+| GET /api/projects | Returns personal and business project lists |
+| GET /api/key-elements | Returns key element list |
+| GET /api/key-elements/{slug} | Returns key element content |
+| GET /api/topics | Returns topic list |
+| GET /api/topics/{slug} | Returns topic content |
 
 ---
 
@@ -318,26 +489,24 @@ After mounting the email_triage router, verify these existing endpoints remain u
 
 | File | Action |
 |---|---|
-| `/opt/myPKA/apps/dashboard/backend/email_triage.py` | Create (new) |
-| `/opt/myPKA/apps/dashboard/backend/test_email_triage.py` | Create (new) |
-| `/opt/myPKA/apps/dashboard/backend/main.py` | Add `include_router` line (add only) |
-| `/opt/myPKA/apps/dashboard/frontend/src/pages/EmailTriage.jsx` | Create (new) |
-| `/opt/myPKA/apps/dashboard/frontend/src/App.jsx` | Add `/email-triage` route (add only) |
-| `/opt/myPKA/apps/dashboard/frontend/src/api/client.js` | Add `get` method if missing (add only) |
+| `/opt/myPKA/apps/dashboard/backend/email_triage.py` | Modify existing — fix DB schema, fix 3 endpoints |
+| `/opt/myPKA/apps/dashboard/backend/test_email_triage.py` | Create new |
+| `/opt/myPKA/apps/dashboard/frontend/src/pages/EmailTriage.jsx` | Create new |
+| `/opt/myPKA/apps/dashboard/frontend/src/App.jsx` | Add /email-triage route (add only) |
+| `/opt/myPKA/apps/dashboard/frontend/src/api/client.js` | Add get method if missing (add only) |
 
-**No DB. No AI subprocess calls. No new dependencies beyond what is already installed.**
+**No new dependencies. No Docker or Traefik changes. No new env vars.**
 
 ---
 
-## Architecture constraints (Devon must not deviate from these)
+## Architecture constraints (Devon must not deviate)
 
+- Gmail is the SSOT for email content. Never write subject, sender, body, snippet, received_at, or thread_id to the DB.
 - Gmail API calls: use `get_credentials()` from `google_helper.py`. No new auth flows.
 - `google_helper.py` import: always via `sys.path.insert(0, "/opt/myPKA/Team Knowledge/Core/Integrations/google")`.
 - Auth: `_require_auth(pka_token)` from `auth.py`. Cookie name: `pka_token`.
-- No AI calls in this MVP.
-- No DB in this MVP.
+- DB path: `EMAIL_TRIAGE_DB` env var or `/opt/myPKA/apps/dashboard/email-triage.db`.
 - No new ports, no Docker changes, no Traefik changes.
-- No new env vars.
 
 ---
 
@@ -347,3 +516,4 @@ After mounting the email_triage router, verify these existing endpoints remain u
 |---|---|---|
 | 2026-06-25 | Initial brief — AI triage with approve/decline/execute (v0.1 scope) | Sloane |
 | 2026-06-25 | Full rewrite — aligned to product brief v0.2 (inbox list + accordion, no AI, no DB); 3 smaller slices; feedback loop stop points added | Sloane |
+| 2026-06-25 | Full rewrite — SSOT correction applied; Devon fixes existing code not rebuilds; Gmail is SSOT; DB stores triage state only; S1 is backend fix, S2 is frontend list, S3 is accordion with triage display; AC-10 superseded by AC-12 and AC-13 | Sloane |
