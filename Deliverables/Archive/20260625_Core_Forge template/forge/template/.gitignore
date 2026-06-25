@@ -1,0 +1,18 @@
+# Secrets — never commit
+.env.secrets
+
+# Local env / caches / build
+.env
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+dist/
+build/
+*.log
+.DS_Store
+
+# Coverage / artifacts
+.coverage
+coverage/
+sbom.json
