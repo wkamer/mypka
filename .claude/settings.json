@@ -1,4 +1,9 @@
 {
+  "permissions": {
+  "allow": [
+    "Bash(node /home/admin/.claude/plugins/cache/openai-codex/codex/1.0.4/scripts/codex-companion.mjs *)"
+  ]
+  }, 
   "hooks": {
     "PostToolUse": [
       {

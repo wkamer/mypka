@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-24 — Jesse Voerman (leerplicht) email gelezen. Alinea over Ylana's verblijfssituatie herschreven: tussenfase en scheiding als bijdragende factor, niet hoofdoorzaak. Reply naar Jesse nog niet verstuurd.
+2026-06-24 — Tricolarae onafhankelijke audit uitgevoerd. Meta advertising gecorrigeerd: BEROAS 2.86 kill-grens maakt het inzetbaar als product-tester. "Geen publiek" blocker vervalt bij paid acquisition. A3 risico bijgesteld naar Groen. Advisory board concept geïntroduceerd als oplossing voor ongevalideerde agentkennis.
 
 ## Open items
 - Nolan: add communicatie_verzender rule to Sienna AGENT.md (team_task 103)
@@ -14,6 +14,10 @@
 - Dashboard: change default password (admin/admin)
 - Dashboard: Systemd auto-start for backend + frontend (deferred)
 - Dashboard: rclone.conf history rewrite — optioneel als repo publiek wordt
+- Tricolarae: Weg 1 + Weg 2 uitvoering (positionering + About Us aanpassing) — nog niet geëxecuteerd
+- Tricolarae: S3 MODEL — wacht op Meta product-test data
+- Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
+- Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
 
 ## Active goals
 - G-Scheiding volledig afgerond
