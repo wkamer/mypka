@@ -131,7 +131,7 @@ WA_LOCKFILE=/tmp/dropbox-whatsapp-export-sync.lock
 WA_LOGFILE="$INTEGRATION_DIR/logs/whatsapp_export.log"
 WA_SOURCE="dropbox:/Team Inbox/Whatsapp Export"
 WA_HANDLER="$INTEGRATION_DIR/whatsapp_export_handler.py"
-WA_PYTHON="/opt/mypka-memory/venv/bin/python"
+WA_PYTHON="/usr/bin/python3"
 WA_TEMP="/tmp/mypka_wa_export"
 
 if [ -f "$WA_LOCKFILE" ]; then

@@ -1,4 +1,4 @@
-#!/opt/mypka-memory/venv/bin/python
+#!/usr/bin/python3
 """
 WhatsApp export handler — Dropbox integration for myPKA.
 
