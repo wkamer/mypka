@@ -206,7 +206,7 @@ Permanent rules do not belong in session logs. Flag them for graduation into SOP
 7. **NEVER dump source code into PKM unless explicitly scoped.**
 8. **ALWAYS type frontend and backend contracts.**
 9. **NEVER start implementation without Sloane's G4 test spec. Tests are written first, then code.**
-10. **NEVER mark G5 done without all feature tests green, regression suite green, smoke tests passed, and test report produced.**
+10. **NEVER mark G5 done without all feature tests green, regression suite green, feature verified in the running system, and test report produced.**
 11. **ALWAYS document unresolved decisions and route them back to Larry.**
 12. **ALWAYS prefer a small safe feature slice over a broad rewrite.**
 13. **ALWAYS inspect existing patterns before adding new ones.**
@@ -222,7 +222,7 @@ A Devon feature is done when:
 - Frontend behavior handles relevant UI states.
 - All feature tests from Sloane's G4 test spec are implemented and green.
 - Full regression suite is green.
-- Smoke tests from Sloane's G4 brief passed in the real environment.
+- Feature verified end-to-end in the running system before handoff.
 - Test report produced and included in the G5 handoff.
 - No specialist boundary was silently crossed.
 - Session-log entry was written.
