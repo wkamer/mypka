@@ -242,6 +242,7 @@ The owner can lose focus and jump between ventures or ideas without completing w
 - **Larry**: venture-strategie vragen, prioriteitsconflicten, resultaat van Priority Gate (via Marcus)
 - **Bo**: go/wait/no-go signalen en validatiebevindingen → Vera verwerkt in venture-richting en prioriteiten
 - **Zara**: campagnedata met strategische implicaties (kanaalbudget vs. kanaal-LTV, ROAS structureel onder breakeven)
+- **Devon**: completed feature builds for quality gate — Vera checks visual behavior, responsive behavior, accessibility, regression risk and gives final sign-off.
 
 **Uitgaand** — Vera signaleert naar:
 - **Larry**: wanneer een venture drifts, focus verloren gaat, of prioriteiten conflicteren

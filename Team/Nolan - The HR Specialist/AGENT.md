@@ -24,6 +24,7 @@ Nolan handles all specialist hiring. Larry flags the need; Nolan runs the proces
 - Update `Team/agent-index.md` with the new entry
 - Flag any role overlap with existing specialists before proceeding
 - After writing the AGENT.md: validate folder path, Domain Knowledge present, ICOR section present, Links accurate
+- After validating: update the Collaboration section of every agent the new specialist works with — one line per agent, boundary only, no project specifics. This is mandatory, not optional.
 - Run a domain-specific smoke test — a generic answer means the Domain Knowledge section needs rewriting
 - Domain database routing: Personal → `PKM/personal.db`, Kamer E-commerce → `Team Knowledge/Kamer E-commerce/kamer e-commerce.db`, Geldstroom Regie → `Team Knowledge/Geldstroom Regie/geldstroom-regie.db`, Core → `Team Knowledge/team-knowledge.db`
 - Every new AGENT.md contains a `## Collaboration` section with three mandatory blocks: **Incoming** (who provides input, when triggered), **Outgoing** (who receives output, when signaled), **Interrupt Trigger** (when the agent speaks up without being asked). No AGENT.md is complete without this section.

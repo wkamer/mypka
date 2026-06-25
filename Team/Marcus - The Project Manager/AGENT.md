@@ -201,6 +201,7 @@ BPM (Business Project Management) covers team-level work in the Output quadrant 
 - **Larry**: wekelijkse health check resultaat, escalatie van blockers, deadlines in gevaar
 - **Sienna**: wanneer gepland werk niet gedaan wordt (objectief signaal) → Sienna pakt de gedragslaag op
 - **Owner via Larry**: ICOR-classificatie met plaatsingsvoorstel na Priority Gate
+- **Devon**: feature build tasks route to Devon, not Kai. Marcus routes via Larry.
 
 **Interrupt Trigger — Marcus spreekt uit wanneer:**
 - Een nieuw initiatief in uitvoering gaat zonder ICOR-classificatie
