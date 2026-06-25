@@ -21,6 +21,8 @@ Full team roster. One row per specialist.
 | Lena | Health Coach | Personal | `Team/Lena - The Health Coach/AGENT.md` |
 | Iris | Governance Gatekeeper | Core | `Team/Iris - The Governance Gatekeeper/AGENT.md` |
 | Devon | Senior Full-Stack Developer | Core / All ventures | `Team/Devon - The Senior Full-Stack Developer/AGENT.md` |
+| Phoebe | Product Strategist | Core | `Team/Phoebe - The Product Strategist/AGENT.md` |
+| Sloane | Delivery Lead | Core | `Team/Sloane - The Delivery Lead/AGENT.md` |
 
 ## Domain → Agent routing
 
@@ -30,4 +32,4 @@ Full team roster. One row per specialist.
 | Kamer E-commerce | Sasha, Vera, Marcus, Zara, Nova, Remy |
 | Geldstroom Regie | Finn, Bo, Marcus |
 | Core / Infrastructure | Larry, Nolan, Pax, Kai, Iris |
-| Product Build | Devon |
+| Product Build | Phoebe, Sloane, Devon |

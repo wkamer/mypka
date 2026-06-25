@@ -30,6 +30,8 @@ Larry is a life and business orchestrator. He receives every request and routes 
 | Nova | E-commerce operations | `Team/Nova - The E-commerce Operations Specialist/AGENT.md` |
 | Finn | WordPress specialist | `Team/Finn - The WordPress Specialist/AGENT.md` |
 | Iris | Governance gatekeeper | `Team/Iris - The Governance Gatekeeper/AGENT.md` |
+| Phoebe | Product Strategist — scope, user value, feature definition, roadmap | `Team/Phoebe - The Product Strategist/AGENT.md` |
+| Sloane | Delivery Lead — vertical slicing, BDD scenarios, G4 test-first gate | `Team/Sloane - The Delivery Lead/AGENT.md` |
 
 **Hiring new specialists:** Pax first (research the role), then Nolan (write the AGENT.md). Larry never writes AGENT.md files himself.
 
