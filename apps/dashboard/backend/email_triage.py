@@ -80,7 +80,6 @@ def _init_db() -> None:
             sender        TEXT,
             received_at   TEXT NOT NULL,
             snippet       TEXT,
-            body_text     TEXT,
             classification TEXT,
             ai_summary    TEXT,
             triage_status TEXT NOT NULL DEFAULT 'pending',
@@ -110,6 +109,48 @@ def _init_db() -> None:
 
 
 _init_db()
+
+
+def _migrate_drop_body_text() -> None:
+    """Drop body_text column from emails table if it still exists.
+
+    SQLite older than 3.35.0 does not support ALTER TABLE DROP COLUMN.
+    Uses the table-rename-recreate pattern, which works on all SQLite versions.
+    Safe to call multiple times — exits immediately when body_text is absent.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(emails)").fetchall()}
+        if "body_text" not in cols:
+            return
+        conn.executescript("""
+            BEGIN;
+            CREATE TABLE emails_new (
+                id            TEXT PRIMARY KEY,
+                thread_id     TEXT NOT NULL,
+                subject       TEXT,
+                sender        TEXT,
+                received_at   TEXT NOT NULL,
+                snippet       TEXT,
+                classification TEXT,
+                ai_summary    TEXT,
+                triage_status TEXT NOT NULL DEFAULT 'pending',
+                created_at    TEXT NOT NULL DEFAULT (datetime('now')),
+                updated_at    TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            INSERT INTO emails_new
+            SELECT id, thread_id, subject, sender, received_at, snippet,
+                   classification, ai_summary, triage_status, created_at, updated_at
+            FROM emails;
+            DROP TABLE emails;
+            ALTER TABLE emails_new RENAME TO emails;
+            COMMIT;
+        """)
+    finally:
+        conn.close()
+
+
+_migrate_drop_body_text()
 
 
 def _get_db() -> sqlite3.Connection:
@@ -164,7 +205,10 @@ def _extract_body(msg: dict) -> str:
         if mime == "text/plain":
             data = part.get("body", {}).get("data", "")
             if data:
-                return base64.urlsafe_b64decode(data + "==").decode(
+                # Gmail omits base64url padding; compute exact padding needed.
+                # (4 - n % 4) % 4 gives 0 when n is already a multiple of 4.
+                padding = (4 - len(data) % 4) % 4
+                return base64.urlsafe_b64decode(data + "=" * padding).decode(
                     "utf-8", errors="replace"
                 )
         for sub in part.get("parts", []):
@@ -250,6 +294,15 @@ def execute_archive_action(action_row: dict) -> str:
     return str(result["id"])
 
 
+# ── Response helpers ──
+
+def _email_to_dict(row: sqlite3.Row) -> dict:
+    """Convert an emails row to a dict and add the computed gmail_url field."""
+    d = dict(row)
+    d["gmail_url"] = f"https://mail.google.com/mail/u/0/#all/{d['id']}"
+    return d
+
+
 # ════════════════════════════════════════════════════════════
 # SLICE 1 — Routes: run triage, list emails
 # ════════════════════════════════════════════════════════════
@@ -323,12 +376,12 @@ def run_triage(pka_token: str = Cookie(default=None)):
             conn.execute(
                 """INSERT INTO emails
                    (id, thread_id, subject, sender, received_at, snippet,
-                    body_text, classification, ai_summary, triage_status,
+                    classification, ai_summary, triage_status,
                     created_at, updated_at)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
                     msg_id, thread_id, subject, sender, received_at,
-                    snippet, body_text, classification, ai_summary,
+                    snippet, classification, ai_summary,
                     triage_status, now, now,
                 ),
             )
@@ -374,7 +427,7 @@ def get_emails(pka_token: str = Cookie(default=None)):
                FROM emails
                ORDER BY received_at DESC"""
         ).fetchall()
-        return {"emails": [dict(r) for r in rows]}
+        return {"emails": [_email_to_dict(r) for r in rows]}
     finally:
         conn.close()
 
@@ -415,7 +468,7 @@ def patch_email(
                FROM emails WHERE id = ?""",
             (email_id,),
         ).fetchone()
-        return dict(updated)
+        return _email_to_dict(updated)
     finally:
         conn.close()
 

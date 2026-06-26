@@ -60,9 +60,9 @@ def _insert_email(
     conn.execute(
         """INSERT OR IGNORE INTO emails
            (id, thread_id, subject, sender, received_at, snippet,
-            body_text, classification, ai_summary, triage_status, created_at, updated_at)
+            classification, ai_summary, triage_status, created_at, updated_at)
            VALUES (?, 'thread1', 'Test Subject', 'test@example.com', ?,
-           'snippet', 'body', ?, 'test summary', ?, datetime('now'), datetime('now'))""",
+           'snippet', ?, 'test summary', ?, datetime('now'), datetime('now'))""",
         (email_id, received_at, classification, triage_status),
     )
     conn.commit()
@@ -143,10 +143,11 @@ def test_db_init_creates_tables():
     email_cols = {r[1] for r in conn.execute("PRAGMA table_info(emails)").fetchall()}
     for col in [
         "id", "thread_id", "subject", "sender", "received_at", "snippet",
-        "body_text", "classification", "ai_summary", "triage_status",
+        "classification", "ai_summary", "triage_status",
         "created_at", "updated_at",
     ]:
         assert col in email_cols, f"emails table missing column: {col}"
+    assert "body_text" not in email_cols, "body_text must not exist — SSOT violation"
 
     action_cols = {r[1] for r in conn.execute("PRAGMA table_info(actions)").fetchall()}
     for col in [
@@ -225,6 +226,8 @@ def test_run_triage_inserts_emails():
     by_id = {e["id"]: e for e in emails}
     assert by_id["msg1"]["classification"] == "Action"
     assert by_id["msg2"]["classification"] == "Information"
+    assert by_id["msg1"]["gmail_url"] == "https://mail.google.com/mail/u/0/#all/msg1"
+    assert by_id["msg2"]["gmail_url"] == "https://mail.google.com/mail/u/0/#all/msg2"
 
 
 def test_run_triage_skips_existing():
@@ -301,6 +304,8 @@ def test_get_emails_returns_all_ordered():
     assert len(emails) == 2
     assert emails[0]["id"] == "newer"
     assert emails[1]["id"] == "older"
+    assert emails[0]["gmail_url"] == "https://mail.google.com/mail/u/0/#all/newer"
+    assert emails[1]["gmail_url"] == "https://mail.google.com/mail/u/0/#all/older"
 
 
 # ════════════════════════════════════════════════════════════
@@ -315,7 +320,9 @@ def test_patch_email_approve():
         cookies=_auth_cookies(),
     )
     assert res.status_code == 200
-    assert res.json()["triage_status"] == "approved"
+    data = res.json()
+    assert data["triage_status"] == "approved"
+    assert data["gmail_url"] == "https://mail.google.com/mail/u/0/#all/msg1"
 
     conn = sqlite3.connect(TEST_DB_PATH)
     row = conn.execute(
