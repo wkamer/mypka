@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-25 — Email Management System delivery pipeline opgestart: G1-G4 compleet, G5 eerste build met bugs, UX-feedback verwerkt, Gmail=SSOT beslissing, feedbackloop geborgd in GL-024/SOP-018. Devon start S1 volgende sessie.
+2026-06-26 — CLAUDE.md orchestrator enforcement: Codex audit (9 gaps), Iris review (Correct, Gap 7 revised), all 9 applied and pushed. Larry's Iron Rule now has explicit domain-question prohibition and structural teeth.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
