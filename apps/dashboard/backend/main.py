@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from auth import create_token, decode_token, verify_credentials
-from email_triage import router as email_triage_router
+from email_management import router as email_management_router
 
 app = FastAPI(title="PKA Dashboard API")
 
@@ -203,4 +203,4 @@ def logout(response: Response):
     return {"ok": True}
 
 
-app.include_router(email_triage_router)
+app.include_router(email_management_router)

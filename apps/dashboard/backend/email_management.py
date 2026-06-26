@@ -1,5 +1,5 @@
 """
-email_triage.py — Email Management (Inbox Zero) backend module.
+email_management.py — Email Management (Inbox Zero) backend module.
 
 FastAPI APIRouter mounted in main.py. DB initialized on module import.
 Auth: _require_auth(pka_token) pattern identical to main.py.
@@ -30,8 +30,8 @@ from googleapiclient.discovery import build
 
 # ── Config ──
 DB_PATH = os.environ.get(
-    "EMAIL_TRIAGE_DB",
-    "/opt/myPKA/apps/dashboard/email-triage.db",
+    "EMAIL_MANAGEMENT_DB",
+    "/opt/myPKA/apps/dashboard/email-management.db",
 )
 
 TODOIST_TOKEN_PATH = (
@@ -328,7 +328,7 @@ def _email_to_dict(row: sqlite3.Row) -> dict:
 # SLICE 1 — Routes: run triage, list emails
 # ════════════════════════════════════════════════════════════
 
-@router.post("/api/email-triage/run")
+@router.post("/api/email-management/run")
 def run_triage(pka_token: str = Cookie(default=None)):
     _require_auth(pka_token)
 
@@ -437,7 +437,7 @@ def run_triage(pka_token: str = Cookie(default=None)):
     return {"processed": processed, "skipped": skipped, "errors": errors}
 
 
-@router.get("/api/email-triage/emails")
+@router.get("/api/email-management/emails")
 def get_emails(pka_token: str = Cookie(default=None)):
     _require_auth(pka_token)
     conn = _get_db()
@@ -457,7 +457,7 @@ def get_emails(pka_token: str = Cookie(default=None)):
 # SLICE 2 — Route: approve / decline email classification
 # ════════════════════════════════════════════════════════════
 
-@router.patch("/api/email-triage/emails/{email_id}")
+@router.patch("/api/email-management/emails/{email_id}")
 def patch_email(
     email_id: str,
     body: EmailStatusUpdate,
@@ -498,7 +498,7 @@ def patch_email(
 # SLICE 3 — Routes: actions per email, approve / decline action
 # ════════════════════════════════════════════════════════════
 
-@router.get("/api/email-triage/emails/{email_id}/actions")
+@router.get("/api/email-management/emails/{email_id}/actions")
 def get_actions(
     email_id: str,
     pka_token: str = Cookie(default=None),
@@ -523,7 +523,7 @@ def get_actions(
         conn.close()
 
 
-@router.patch("/api/email-triage/actions/{action_id}")
+@router.patch("/api/email-management/actions/{action_id}")
 def patch_action(
     action_id: int,
     body: ActionStatusUpdate,

@@ -1,5 +1,5 @@
 """
-test_email_triage.py — Backend tests for Email Triage feature.
+test_email_management.py — Backend tests for Email Management feature.
 
 Tests are grouped by slice:
 - Slice 1: Triage trigger and email list (8 tests)
@@ -20,9 +20,9 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 # ── Environment setup BEFORE any local imports ──
-_TEST_DB_FD, TEST_DB_PATH = tempfile.mkstemp(suffix="-test-email-triage.db")
+_TEST_DB_FD, TEST_DB_PATH = tempfile.mkstemp(suffix="-test-email-management.db")
 os.close(_TEST_DB_FD)
-os.environ["EMAIL_TRIAGE_DB"] = TEST_DB_PATH
+os.environ["EMAIL_MANAGEMENT_DB"] = TEST_DB_PATH
 
 import bcrypt as _bcrypt
 
@@ -36,11 +36,11 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 import auth
-import email_triage
+import email_management
 
-# Build test app with email triage router
+# Build test app with email management router
 _test_app = FastAPI()
-_test_app.include_router(email_triage.router)
+_test_app.include_router(email_management.router)
 client = TestClient(_test_app, raise_server_exceptions=False)
 
 
@@ -131,7 +131,7 @@ def clean_db():
 # ════════════════════════════════════════════════════════════
 
 def test_db_init_creates_tables():
-    """After import, email-triage.db contains emails and actions tables with all columns."""
+    """After import, email-management.db contains emails and actions tables with all columns."""
     conn = sqlite3.connect(TEST_DB_PATH)
     tables = {r[0] for r in conn.execute(
         "SELECT name FROM sqlite_master WHERE type='table'"
@@ -161,12 +161,12 @@ def test_db_init_creates_tables():
 
 
 def test_run_triage_requires_auth():
-    res = client.post("/api/email-triage/run")
+    res = client.post("/api/email-management/run")
     assert res.status_code == 401
 
 
 def test_get_emails_requires_auth():
-    res = client.get("/api/email-triage/emails")
+    res = client.get("/api/email-management/emails")
     assert res.status_code == 401
 
 
@@ -177,14 +177,14 @@ def test_run_triage_empty_inbox():
         "messages": []
     }
 
-    with patch("email_triage.build", return_value=mock_svc), \
-         patch("email_triage.get_credentials", return_value=MagicMock()):
-        res = client.post("/api/email-triage/run", cookies=_auth_cookies())
+    with patch("email_management.build", return_value=mock_svc), \
+         patch("email_management.get_credentials", return_value=MagicMock()):
+        res = client.post("/api/email-management/run", cookies=_auth_cookies())
 
     assert res.status_code == 200
     assert res.json() == {"processed": 0, "skipped": 0, "errors": 0}
 
-    list_res = client.get("/api/email-triage/emails", cookies=_auth_cookies())
+    list_res = client.get("/api/email-management/emails", cookies=_auth_cookies())
     assert list_res.json()["emails"] == []
 
 
@@ -208,10 +208,10 @@ def test_run_triage_inserts_emails():
         _make_ai_result("Information"),
     ]
 
-    with patch("email_triage.build", return_value=mock_svc), \
-         patch("email_triage.get_credentials", return_value=MagicMock()), \
-         patch("email_triage.subprocess.run", side_effect=ai_side_effects):
-        res = client.post("/api/email-triage/run", cookies=_auth_cookies())
+    with patch("email_management.build", return_value=mock_svc), \
+         patch("email_management.get_credentials", return_value=MagicMock()), \
+         patch("email_management.subprocess.run", side_effect=ai_side_effects):
+        res = client.post("/api/email-management/run", cookies=_auth_cookies())
 
     assert res.status_code == 200
     data = res.json()
@@ -219,7 +219,7 @@ def test_run_triage_inserts_emails():
     assert data["skipped"] == 0
     assert data["errors"] == 0
 
-    list_res = client.get("/api/email-triage/emails", cookies=_auth_cookies())
+    list_res = client.get("/api/email-management/emails", cookies=_auth_cookies())
     emails = list_res.json()["emails"]
     assert len(emails) == 2
 
@@ -240,9 +240,9 @@ def test_run_triage_skips_existing():
         "messages": [{"id": "msg1"}, {"id": "msg2"}]
     }
 
-    with patch("email_triage.build", return_value=mock_svc), \
-         patch("email_triage.get_credentials", return_value=MagicMock()):
-        res = client.post("/api/email-triage/run", cookies=_auth_cookies())
+    with patch("email_management.build", return_value=mock_svc), \
+         patch("email_management.get_credentials", return_value=MagicMock()):
+        res = client.post("/api/email-management/run", cookies=_auth_cookies())
 
     assert res.status_code == 200
     data = res.json()
@@ -250,7 +250,7 @@ def test_run_triage_skips_existing():
     assert data["skipped"] == 2
     assert data["errors"] == 0
 
-    list_res = client.get("/api/email-triage/emails", cookies=_auth_cookies())
+    list_res = client.get("/api/email-management/emails", cookies=_auth_cookies())
     assert len(list_res.json()["emails"]) == 2
 
 
@@ -274,17 +274,17 @@ def test_run_triage_ai_failure_stored_as_error():
             return m
         return _make_ai_result("Information")
 
-    with patch("email_triage.build", return_value=mock_svc), \
-         patch("email_triage.get_credentials", return_value=MagicMock()), \
-         patch("email_triage.subprocess.run", side_effect=ai_side_effect):
-        res = client.post("/api/email-triage/run", cookies=_auth_cookies())
+    with patch("email_management.build", return_value=mock_svc), \
+         patch("email_management.get_credentials", return_value=MagicMock()), \
+         patch("email_management.subprocess.run", side_effect=ai_side_effect):
+        res = client.post("/api/email-management/run", cookies=_auth_cookies())
 
     assert res.status_code == 200
     data = res.json()
     assert data["errors"] == 1
     assert data["processed"] == 1
 
-    list_res = client.get("/api/email-triage/emails", cookies=_auth_cookies())
+    list_res = client.get("/api/email-management/emails", cookies=_auth_cookies())
     emails = list_res.json()["emails"]
     assert len(emails) == 2
 
@@ -294,11 +294,11 @@ def test_run_triage_ai_failure_stored_as_error():
 
 
 def test_get_emails_returns_all_ordered():
-    """GET /api/email-triage/emails returns all rows ordered by received_at DESC."""
+    """GET /api/email-management/emails returns all rows ordered by received_at DESC."""
     _insert_email("older", received_at="2026-06-24T10:00:00+00:00")
     _insert_email("newer", received_at="2026-06-25T10:00:00+00:00")
 
-    res = client.get("/api/email-triage/emails", cookies=_auth_cookies())
+    res = client.get("/api/email-management/emails", cookies=_auth_cookies())
     assert res.status_code == 200
     emails = res.json()["emails"]
     assert len(emails) == 2
@@ -315,7 +315,7 @@ def test_get_emails_returns_all_ordered():
 def test_patch_email_approve():
     _insert_email("msg1")
     res = client.patch(
-        "/api/email-triage/emails/msg1",
+        "/api/email-management/emails/msg1",
         json={"triage_status": "approved"},
         cookies=_auth_cookies(),
     )
@@ -336,7 +336,7 @@ def test_patch_email_approve():
 def test_patch_email_decline():
     _insert_email("msg1")
     res = client.patch(
-        "/api/email-triage/emails/msg1",
+        "/api/email-management/emails/msg1",
         json={"triage_status": "declined"},
         cookies=_auth_cookies(),
     )
@@ -346,7 +346,7 @@ def test_patch_email_decline():
 
 def test_patch_email_not_found():
     res = client.patch(
-        "/api/email-triage/emails/nonexistent",
+        "/api/email-management/emails/nonexistent",
         json={"triage_status": "approved"},
         cookies=_auth_cookies(),
     )
@@ -356,7 +356,7 @@ def test_patch_email_not_found():
 def test_patch_email_invalid_status():
     _insert_email("msg1")
     res = client.patch(
-        "/api/email-triage/emails/msg1",
+        "/api/email-management/emails/msg1",
         json={"triage_status": "banana"},
         cookies=_auth_cookies(),
     )
@@ -366,7 +366,7 @@ def test_patch_email_invalid_status():
 def test_patch_email_requires_auth():
     _insert_email("msg1")
     res = client.patch(
-        "/api/email-triage/emails/msg1",
+        "/api/email-management/emails/msg1",
         json={"triage_status": "approved"},
     )
     assert res.status_code == 401
@@ -381,7 +381,7 @@ def test_get_actions_for_email():
     _insert_action("msg1", "todoist")
     _insert_action("msg1", "calendar")
 
-    res = client.get("/api/email-triage/emails/msg1/actions", cookies=_auth_cookies())
+    res = client.get("/api/email-management/emails/msg1/actions", cookies=_auth_cookies())
     assert res.status_code == 200
     actions = res.json()["actions"]
     assert len(actions) == 2
@@ -390,18 +390,18 @@ def test_get_actions_for_email():
 def test_get_actions_empty_for_information_email():
     _insert_email("msg1", classification="Information")
 
-    res = client.get("/api/email-triage/emails/msg1/actions", cookies=_auth_cookies())
+    res = client.get("/api/email-management/emails/msg1/actions", cookies=_auth_cookies())
     assert res.status_code == 200
     assert res.json()["actions"] == []
 
 
 def test_get_actions_not_found():
-    res = client.get("/api/email-triage/emails/nonexistent/actions", cookies=_auth_cookies())
+    res = client.get("/api/email-management/emails/nonexistent/actions", cookies=_auth_cookies())
     assert res.status_code == 404
 
 
 def test_get_actions_requires_auth():
-    res = client.get("/api/email-triage/emails/msg1/actions")
+    res = client.get("/api/email-management/emails/msg1/actions")
     assert res.status_code == 401
 
 
@@ -409,9 +409,9 @@ def test_patch_action_decline():
     _insert_email("msg1")
     action_id = _insert_action("msg1", "todoist")
 
-    with patch("email_triage.execute_todoist_action") as mock_exec:
+    with patch("email_management.execute_todoist_action") as mock_exec:
         res = client.patch(
-            f"/api/email-triage/actions/{action_id}",
+            f"/api/email-management/actions/{action_id}",
             json={"status": "declined"},
             cookies=_auth_cookies(),
         )
@@ -425,9 +425,9 @@ def test_patch_action_approve_todoist():
     _insert_email("msg1")
     action_id = _insert_action("msg1", "todoist")
 
-    with patch("email_triage.execute_todoist_action", return_value="todoist-task-123"):
+    with patch("email_management.execute_todoist_action", return_value="todoist-task-123"):
         res = client.patch(
-            f"/api/email-triage/actions/{action_id}",
+            f"/api/email-management/actions/{action_id}",
             json={"status": "approved"},
             cookies=_auth_cookies(),
         )
@@ -443,9 +443,9 @@ def test_patch_action_approve_calendar():
     _insert_email("msg1")
     action_id = _insert_action("msg1", "calendar")
 
-    with patch("email_triage.execute_calendar_action", return_value="cal-event-456"):
+    with patch("email_management.execute_calendar_action", return_value="cal-event-456"):
         res = client.patch(
-            f"/api/email-triage/actions/{action_id}",
+            f"/api/email-management/actions/{action_id}",
             json={"status": "approved"},
             cookies=_auth_cookies(),
         )
@@ -460,9 +460,9 @@ def test_patch_action_approve_archive():
     _insert_email("msg1")
     action_id = _insert_action("msg1", "archive")
 
-    with patch("email_triage.execute_archive_action", return_value="msg1") as mock_archive:
+    with patch("email_management.execute_archive_action", return_value="msg1") as mock_archive:
         res = client.patch(
-            f"/api/email-triage/actions/{action_id}",
+            f"/api/email-management/actions/{action_id}",
             json={"status": "approved"},
             cookies=_auth_cookies(),
         )
@@ -478,9 +478,9 @@ def test_patch_action_execution_fails():
     _insert_email("msg1")
     action_id = _insert_action("msg1", "todoist")
 
-    with patch("email_triage.execute_todoist_action", side_effect=Exception("Todoist unavailable")):
+    with patch("email_management.execute_todoist_action", side_effect=Exception("Todoist unavailable")):
         res = client.patch(
-            f"/api/email-triage/actions/{action_id}",
+            f"/api/email-management/actions/{action_id}",
             json={"status": "approved"},
             cookies=_auth_cookies(),
         )
@@ -491,7 +491,7 @@ def test_patch_action_execution_fails():
 
 def test_patch_action_not_found():
     res = client.patch(
-        "/api/email-triage/actions/99999",
+        "/api/email-management/actions/99999",
         json={"status": "declined"},
         cookies=_auth_cookies(),
     )
@@ -503,7 +503,7 @@ def test_patch_action_invalid_status():
     action_id = _insert_action("msg1", "todoist")
 
     res = client.patch(
-        f"/api/email-triage/actions/{action_id}",
+        f"/api/email-management/actions/{action_id}",
         json={"status": "banana"},
         cookies=_auth_cookies(),
     )
@@ -515,7 +515,7 @@ def test_patch_action_requires_auth():
     action_id = _insert_action("msg1", "todoist")
 
     res = client.patch(
-        f"/api/email-triage/actions/{action_id}",
+        f"/api/email-management/actions/{action_id}",
         json={"status": "declined"},
     )
     assert res.status_code == 401
@@ -590,6 +590,6 @@ def test_regression_topics():
 
 
 def test_regression_new_routes_exist():
-    """New email-triage routes are accessible on the main app."""
-    res = _regression_client.get("/api/email-triage/emails", cookies=_regression_auth_cookie())
+    """New email-management routes are accessible on the main app."""
+    res = _regression_client.get("/api/email-management/emails", cookies=_regression_auth_cookie())
     assert res.status_code == 200

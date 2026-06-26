@@ -191,7 +191,7 @@ function ActionRow({ action, onStatusChange }) {
     setLoading(true);
     try {
       const updated = await api.patch(
-        `/api/email-triage/actions/${action.id}`,
+        `/api/email-management/actions/${action.id}`,
         { status: newStatus }
       );
       onStatusChange(updated);
@@ -253,7 +253,7 @@ export default function EmailTriage() {
 
   const loadEmails = useCallback(() => {
     return api
-      .get("/api/email-triage/emails")
+      .get("/api/email-management/emails")
       .then((d) => setEmails(d.emails))
       .catch((e) => setError(e.message));
   }, []);
@@ -267,7 +267,7 @@ export default function EmailTriage() {
     setRunResult(null);
     setError(null);
     try {
-      const result = await api.post("/api/email-triage/run", {});
+      const result = await api.post("/api/email-management/run", {});
       setRunResult(result);
       await loadEmails();
     } catch (e) {

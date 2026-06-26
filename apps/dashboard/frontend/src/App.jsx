@@ -74,7 +74,7 @@ function AuthGate() {
         element={user ? <TopicDetail /> : <Navigate to="/login" replace />}
       />
       <Route
-        path="/email-triage"
+        path="/email-management"
         element={user ? <EmailTriage /> : <Navigate to="/login" replace />}
       />
       <Route
