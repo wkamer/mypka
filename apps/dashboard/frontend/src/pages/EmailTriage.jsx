@@ -78,6 +78,80 @@ function ActionStatusBadge({ value, externalId }) {
   );
 }
 
+// ── Sender parsing ──
+
+function parseSenderName(sender) {
+  if (!sender) return "";
+  // "Display Name <addr@domain>" — extract display name
+  const match = sender.match(/^([^<]+?)\s*</);
+  if (match) {
+    const name = match[1].trim().replace(/^["']|["']$/g, "");
+    if (name) return name;
+  }
+  // fallback: return raw sender string (plain address or unknown format)
+  return sender;
+}
+
+// ── Inbox row (S2) ──
+
+function InboxRow({ email }) {
+  const senderName = parseSenderName(email.sender);
+
+  const receivedAt = email.received_at
+    ? new Date(email.received_at).toLocaleString("nl-NL", {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "";
+
+  return (
+    <div className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 transition-colors">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5">
+          <span className="text-slate-200 text-sm font-medium truncate">
+            {senderName}
+          </span>
+          {email.gmail_url && (
+            <a
+              href={email.gmail_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
+              aria-label="Open in Gmail"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+            </a>
+          )}
+        </div>
+        <div className="flex items-baseline justify-between gap-4 mt-0.5">
+          <p className="text-slate-400 text-xs truncate">
+            {email.subject || "(no subject)"}
+          </p>
+          <span className="text-slate-600 text-xs shrink-0 whitespace-nowrap">
+            {receivedAt}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Action row ──
 
 function ActionRow({ action, onStatusChange }) {
@@ -343,13 +417,9 @@ export default function EmailTriage() {
         )}
 
         {emails && emails.length > 0 && (
-          <div className="space-y-3">
+          <div className="bg-slate-800 rounded-lg overflow-hidden divide-y divide-slate-700">
             {emails.map((email) => (
-              <EmailRow
-                key={email.id}
-                email={email}
-                onTriageStatusChange={handleEmailStatusChange}
-              />
+              <InboxRow key={email.id} email={email} />
             ))}
           </div>
         )}
