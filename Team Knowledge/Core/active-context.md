@@ -17,10 +17,9 @@
 - Tricolarae: S3 MODEL — wacht op Meta product-test data
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
-- Email triage S1: Devon fix bestaande backend (DB migratie + Gmail fetch) — wacht op owner akkoord
-- Email triage S2: Frontend twee-regels inbox-weergave — na S1 akkoord
-- Email triage S3: Accordion triage-info + action buttons — na S2 akkoord
-- Kai: email-triage.db toevoegen aan backup script voor go-live
+- Email triage S1/S2/S3: done — backend fixed, inbox list live, accordion live (commits 732a8b0, 2e6cac8, b850ad6)
+- Email triage accessibility findings (S3): parked in EmailTriage.jsx TODO block
+- Kai: email-triage.db toevoegen aan backup script — go-live blocker
 
 ## Active goals
 - G-Scheiding volledig afgerond

@@ -1,6 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { api } from "../api/client";
 
+// ── Parked (S3 review — defer to later) ──
+// MEDIUM: InboxRow clickable div needs role="button", tabIndex={0}, onKeyDown for keyboard nav
+// MEDIUM: No focus-visible ring on InboxRow — keyboard users cannot see focus
+// LOW:    Chevron SVG needs aria-hidden="true"
+
 // ── Badge helpers ──
 
 function ClassificationBadge({ value }) {
