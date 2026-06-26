@@ -92,9 +92,9 @@ function parseSenderName(sender) {
   return sender;
 }
 
-// ── Inbox row (S2) ──
+// ── Inbox row (S3: accordion) ──
 
-function InboxRow({ email }) {
+function InboxRow({ email, isOpen, onToggle }) {
   const senderName = parseSenderName(email.sender);
 
   const receivedAt = email.received_at
@@ -107,47 +107,72 @@ function InboxRow({ email }) {
     : "";
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 transition-colors">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5">
-          <span className="text-slate-200 text-sm font-medium truncate">
-            {senderName}
-          </span>
-          {email.gmail_url && (
-            <a
-              href={email.gmail_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
-              aria-label="Open in Gmail"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+    <div>
+      <div
+        className="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer select-none"
+        onClick={() => onToggle(email.id)}
+      >
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="text-slate-200 text-sm font-medium truncate">
+              {senderName}
+            </span>
+            {email.gmail_url && (
+              <a
+                href={email.gmail_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
+                aria-label="Open in Gmail"
+                onClick={(e) => e.stopPropagation()}
               >
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                <polyline points="15 3 21 3 21 9" />
-                <line x1="10" y1="14" x2="21" y2="3" />
-              </svg>
-            </a>
-          )}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
+            )}
+          </div>
+          <div className="flex items-baseline justify-between gap-4 mt-0.5">
+            <p className="text-slate-400 text-xs truncate">
+              {email.subject || "(no subject)"}
+            </p>
+            <span className="text-slate-600 text-xs shrink-0 whitespace-nowrap">
+              {receivedAt}
+            </span>
+          </div>
         </div>
-        <div className="flex items-baseline justify-between gap-4 mt-0.5">
-          <p className="text-slate-400 text-xs truncate">
-            {email.subject || "(no subject)"}
-          </p>
-          <span className="text-slate-600 text-xs shrink-0 whitespace-nowrap">
-            {receivedAt}
-          </span>
-        </div>
+        <svg
+          className={`shrink-0 text-slate-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
       </div>
+      {isOpen && (
+        <div className="mx-4 mb-3 border border-slate-700 rounded bg-slate-900 px-4 py-3">
+          {/* AC-10: detail panel — intentionally empty for MVP */}
+        </div>
+      )}
     </div>
   );
 }
@@ -207,127 +232,6 @@ function ActionRow({ action, onStatusChange }) {
   );
 }
 
-// ── Email row ──
-
-function EmailRow({ email, onTriageStatusChange }) {
-  const [actions, setActions] = useState(null);
-  const [actionsLoading, setActionsLoading] = useState(false);
-  const [actionError, setActionError] = useState(null);
-  const [triageLoading, setTriageLoading] = useState(false);
-
-  const showActions =
-    email.triage_status === "approved" && email.classification === "Action";
-
-  useEffect(() => {
-    if (!showActions) return;
-    setActionsLoading(true);
-    api
-      .get(`/api/email-triage/emails/${email.id}/actions`)
-      .then((d) => setActions(d.actions))
-      .catch((e) => setActionError(e.message))
-      .finally(() => setActionsLoading(false));
-  }, [showActions, email.id]);
-
-  const handleTriage = async (newStatus) => {
-    setTriageLoading(true);
-    try {
-      const updated = await api.patch(`/api/email-triage/emails/${email.id}`, {
-        triage_status: newStatus,
-      });
-      onTriageStatusChange(updated);
-    } catch (e) {
-      console.error("Triage update failed:", e);
-    } finally {
-      setTriageLoading(false);
-    }
-  };
-
-  const handleActionUpdate = (updated) => {
-    setActions((prev) =>
-      prev ? prev.map((a) => (a.id === updated.id ? updated : a)) : prev
-    );
-  };
-
-  const receivedDate = email.received_at
-    ? new Date(email.received_at).toLocaleDateString("nl-NL", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })
-    : "";
-
-  return (
-    <div className="bg-slate-800 rounded-lg overflow-hidden">
-      <div className="px-4 py-3">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <p className="text-slate-100 font-medium text-sm truncate">
-              {email.subject || "(no subject)"}
-            </p>
-            <p className="text-slate-400 text-xs mt-0.5 truncate">{email.sender}</p>
-            {email.ai_summary && (
-              <p className="text-slate-400 text-xs mt-1 line-clamp-2">
-                {email.ai_summary}
-              </p>
-            )}
-          </div>
-          <div className="flex flex-col items-end gap-1 shrink-0">
-            <span className="text-slate-600 text-xs">{receivedDate}</span>
-            <div className="flex gap-1 flex-wrap justify-end">
-              <ClassificationBadge value={email.classification} />
-              <TriageStatusBadge value={email.triage_status} />
-            </div>
-          </div>
-        </div>
-
-        {email.triage_status === "pending" && (
-          <div className="flex gap-2 mt-3">
-            <button
-              onClick={() => handleTriage("approved")}
-              disabled={triageLoading}
-              className="px-3 py-1 text-xs rounded bg-green-800 hover:bg-green-700 text-green-200 disabled:opacity-50 transition-colors"
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => handleTriage("declined")}
-              disabled={triageLoading}
-              className="px-3 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600 text-slate-300 disabled:opacity-50 transition-colors"
-            >
-              Decline
-            </button>
-          </div>
-        )}
-      </div>
-
-      {showActions && (
-        <div className="border-t border-slate-700 px-4 py-3 space-y-2">
-          <p className="text-slate-500 text-xs uppercase tracking-wide font-medium">
-            Actions
-          </p>
-          {actionsLoading && (
-            <p className="text-slate-600 text-xs">Loading actions...</p>
-          )}
-          {actionError && (
-            <p className="text-red-400 text-xs">{actionError}</p>
-          )}
-          {actions &&
-            actions.map((action) => (
-              <ActionRow
-                key={action.id}
-                action={action}
-                onStatusChange={handleActionUpdate}
-              />
-            ))}
-          {actions && actions.length === 0 && (
-            <p className="text-slate-600 text-xs">No actions extracted.</p>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ── Main page ──
 
 export default function EmailTriage() {
@@ -336,6 +240,11 @@ export default function EmailTriage() {
   const [runLoading, setRunLoading] = useState(false);
   const [error, setError] = useState(null);
   const [runResult, setRunResult] = useState(null);
+  const [openEmailId, setOpenEmailId] = useState(null);
+
+  const handleToggle = useCallback((id) => {
+    setOpenEmailId((prev) => (prev === id ? null : id));
+  }, []);
 
   const loadEmails = useCallback(() => {
     return api
@@ -419,7 +328,12 @@ export default function EmailTriage() {
         {emails && emails.length > 0 && (
           <div className="bg-slate-800 rounded-lg overflow-hidden divide-y divide-slate-700">
             {emails.map((email) => (
-              <InboxRow key={email.id} email={email} />
+              <InboxRow
+                key={email.id}
+                email={email}
+                isOpen={openEmailId === email.id}
+                onToggle={handleToggle}
+              />
             ))}
           </div>
         )}
