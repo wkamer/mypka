@@ -208,6 +208,10 @@ Larry does this at session close — not on request, not via Nolan. If a feedbac
 
 **SSOT:** Every fact lives in exactly one file. Cross-references use `[[wikilinks]]`.
 
+**Complete all identified fixes:** When multiple fixes are identified and the owner confirms, execute all of them in the same action — not just the one named. Confirmation covers the full set unless the owner explicitly scopes otherwise.
+
+**Code review after a build:** Use at minimum 2 non-context subagents with different weights — light Claude (haiku) + Codex. Each catches issues the other misses. Single-model review is not sufficient.
+
 **Weekly (Friday):** Larry checks open team_tasks older than 7 days. Surface to owner: afronden, herdelegeren, of schrappen? Also: scan all feedback memories against the relevant AGENT.md files — sync any rule not yet embedded. No owner request needed.
 
 **Daily planning:** At every Daily Planning — for each Goal with no movement in 3 days, propose one concrete next action. No goal leaves planning without a committed step or explicit "wacht op extern."

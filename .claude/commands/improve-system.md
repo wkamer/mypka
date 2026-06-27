@@ -62,11 +62,11 @@ Paths:
 - `/opt/myPKA/Team Knowledge/Core/Guidelines/`
 
 Check active files (not in Archive/) for:
-- References to archived system files: SOP-007, SOP-016, SOP-017, SOP-019, GL-013, GL-015, GL-016, GL-017, GL-018, GL-019, GL-022
+- References to archived system files: SOP-007, SOP-016, SOP-019, GL-013, GL-015, GL-016, GL-017, GL-018, GL-019, GL-022
 - References to `/opt/mypka-memory/venv/bin/python` (the venv is gone)
 
 ```bash
-grep -rn "mypka-memory\|SOP-007\|SOP-016\|SOP-017\|SOP-019\|GL-013\|GL-015\|GL-016\|GL-017\|GL-018\|GL-019\|GL-022" \
+grep -rn "mypka-memory\|SOP-007\|SOP-016\|SOP-019\|GL-013\|GL-015\|GL-016\|GL-017\|GL-018\|GL-019\|GL-022" \
     "/opt/myPKA/Team Knowledge/Core/SOPs/" \
     "/opt/myPKA/Team Knowledge/Core/Guidelines/" \
     2>/dev/null | grep -v "/Archive/"
