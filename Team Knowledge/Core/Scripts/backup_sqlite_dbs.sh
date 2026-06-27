@@ -40,6 +40,7 @@ databases = [
     ("/opt/myPKA/Team Knowledge/team-knowledge.db",                                   "team-knowledge.db"),
     ("/opt/myPKA/Team Knowledge/Kamer E-commerce/kamer e-commerce.db",                "kamer-ecommerce.db"),
     ("/opt/myPKA/Team Knowledge/Geldstroom Regie/geldstroom-regie.db",                "geldstroom-regie.db"),
+    ("/opt/myPKA/apps/dashboard/email-management.db",                                   "email-management.db"),
 ]
 
 def log(msg):

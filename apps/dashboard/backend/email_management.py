@@ -48,7 +48,7 @@ Required JSON schema:
   "summary": "one sentence plain-text summary of the email",
   "actions": [
     {
-      "type": "todoist or calendar or archive",
+      "type": "Task or Event or archive",
       "description": "human-readable description of the action",
       "suggested_title": "string for Todoist task or Calendar event title",
       "due_date": "YYYY-MM-DD or null",
@@ -62,7 +62,7 @@ Rules:
 - classification is exactly "Information" or "Action" (capital first letter)
 - For "Information" emails: actions must be an empty array []
 - For "Action" emails: include one or more relevant actions
-- Action type is exactly one of: todoist, calendar, archive
+- Action type is exactly one of: Task, Event, archive
 - Respond with JSON only — no prose, no markdown fences
 """
 
@@ -70,8 +70,6 @@ router = APIRouter()
 
 
 # ── Known issues deferred to S2 ──────────────────────────────────────────────
-# TODO MEDIUM: inconsistent response schema between get_emails (no updated_at)
-#              and patch_email (has updated_at).
 # TODO MEDIUM: _extract_body() is called before the per-message try block —
 #              malformed base64 raises outside error handling.
 # TODO MEDIUM: indexes/triggers on the emails table are not recreated after
@@ -187,12 +185,20 @@ def _require_auth(pka_token: str | None) -> None:
 
 # ── Pydantic models ──
 
-class EmailStatusUpdate(BaseModel):
-    triage_status: str
-
-
 class ActionStatusUpdate(BaseModel):
     status: str
+    name: str | None = None
+    event_datetime: str | None = None
+
+
+class ActionCreate(BaseModel):
+    type: str
+    name: str | None = None
+    event_datetime: str | None = None
+
+
+class DisposeRequest(BaseModel):
+    action: str
 
 
 # ── AI triage ──
@@ -315,6 +321,19 @@ def execute_archive_action(action_row: dict) -> str:
     return str(result["id"])
 
 
+def execute_delete_action(email_id: str) -> str:
+    """Move Gmail message to Trash. Returns message ID. Raises on failure."""
+    creds = get_credentials()
+    service = build("gmail", "v1", credentials=creds)
+    result = (
+        service.users()
+        .messages()
+        .trash(userId="me", id=email_id)
+        .execute()
+    )
+    return str(result["id"])
+
+
 # ── Response helpers ──
 
 def _email_to_dict(row: sqlite3.Row) -> dict:
@@ -322,6 +341,21 @@ def _email_to_dict(row: sqlite3.Row) -> dict:
     d = dict(row)
     d["gmail_url"] = f"https://mail.google.com/mail/u/0/#all/{d['id']}"
     return d
+
+
+def _action_to_dict(row) -> dict:
+    """Map an actions DB row to the API response shape."""
+    d = dict(row)
+    return {
+        "id": d["id"],
+        "email_id": d["email_id"],
+        "type": d["action_type"],
+        "name": d["suggested_title"],
+        "event_datetime": d["calendar_start"],
+        "status": d["status"],
+        "external_id": d.get("external_id"),
+        "executed_at": d.get("executed_at"),
+    }
 
 
 # ════════════════════════════════════════════════════════════
@@ -442,54 +476,39 @@ def get_emails(pka_token: str = Cookie(default=None)):
     _require_auth(pka_token)
     conn = _get_db()
     try:
-        rows = conn.execute(
-            """SELECT id, subject, sender, received_at, snippet, ai_summary,
-               classification, triage_status
+        email_rows = conn.execute(
+            """SELECT id, thread_id, subject, sender, received_at, snippet,
+               ai_summary, classification, triage_status
                FROM emails
                ORDER BY received_at DESC"""
         ).fetchall()
-        return {"emails": [_email_to_dict(r) for r in rows]}
-    finally:
-        conn.close()
 
+        if not email_rows:
+            return {"emails": []}
 
-# ════════════════════════════════════════════════════════════
-# SLICE 2 — Route: approve / decline email classification
-# ════════════════════════════════════════════════════════════
+        # Build email dicts and collect ids for actions lookup
+        emails = [_email_to_dict(r) for r in email_rows]
+        email_ids = [e["id"] for e in emails]
 
-@router.patch("/api/email-management/emails/{email_id}")
-def patch_email(
-    email_id: str,
-    body: EmailStatusUpdate,
-    pka_token: str = Cookie(default=None),
-):
-    _require_auth(pka_token)
+        # Fetch all actions for these emails in one query
+        placeholders = ",".join("?" * len(email_ids))
+        action_rows = conn.execute(
+            f"""SELECT id, email_id, action_type, suggested_title,
+                calendar_start, status, external_id, executed_at
+                FROM actions WHERE email_id IN ({placeholders})""",
+            email_ids,
+        ).fetchall()
 
-    if body.triage_status not in ("approved", "declined"):
-        raise HTTPException(status_code=422, detail="Invalid triage_status value")
+        # Group actions by email_id
+        actions_by_email: dict = {e["id"]: [] for e in emails}
+        for a in action_rows:
+            actions_by_email[a["email_id"]].append(_action_to_dict(a))
 
-    conn = _get_db()
-    try:
-        row = conn.execute(
-            "SELECT id FROM emails WHERE id = ?", (email_id,)
-        ).fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail="Email not found")
+        # Attach actions array to each email
+        for email in emails:
+            email["actions"] = actions_by_email[email["id"]]
 
-        now = datetime.now(timezone.utc).isoformat()
-        conn.execute(
-            "UPDATE emails SET triage_status = ?, updated_at = ? WHERE id = ?",
-            (body.triage_status, now, email_id),
-        )
-        conn.commit()
-
-        updated = conn.execute(
-            """SELECT id, subject, sender, received_at, snippet, ai_summary,
-               classification, triage_status, updated_at
-               FROM emails WHERE id = ?""",
-            (email_id,),
-        ).fetchone()
-        return _email_to_dict(updated)
+        return {"emails": emails}
     finally:
         conn.close()
 
@@ -513,12 +532,49 @@ def get_actions(
             raise HTTPException(status_code=404, detail="Email not found")
 
         rows = conn.execute(
-            """SELECT id, email_id, action_type, description, suggested_title,
-               due_date, calendar_start, calendar_end, status, external_id, executed_at
+            """SELECT id, email_id, action_type, suggested_title,
+               calendar_start, status, external_id, executed_at
                FROM actions WHERE email_id = ?""",
             (email_id,),
         ).fetchall()
-        return {"actions": [dict(r) for r in rows]}
+        return {"actions": [_action_to_dict(r) for r in rows]}
+    finally:
+        conn.close()
+
+
+@router.post("/api/email-management/emails/{email_id}/actions")
+def create_action(
+    email_id: str,
+    body: ActionCreate,
+    pka_token: str = Cookie(default=None),
+):
+    _require_auth(pka_token)
+    conn = _get_db()
+    try:
+        email = conn.execute(
+            "SELECT id FROM emails WHERE id = ?", (email_id,)
+        ).fetchone()
+        if not email:
+            raise HTTPException(status_code=404, detail="Email not found")
+
+        now = datetime.now(timezone.utc).isoformat()
+        cursor = conn.execute(
+            """INSERT INTO actions
+               (email_id, action_type, description, suggested_title,
+                due_date, calendar_start, calendar_end, status,
+                created_at, updated_at)
+               VALUES (?, ?, NULL, ?, NULL, ?, NULL, 'pending', ?, ?)""",
+            (email_id, body.type, body.name, body.event_datetime, now, now),
+        )
+        conn.commit()
+
+        inserted = conn.execute(
+            """SELECT id, email_id, action_type, suggested_title,
+               calendar_start, status, external_id, executed_at
+               FROM actions WHERE id = ?""",
+            (cursor.lastrowid,),
+        ).fetchone()
+        return _action_to_dict(inserted)
     finally:
         conn.close()
 
@@ -552,39 +608,97 @@ def patch_action(
             )
             conn.commit()
         else:
-            # approved — attempt execution
+            # approved — apply owner-supplied overrides, then execute
+            effective_row = dict(row_dict)
+            effective_row["suggested_title"] = (
+                body.name if body.name is not None else row_dict["suggested_title"]
+            )
+            effective_row["calendar_start"] = (
+                body.event_datetime if body.event_datetime is not None
+                else row_dict["calendar_start"]
+            )
+
             action_type = row_dict["action_type"]
             try:
-                if action_type == "todoist":
-                    external_id = execute_todoist_action(row_dict)
-                elif action_type == "calendar":
-                    external_id = execute_calendar_action(row_dict)
-                elif action_type == "archive":
-                    external_id = execute_archive_action(row_dict)
+                if action_type == "Task":
+                    external_id = execute_todoist_action(effective_row)
+                elif action_type == "Event":
+                    external_id = execute_calendar_action(effective_row)
                 else:
                     external_id = None
-
-                conn.execute(
-                    """UPDATE actions
-                       SET status = 'executed', external_id = ?,
-                           executed_at = ?, updated_at = ?
-                       WHERE id = ?""",
-                    (external_id, now, now, action_id),
-                )
-                conn.commit()
             except Exception:
-                conn.execute(
-                    "UPDATE actions SET status = 'failed', updated_at = ? WHERE id = ?",
-                    (now, action_id),
+                raise HTTPException(
+                    status_code=502, detail="External execution failed"
                 )
-                conn.commit()
+
+            conn.execute(
+                """UPDATE actions
+                   SET status = 'approved', external_id = ?,
+                       executed_at = ?, updated_at = ?
+                   WHERE id = ?""",
+                (external_id, now, now, action_id),
+            )
+            conn.commit()
 
         updated = conn.execute(
-            """SELECT id, email_id, action_type, description, suggested_title,
-               due_date, calendar_start, calendar_end, status, external_id, executed_at
+            """SELECT id, email_id, action_type, suggested_title,
+               calendar_start, status, external_id, executed_at
                FROM actions WHERE id = ?""",
             (action_id,),
         ).fetchone()
-        return dict(updated)
+        return _action_to_dict(updated)
+    finally:
+        conn.close()
+
+
+@router.post("/api/email-management/emails/{email_id}/dispose")
+def dispose_email(
+    email_id: str,
+    body: DisposeRequest,
+    pka_token: str = Cookie(default=None),
+):
+    _require_auth(pka_token)
+
+    if body.action not in ("archive", "delete"):
+        raise HTTPException(status_code=422, detail="Invalid action value")
+
+    conn = _get_db()
+    try:
+        email = conn.execute(
+            "SELECT id FROM emails WHERE id = ?", (email_id,)
+        ).fetchone()
+        if not email:
+            raise HTTPException(status_code=404, detail="Email not found")
+
+        # All actions must be resolved before disposition
+        pending = conn.execute(
+            """SELECT id FROM actions
+               WHERE email_id = ? AND status NOT IN ('approved', 'declined')""",
+            (email_id,),
+        ).fetchall()
+        if pending:
+            raise HTTPException(
+                status_code=409,
+                detail="All actions must be approved or declined before disposition",
+            )
+
+        try:
+            if body.action == "archive":
+                execute_archive_action({"email_id": email_id})
+                new_status = "archived"
+            else:
+                execute_delete_action(email_id)
+                new_status = "deleted"
+        except Exception:
+            raise HTTPException(status_code=502, detail="Gmail API failure")
+
+        now = datetime.now(timezone.utc).isoformat()
+        conn.execute(
+            "UPDATE emails SET triage_status = ?, updated_at = ? WHERE id = ?",
+            (new_status, now, email_id),
+        )
+        conn.commit()
+
+        return {"id": email_id, "triage_status": new_status}
     finally:
         conn.close()
