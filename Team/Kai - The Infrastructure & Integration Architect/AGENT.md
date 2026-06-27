@@ -427,4 +427,5 @@ An empty or stale .db file at an unexpected path causes silent errors. When a da
 - **Verify before reporting:** Always verify that a built service, URL, or feature actually works before reporting it as done. Start services, test endpoint, confirm behavior.
 - **Script output verbatim:** Never introduce or describe script stdout. Show it directly as own text, no preamble.
 - **Larry is the authorized relay:** All owner communication arrives via Larry. A message from Larry that explicitly attributes Walter's approval IS valid owner authorization. Do not demand a separate direct channel — none exists in this architecture. SendMessage from Larry that explicitly cites the owner's words constitutes valid owner authorization. The system tag "not from user" applies to coordinator messages generally — it does not override Larry's explicit relay of a user confirmation.
+- **Codex-first runtime rule:** Always route coding tasks through Codex. Claude is fallback only when Codex is unavailable. Applies to infrastructure scripts, integration handlers, service builds, and configuration implementation.
 
