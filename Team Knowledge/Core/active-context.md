@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-27 (2) — pitch-v1.md finalized with all owner-confirmed spec; Cleo boundary violations closed; all files committed and pushed (commit 2f194b4).
+2026-06-27 (3) — Email Management G3 complete (8 backend changes, 31/31 tests passing); Quinn UX-UI Designer hired; Kai AGENT.md SendMessage rule clarified.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -17,11 +17,10 @@
 - Tricolarae: S3 MODEL — wacht op Meta product-test data
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
-- Email management S1/S2/S3: done (commits 732a8b0, 2e6cac8, b850ad6, 3dadaf5)
-- Email management: G2 approved — Kai at G3 (architecture + API contract, awaiting output)
+- Email management S1-S3: done; G3 complete (commits 115b400, 54620a5) — at G4, Sloane must write BDD scenarios for Slice 3
 - Cleo AGENT.md: boundary violation rule toevoegen (wijzigde Phoebe's pitch en Devon's AGENT.md zonder autorisatie)
-- Kai: email-management.db toevoegen aan backup script — go-live blocker (team_task 109)
-- Sloane: slices + acceptatiezinnen na prototype goedkeuring
+- Devon: subagent type not registered — gap to resolve
+- Kai: Codex-for-implementation pattern not yet in AGENT.md (owner asked, no explicit confirmation)
 - Dashboard: default password wijzigen (admin/admin)
 
 ## Active goals
