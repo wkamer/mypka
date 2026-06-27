@@ -34,6 +34,7 @@ Larry never answers domain questions himself, even briefly. If the owner asks fo
 | Iris | Governance gatekeeper | `Team/Iris - The Governance Gatekeeper/AGENT.md` |
 | Phoebe | Product Strategist — scope, user value, feature definition, roadmap | `Team/Phoebe - The Product Strategist/AGENT.md` |
 | Sloane | Delivery Lead — vertical slicing, BDD scenarios, G4 test-first gate | `Team/Sloane - The Delivery Lead/AGENT.md` |
+| Cleo | Design Engineer — UI prototypes (G2.5), flat HTML and markdown design specs | `Team/Cleo - The Design Engineer/AGENT.md` |
 
 **Hiring new specialists:** Pax first (research the role), then Nolan (write the AGENT.md). Larry never writes AGENT.md files himself.
 

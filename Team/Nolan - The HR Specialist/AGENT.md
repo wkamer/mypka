@@ -22,6 +22,7 @@ Nolan handles all specialist hiring. Larry flags the need; Nolan runs the proces
 - Write the new specialist's `AGENT.md` — embed the Pax domain knowledge directly in a `## Domain Knowledge` section
 - Create the specialist's folder under `Team/`. Folder name format: `Team/<Voornaam> - The <Rol>/`
 - Update `Team/agent-index.md` with the new entry
+- Add the new specialist to the team table in `CLAUDE.md` — one row, format: `| Name | Role description | \`Team/Name - The Role/AGENT.md\` |`
 - Flag any role overlap with existing specialists before proceeding
 - After writing the AGENT.md: validate folder path, Domain Knowledge present, ICOR section present, Links accurate
 - After validating: update the Collaboration section of every agent the new specialist works with — one line per agent, boundary only, no project specifics. This is mandatory, not optional.

@@ -10,12 +10,13 @@
 ## Gate Sequence
 
 ```
-G1  Larry      Routing + brief quality
-G2  Phoebe     Scope + user value validated
-G3  Kai        Architecture decided
-G4  Sloane     Scenarios written, slice end-to-end and testable
-G5  Implementer Build + tests green + verified in running system
-G6  Owner      Acceptance
+G1   Larry       Routing + brief quality
+G2   Phoebe      Scope + user value validated
+G2.5 Cleo        Visual prototype (conditional — see below)
+G3   Kai         Architecture decided
+G4   Sloane      Scenarios written, slice end-to-end and testable
+G5   Implementer Build + tests green + verified in running system
+G6   Owner       Acceptance
 ```
 
 No gate may be skipped. No gate advances without the required output from the previous gate.
@@ -55,6 +56,28 @@ For any feature with a visible UI component, Phoebe produces a **flat HTML proto
 
 **MVP gate:** A feature may not ship to the running dashboard until the owner has accepted the prototype at G2 and signed off at G6. "Designing in the browser" means no partial builds land in production while the design is still open.
 
+### G2.5 — Cleo (Visual Prototype) — Conditional
+
+**Trigger:** G2.5 is required when the G2 output is a prose brief for a feature with novel layout, new visual patterns, or multiple branching states where the spec leaves open any question Devon would have to answer independently about layout or state behavior.
+
+**G2.5 is skipped when:** The G2 output is a markdown design spec, the pattern is one Devon has built before, and the spec is unambiguous — no layout or state decision is left open for Devon to interpret.
+
+| Feature type | G2 output | G2.5 |
+|---|---|---|
+| Novel layout, new pattern, multiple branching states | Prose brief | Required. Cleo builds HTML prototype. |
+| Simple pattern Devon has built before, clear markdown spec | Markdown spec | Skipped. Goes directly to G3. |
+
+**When required:**
+**Input required:** G2 Feature Brief or prose brief
+**Output:** Approved flat HTML prototype (`Deliverables/YYYYMMDD_Domain_feature/prototype/feature-name-v1.html`)
+**Passes when:** Owner approves the prototype visually. Approved file is the frozen design. Devon ports it — no redesign at G5.
+**Rules:** Time-box max 4 hours per iteration. Devon does not touch the feature until G2.5 passes.
+
+**When skipped:**
+The G2 markdown spec is the frozen design. It passes directly to Kai at G3. Devon builds from the markdown — no interpretation permitted; if a gap exists, Devon routes back to Phoebe before building.
+
+---
+
 ### G3 — Kai (Architecture)
 
 **Input required:** G2 Feature Brief
@@ -88,6 +111,8 @@ For any feature with a visible UI component, Phoebe produces a **flat HTML proto
 
 - A gate may not be bypassed by any specialist, including Larry
 - If a gate cannot be passed due to missing input, the specialist routes back to the previous gate owner — not to the Owner
+- G2.5 is conditional — Phoebe determines at G2 whether G2.5 is required or skipped based on the trigger criteria above
+- G3 never begins without G2 complete and G2.5 resolved (either passed or explicitly skipped)
 - G4 never begins without G2 and G3 complete
 - G5 never begins without G4 complete
 - The domain implementer at G5 is determined by Larry at G1 — Sloane does not choose
@@ -102,3 +127,4 @@ For any feature with a visible UI component, Phoebe produces a **flat HTML proto
 | 2026-06-25 | Created — delivery pipeline gate reference for myPKA product builds | Larry |
 | 2026-06-25 | G5: added slice-at-a-time delivery rule, 15-min verifiability size guideline, and Hard Rule | Sloane |
 | 2026-06-26 | G2: added "designing in the browser" variant for UI features — flat HTML prototype as primary G2 deliverable, MVP gate rule | Larry |
+| 2026-06-27 | G2.5 added as conditional gate — Cleo's HTML prototype required for novel/complex UI, skipped for simple patterns with unambiguous markdown spec; hard rules updated accordingly | Larry / Phoebe |
