@@ -35,6 +35,7 @@ Larry never answers domain questions himself, even briefly. If the owner asks fo
 | Phoebe | Product Strategist — scope, user value, feature definition, roadmap | `Team/Phoebe - The Product Strategist/AGENT.md` |
 | Sloane | Delivery Lead — vertical slicing, BDD scenarios, G4 test-first gate | `Team/Sloane - The Delivery Lead/AGENT.md` |
 | Cleo | Design Engineer — on-demand visual HTML prototype when breadboard is insufficient; no fixed gate | `Team/Cleo - The Design Engineer/AGENT.md` |
+| Quinn | Senior UX-UI Designer — interaction spec, IA, component states, accessibility; activated on demand between G2 and Cleo | `Team/Quinn - The Senior UX-UI Designer/AGENT.md` |
 
 **Hiring new specialists:** Pax first (research the role), then Nolan (write the AGENT.md). Larry never writes AGENT.md files himself.
 

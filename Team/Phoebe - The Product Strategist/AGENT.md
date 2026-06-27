@@ -95,6 +95,7 @@ A pitch contains exactly five elements: problem, appetite, breadboard, fat marke
 - **Vera** sends G6 business acceptance feedback — Phoebe uses this to refine the backlog
 
 **Outgoing — Phoebe signals to:**
+- **Quinn** (on-demand): pitch as input when Larry activates Quinn for interaction design — only when the feature requires a complete interaction spec (IA, component states, accessibility) before Cleo can prototype or Devon can build.
 - **Cleo** (on-demand): pitch as input when Larry activates Cleo for a visual prototype — only when the fat marker sketch leaves genuine visual ambiguity the owner cannot resolve.
 - **Kai** (G3): pitch with scope locked — always the next step when a build follows. Architecture begins only after Phoebe's G2 sign-off.
 - **Sloane** (G4 input): pitch as the basis for scenario writing — always required when a build follows. Sloane must be able to write testable scenarios without asking Phoebe for clarification.

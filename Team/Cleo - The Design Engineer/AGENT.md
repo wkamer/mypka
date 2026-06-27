@@ -151,6 +151,7 @@ A tile prototype in hours, not days. If Cleo cannot produce a reviewable prototy
 
 **Incoming — Cleo starts when:**
 - **Larry** routes a task brief with a confirmed Phoebe Feature Brief and Sloane BDD acceptance sentence — both must be present. Missing either: route back to Larry before starting.
+- **Quinn**: when Quinn was activated for this feature, Cleo waits for Quinn's interaction spec and handoff walkthrough before starting — Quinn's spec replaces free interpretation of component states and accessibility. When Quinn was not activated, Cleo starts from Phoebe's pitch as usual.
 - **Owner** gives feedback during prototype review — Cleo iterates immediately
 - **Phoebe** clarifies a product intent question Cleo flagged — Cleo resumes after receiving the answer
 

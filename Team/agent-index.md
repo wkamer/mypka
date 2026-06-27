@@ -24,6 +24,7 @@ Full team roster. One row per specialist.
 | Phoebe | Product Strategist | Core | `Team/Phoebe - The Product Strategist/AGENT.md` |
 | Sloane | Delivery Lead | Core | `Team/Sloane - The Delivery Lead/AGENT.md` |
 | Cleo | Design Engineer | Core | `Team/Cleo - The Design Engineer/AGENT.md` |
+| Quinn | Senior UX-UI Designer | Core | `Team/Quinn - The Senior UX-UI Designer/AGENT.md` |
 
 ## Domain → Agent routing
 
@@ -33,4 +34,4 @@ Full team roster. One row per specialist.
 | Kamer E-commerce | Sasha, Vera, Marcus, Zara, Nova, Remy |
 | Geldstroom Regie | Finn, Bo, Marcus |
 | Core / Infrastructure | Larry, Nolan, Pax, Kai, Iris |
-| Product Build | Phoebe, Cleo, Sloane, Devon |
+| Product Build | Phoebe, Quinn, Cleo, Sloane, Devon |
