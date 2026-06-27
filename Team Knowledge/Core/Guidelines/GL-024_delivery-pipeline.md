@@ -10,13 +10,12 @@
 ## Gate Sequence
 
 ```
-G1   Larry       Routing + brief quality
-G2   Phoebe      Scope + user value validated
-G2.5 Cleo        Visual prototype (conditional — see below)
-G3   Kai         Architecture decided
-G4   Sloane      Scenarios written, slice end-to-end and testable
-G5   Implementer Build + tests green + verified in running system
-G6   Owner       Acceptance
+G1  Larry       Routing + brief quality
+G2  Phoebe      Scope shaped — appetite, breadboard, fat marker sketch approved by owner
+G3  Kai         Architecture decided
+G4  Sloane      Scenarios written, slice end-to-end and testable
+G5  Implementer Build + tests green + verified in running system
+G6  Owner       Acceptance
 ```
 
 No gate may be skipped. No gate advances without the required output from the previous gate.
@@ -31,52 +30,41 @@ No gate may be skipped. No gate advances without the required output from the pr
 **Output:** Complete brief to Phoebe (or Pax / Vera if no build follows)
 **Passes when:** Brief contains — problem statement, context, done looks like, minimum viable
 
-### G2 — Phoebe (Scope + User Value)
+### G2 — Phoebe (Shaping)
 
 **Input required:** Larry brief
-**Output:** Signed Feature Brief (see SOP-016)
-**Passes when:** Feature Brief contains problem statement, user value (observable), scope boundary, non-goals, and feature-level acceptance criteria — and Sloane can write testable scenarios from it without asking Phoebe
+**Output:** Shaped pitch containing — appetite, breadboard, fat marker sketch (for UI features), rabbit holes, no-gos
+**Passes when:** Owner has approved the breadboard and fat marker sketch. Sloane can write testable scenarios from the pitch without asking Phoebe.
 
-#### G2 variant: UI features — Designing in the browser
+#### Appetite
 
-For any feature with a visible UI component, Phoebe produces a **flat HTML prototype** in addition to (or instead of) a prose brief. This is the primary G2 deliverable for UI features.
+Every G2 pitch opens with an appetite: "This feature is worth [N hours/days] of build time." Appetite is set by the owner before shaping begins — not after. Appetite constrains what Phoebe shapes. If the shaped solution cannot fit the appetite, scope is cut. Time is never extended.
 
-**What it is:** A single `.html` file using Tailwind CDN (`<script src="https://cdn.tailwindcss.com">`). No build step, no React, no Node. Opens directly in a browser. Uses identical Tailwind classes to what Devon will build.
+#### Breadboard
 
-**Who owns it:** Phoebe. She iterates on it until the owner approves. The approved flat file is the frozen design.
+A text-only artifact. Answers: what connects to what? Three elements: places (screens/panels), affordances (buttons/fields/links), and connection lines (arrows showing where actions go).
 
-**Where it lives:** `Deliverables/YYYYMMDD_Domain_feature/prototype/feature-name-v1.html`
+No visual design. No layout information. Phoebe produces this in 15 to 30 minutes.
 
-**Rules:**
-- Time-box: max 4 hours per prototype iteration
-- Owner approves visually before G3 begins
-- Devon does not touch the dashboard until the owner has approved the prototype
-- Devon ports the approved HTML to React — he does not redesign. No design decisions at G5.
-- The prototype is throwaway. Devon re-implements; copy-paste is not expected.
+#### Fat marker sketch (UI features)
 
-**MVP gate:** A feature may not ship to the running dashboard until the owner has accepted the prototype at G2 and signed off at G6. "Designing in the browser" means no partial builds land in production while the design is still open.
+A rough spatial artifact. Answers: where does each element go relative to the others? ASCII or hand-drawn. Deliberately rough — column widths, font sizes, and padding are Devon's decisions.
 
-### G2.5 — Cleo (Visual Prototype) — Conditional
+Phoebe produces this in 15 to 30 minutes.
 
-**Trigger:** G2.5 is required when the G2 output is a prose brief for a feature with novel layout, new visual patterns, or multiple branching states where the spec leaves open any question Devon would have to answer independently about layout or state behavior.
+#### Rabbit holes and no-gos
 
-**G2.5 is skipped when:** The G2 output is a markdown design spec, the pattern is one Devon has built before, and the spec is unambiguous — no layout or state decision is left open for Devon to interpret.
+Every pitch includes:
+- **Rabbit holes:** known implementation traps that could blow the appetite — named explicitly so Devon can avoid them
+- **No-gos:** features or behaviors explicitly excluded from this iteration
 
-| Feature type | G2 output | G2.5 |
-|---|---|---|
-| Novel layout, new pattern, multiple branching states | Prose brief | Required. Cleo builds HTML prototype. |
-| Simple pattern Devon has built before, clear markdown spec | Markdown spec | Skipped. Goes directly to G3. |
+#### Owner approval at G2
 
-**When required:**
-**Input required:** G2 Feature Brief or prose brief
-**Output:** Approved flat HTML prototype (`Deliverables/YYYYMMDD_Domain_feature/prototype/feature-name-v1.html`)
-**Passes when:** Owner approves the prototype visually. Approved file is the frozen design. Devon ports it — no redesign at G5.
-**Rules:** Time-box max 4 hours per iteration. Devon does not touch the feature until G2.5 passes.
+The owner reviews breadboard and fat marker sketch and approves or corrects. Corrections cost minutes. G3 does not begin until the owner has explicitly approved. The approved pitch is the frozen scope — no additions during G5.
 
-**When skipped:**
-The G2 markdown spec is the frozen design. It passes directly to Kai at G3. Devon builds from the markdown — no interpretation permitted; if a gap exists, Devon routes back to Phoebe before building.
+#### On-demand visual prototype (Cleo)
 
----
+For features where a fat marker sketch leaves genuine visual ambiguity the owner cannot resolve from the sketch alone, Cleo may be activated on request to produce a flat HTML prototype. This is not a gate — it is an optional tool. Cleo is activated by Larry, not by Phoebe.
 
 ### G3 — Kai (Architecture)
 
@@ -111,12 +99,13 @@ The G2 markdown spec is the frozen design. It passes directly to Kai at G3. Devo
 
 - A gate may not be bypassed by any specialist, including Larry
 - If a gate cannot be passed due to missing input, the specialist routes back to the previous gate owner — not to the Owner
-- G2.5 is conditional — Phoebe determines at G2 whether G2.5 is required or skipped based on the trigger criteria above
-- G3 never begins without G2 complete and G2.5 resolved (either passed or explicitly skipped)
+- G3 never begins without owner-approved G2 pitch (breadboard + fat marker sketch approved)
 - G4 never begins without G2 and G3 complete
 - G5 never begins without G4 complete
 - The domain implementer at G5 is determined by Larry at G1 — Sloane does not choose
 - G5 delivers one slice at a time. Owner verifies each slice before Devon continues.
+- Circuit breaker: if shaped work cannot fit the appetite during G5, scope is cut — time is never extended. Devon routes back to Phoebe for re-shaping, not to owner for a time extension.
+- No scope additions during G5. Any new idea is a new pitch at G1.
 
 ---
 
@@ -128,3 +117,4 @@ The G2 markdown spec is the frozen design. It passes directly to Kai at G3. Devo
 | 2026-06-25 | G5: added slice-at-a-time delivery rule, 15-min verifiability size guideline, and Hard Rule | Sloane |
 | 2026-06-26 | G2: added "designing in the browser" variant for UI features — flat HTML prototype as primary G2 deliverable, MVP gate rule | Larry |
 | 2026-06-27 | G2.5 added as conditional gate — Cleo's HTML prototype required for novel/complex UI, skipped for simple patterns with unambiguous markdown spec; hard rules updated accordingly | Larry / Phoebe |
+| 2026-06-27 | Shape Up adopted — G2.5 removed; G2 rewritten with appetite, breadboard, fat marker sketch, rabbit holes, no-gos as mandatory pitch output; circuit breaker and no-scope-addition rules added; Cleo moved to on-demand role | Larry / Sloane / Phoebe |
