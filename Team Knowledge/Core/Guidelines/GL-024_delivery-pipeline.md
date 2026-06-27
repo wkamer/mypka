@@ -68,13 +68,13 @@ For features where a fat marker sketch leaves genuine visual ambiguity the owner
 
 ### G3 — Kai (Architecture)
 
-**Input required:** G2 Feature Brief
+**Input required:** G2 pitch (owner-approved)
 **Output:** Architecture decision + technical constraints
 **Passes when:** Stack, data boundaries, and integration points are decided and documented — Devon or domain implementer can build without making architecture decisions
 
 ### G4 — Sloane (Test-First)
 
-**Input required:** G2 Feature Brief + G3 architecture decisions
+**Input required:** G2 pitch (owner-approved) + G3 architecture decisions
 **Output:** Vertical slice plan + Gherkin feature file + test spec (see SOP-017)
 **Passes when:** Each slice is end-to-end, independently deliverable, and has at least one happy path and one edge case scenario — implementer can start without asking Sloane for clarification
 
