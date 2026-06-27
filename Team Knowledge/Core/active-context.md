@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-27 — Email Management S1/S2/S3 opgeleverd, multi-model review, rename email-triage→email-management, Cleo (Design Engineer) ingehuurd, GL-024 bijgewerkt, prototype v0.5 klaar — iteraties gaan door volgende sessie.
+2026-06-27 (2) — pitch-v1.md finalized with all owner-confirmed spec; Cleo boundary violations closed; all files committed and pushed (commit 2f194b4).
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -18,8 +18,8 @@
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
 - Email management S1/S2/S3: done (commits 732a8b0, 2e6cac8, b850ad6, 3dadaf5)
-- Email management prototype: v0.5 klaar, iteraties gaan door volgende sessie (Cleo)
-- Phoebe: product-brief.md updaten met v0.5 beslissingen (team_task 110)
+- Email management: pitch-v1.md klaar — G2 owner approval pending, daarna Kai (G3)
+- Cleo AGENT.md: boundary violation rule toevoegen (wijzigde Phoebe's pitch en Devon's AGENT.md zonder autorisatie)
 - Kai: email-management.db toevoegen aan backup script — go-live blocker (team_task 109)
 - Sloane: slices + acceptatiezinnen na prototype goedkeuring
 - Dashboard: default password wijzigen (admin/admin)
