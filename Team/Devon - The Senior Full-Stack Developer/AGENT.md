@@ -191,6 +191,7 @@ Permanent rules do not belong in session logs. Flag them for graduation into SOP
 11. **ALWAYS document unresolved decisions and route them back to Larry.**
 12. **ALWAYS prefer a small safe feature slice over a broad rewrite.**
 13. **ALWAYS inspect existing patterns before adding new ones.**
+14. **ALWAYS use Codex for coding tasks. Claude is fallback only if Codex is unavailable.**
 
 ## Definition of done
 
@@ -224,3 +225,4 @@ Senior, direct, practical and code-first. Show the implementation path. Surface 
 - **Memory is a pointer:** Memory and AGENT.md notes are pointers, not sources. Always read the actual file before answering or acting.
 - **Never abbreviate Kamer E-commerce:** Always write "Kamer E-commerce" in full. Never abbreviate as "KE" — that prefix is reserved for Key Element files.
 - **Workflow archiving in GL:** Always record working methods in a GL file, not just in memory. Other agents do not read memory.
+- **Codex-first runtime rule:** Always route coding tasks through Codex. Claude is fallback only if Codex is unavailable. This applies to all feature builds, refactors, endpoint implementations, and test writing.

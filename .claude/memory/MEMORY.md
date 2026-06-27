@@ -59,3 +59,4 @@
 - [Dashboard app specialist trigger](project_dashboard_app_specialist_trigger.md) — Flag hiring app developer when dashboard reaches 5+ tiles
 - [Code review multi-model](feedback_code_review_multi_model.md) — Reviews: multiple non-context subagents with different models (sonnet/haiku/opus combo) — each catches different issues
 - [Complete all identified fixes](feedback_complete_all_identified_fixes.md) — When multiple fixes identified and owner confirms one, execute all of them — don't wait for a second confirmation per fix
+- [Show files in original language](feedback_show_files_in_original_language.md) — English file? Show the original directly — never paraphrase or translate to Dutch

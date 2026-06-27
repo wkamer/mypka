@@ -6,157 +6,465 @@
   <title>Email Management — Prototype v1</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-900 text-slate-100 antialiased">
+  <div class="min-h-screen px-4 py-6 sm:px-6">
+    <main class="mx-auto max-w-2xl">
+      <header class="mb-6 flex items-center justify-between gap-4">
+        <h1 class="text-xl font-semibold tracking-normal text-slate-100">Email Management</h1>
+        <button
+          id="run-triage"
+          type="button"
+          class="inline-flex items-center gap-2 rounded-md bg-slate-700 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          <span id="triage-spinner" class="hidden h-4 w-4 animate-spin rounded-full border-2 border-slate-400 border-t-slate-100"></span>
+          <span id="triage-label">Run Triage</span>
+        </button>
+      </header>
 
-<div class="min-h-screen bg-slate-900 p-6">
+      <section class="mb-6">
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300">Pending</h2>
+          <span id="pending-count" class="rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-300">0</span>
+        </div>
+        <div id="pending-list" class="overflow-hidden rounded-lg bg-slate-800 shadow-sm ring-1 ring-slate-700/60"></div>
+      </section>
 
-  <!-- Header -->
-  <header class="flex items-center gap-4 mb-8">
-    <button class="text-sm text-slate-400 hover:text-slate-200 transition-colors">
-      &larr; Back
-    </button>
-    <h1 class="text-xl font-semibold text-slate-100">Email Management</h1>
-  </header>
+      <section>
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Processed</h2>
+          <span id="processed-count" class="rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-500">0</span>
+        </div>
+        <div id="processed-list" class="overflow-hidden rounded-lg bg-slate-800 shadow-sm ring-1 ring-slate-700/60"></div>
+      </section>
+    </main>
+  </div>
 
-  <!-- Main content -->
-  <main class="max-w-2xl mx-auto">
+  <script>
+    const pendingSeed = [
+      {
+        id: "jan-de-vries",
+        sender: "Jan de Vries",
+        classification: "Action",
+        subject: "Factuur april 2026",
+        date: "15 jun, 09:42",
+        summary: "Factuur van €340 voor advieswerk april. Betaaltermijn 14 dagen. Geen bijzonderheden.",
+        gmailLink: "https://mail.google.com/mail/u/0/#all/18f3a1b2c4d5e678",
+        actions: [
+          { type: "Task", value: "Factuur betalen voor 15 juli" },
+          { type: "Task", value: "Bevestiging sturen aan Jan de Vries" }
+        ]
+      },
+      {
+        id: "remko-kamer",
+        sender: "Remko Kamer",
+        classification: "Information",
+        subject: "Broederweekend datum prikken",
+        date: "13 jun, 11:20",
+        summary: "Remko vraagt om een datum voor het broederweekend in september. Geen actie vereist — hij vraagt alleen of je kunt nadenken over een weekend.",
+        gmailLink: "https://mail.google.com/mail/u/0/#all/18e2d4c6b8a0f912",
+        actions: []
+      },
+      {
+        id: "sophie-van-den-berg",
+        sender: "Sophie van den Berg",
+        classification: "Action",
+        subject: "Offerte websitebouw",
+        date: "12 jun, 14:05",
+        summary: "Sophie stuurt een offerte van €1.850 voor websitebouw. Ze vraagt een reactie voor 20 juni.",
+        gmailLink: "https://mail.google.com/mail/u/0/#all/18d1c3b5a7e9f023",
+        actions: [
+          { type: "Event", value: "Bespreking offerte Sophie inplannen", datetime: "2026-06-30T10:00" },
+          { type: "Task", value: "Offerte evalueren en beslissing nemen" }
+        ]
+      }
+    ];
 
-    <!-- Run Triage button row -->
-    <div class="flex items-center gap-4 mb-6">
-      <button class="px-4 py-2 text-sm rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-100 transition-colors font-medium">
-        Run Triage
-      </button>
-    </div>
+    const processedSeed = [
+      {
+        id: "ing-afschrift",
+        sender: "noreply@ing.nl",
+        classification: "Information",
+        subject: "ING afschrift mei 2026",
+        date: "14 jun, 17:03",
+        summary: "Automatische notificatie van ING — maandelijks rekeningoverzicht mei 2026 is beschikbaar in de ING app.",
+        gmailLink: "https://mail.google.com/mail/u/0/#all/18c0b2a4967d8e34",
+        actions: []
+      }
+    ];
 
-    <!-- Inbox list -->
-    <div class="bg-slate-800 rounded-lg overflow-hidden divide-y divide-slate-700">
+    const pendingList   = document.getElementById("pending-list");
+    const processedList = document.getElementById("processed-list");
+    const pendingCount  = document.getElementById("pending-count");
+    const processedCount = document.getElementById("processed-count");
+    const runTriageButton = document.getElementById("run-triage");
+    const triageSpinner = document.getElementById("triage-spinner");
+    const triageLabel   = document.getElementById("triage-label");
 
-      <!-- Row 1 — Expanded -->
-      <div>
-        <div class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer select-none">
-          <div class="flex-1 min-w-0">
-            <!-- Line 1: sender + badges + gmail icon -->
-            <div class="flex items-center gap-1.5">
-              <span class="text-slate-200 text-sm font-medium truncate">Jan de Vries</span>
-              <!-- Classification badge: Action -->
-              <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-amber-900 text-amber-200">Action</span>
-              <!-- Triage status badge: Pending -->
-              <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-slate-700 text-slate-300">Pending</span>
-              <!-- Gmail link icon -->
-              <a
-                href="https://mail.google.com/mail/u/0/#all/example1"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
-                aria-label="Open in Gmail"
-                onclick="event.stopPropagation()"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-              </a>
-            </div>
-            <!-- Line 2: subject + date -->
-            <div class="flex items-baseline justify-between gap-4 mt-0.5">
-              <p class="text-slate-400 text-xs truncate">Factuur april 2026</p>
-              <span class="text-slate-600 text-xs shrink-0 whitespace-nowrap">15 jun, 09:42</span>
+    function cloneEmail(email) {
+      return { ...email, actions: email.actions.map((a) => ({ ...a })) };
+    }
+
+    function nowLabel() {
+      return new Date().toLocaleString("nl-NL", {
+        day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"
+      });
+    }
+
+    function badgeClass(classification) {
+      return classification === "Action"
+        ? "bg-amber-900 text-amber-200"
+        : "bg-blue-900 text-blue-200";
+    }
+
+    function gmailIcon() {
+      return `<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
+    }
+
+    function checkIcon() {
+      return `<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    }
+
+    function processedIndicatorHtml() {
+      return `<span class="status-indicator inline-flex items-center gap-1 text-xs font-medium text-green-600">${checkIcon()} Processed</span>`;
+    }
+
+    function formatDatetime(val) {
+      return new Date(val).toLocaleString("nl-NL", {
+        day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+      });
+    }
+
+    function chevronIcon() {
+      return `<svg class="email-chevron h-4 w-4 shrink-0 text-slate-500 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+    }
+
+    function updateCounts() {
+      pendingCount.textContent  = pendingList.querySelectorAll(".email-item").length;
+      processedCount.textContent = processedList.querySelectorAll(".email-item").length;
+    }
+
+    function closeOtherAccordions(activeItem) {
+      document.querySelectorAll(".email-item").forEach((item) => {
+        if (item !== activeItem) {
+          item.querySelector(".email-panel").classList.add("hidden");
+          item.querySelector(".email-chevron").classList.remove("rotate-180");
+        }
+      });
+    }
+
+    function toggleAccordion(item) {
+      const panel   = item.querySelector(".email-panel");
+      const chevron = item.querySelector(".email-chevron");
+      const isClosed = panel.classList.contains("hidden");
+      closeOtherAccordions(item);
+      panel.classList.toggle("hidden", !isClosed);
+      chevron.classList.toggle("rotate-180", isClosed);
+    }
+
+    // Enable Archive/Delete only when no action row still has pending Approve button.
+    function checkDispositionGate(item) {
+      const unresolved = item.querySelectorAll(".action-row .approve-button");
+      const enabled = unresolved.length === 0;
+      [".archive-button", ".delete-button"].forEach((sel) => {
+        const btn = item.querySelector(sel);
+        if (!btn) return;
+        btn.disabled = !enabled;
+        btn.classList.toggle("opacity-40", !enabled);
+        btn.classList.toggle("cursor-not-allowed", !enabled);
+      });
+    }
+
+    function createActionRow(type, value, datetime = "") {
+      const row = document.createElement("div");
+      row.className = "action-row rounded-md border border-slate-700 bg-slate-800/70 p-3";
+      row.dataset.type = type;
+      const safeValue = value.replace(/"/g, "&quot;");
+      const safeDatetime = datetime.replace(/"/g, "&quot;");
+
+      if (type === "Event") {
+        row.innerHTML = `
+          <div class="grid gap-2 sm:grid-cols-[3.5rem_1fr]">
+            <span class="text-xs font-semibold uppercase tracking-wide text-slate-400 sm:pt-2.5">${type}</span>
+            <div class="space-y-2">
+              <input
+                type="text"
+                value="${safeValue}"
+                class="w-full min-w-0 rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-slate-500"
+                placeholder="Nieuw event..."
+              />
+              <input
+                type="datetime-local"
+                value="${safeDatetime}"
+                class="action-datetime w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 outline-none transition focus:border-slate-500"
+              />
+              <div class="action-controls flex items-center justify-end gap-2">
+                <button type="button" class="approve-button rounded-md border border-slate-600 px-3 py-2 text-xs font-medium text-slate-200 transition hover:border-green-800 hover:bg-green-900 hover:text-green-200">Approve</button>
+                <button type="button" class="decline-button rounded-md border border-slate-600 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-slate-500 hover:bg-slate-700 hover:text-slate-100">Decline</button>
+              </div>
             </div>
           </div>
-          <!-- Chevron — rotated (open state) -->
-          <svg class="shrink-0 text-slate-500 transition-transform duration-200 rotate-180" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-        <!-- Expanded detail panel (MVP: empty) -->
-        <div class="mx-4 mb-3 border border-slate-700 rounded bg-slate-900 px-4 py-3">
-        </div>
-      </div>
-
-      <!-- Row 2 — Collapsed -->
-      <div>
-        <div class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer select-none">
-          <div class="flex-1 min-w-0">
-            <!-- Line 1: sender + badges + gmail icon -->
-            <div class="flex items-center gap-1.5">
-              <span class="text-slate-200 text-sm font-medium truncate">noreply@ing.nl</span>
-              <!-- Classification badge: FYI -->
-              <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-200">FYI</span>
-              <!-- Triage status badge: Approved -->
-              <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-green-900 text-green-200">Approved</span>
-              <!-- Gmail link icon -->
-              <a
-                href="https://mail.google.com/mail/u/0/#all/example2"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
-                aria-label="Open in Gmail"
-                onclick="event.stopPropagation()"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-              </a>
-            </div>
-            <!-- Line 2: subject + date -->
-            <div class="flex items-baseline justify-between gap-4 mt-0.5">
-              <p class="text-slate-400 text-xs truncate">Uw ING afschrift is klaar</p>
-              <span class="text-slate-600 text-xs shrink-0 whitespace-nowrap">14 jun, 17:03</span>
+        `;
+      } else {
+        row.innerHTML = `
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <span class="w-14 shrink-0 text-xs font-semibold uppercase tracking-wide text-slate-400">${type}</span>
+            <input
+              type="text"
+              value="${safeValue}"
+              class="min-w-0 flex-1 rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-slate-500"
+              placeholder="Nieuwe taak..."
+            />
+            <div class="action-controls flex shrink-0 items-center gap-2">
+              <button type="button" class="approve-button rounded-md border border-slate-600 px-3 py-2 text-xs font-medium text-slate-200 transition hover:border-green-800 hover:bg-green-900 hover:text-green-200">Approve</button>
+              <button type="button" class="decline-button rounded-md border border-slate-600 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-slate-500 hover:bg-slate-700 hover:text-slate-100">Decline</button>
             </div>
           </div>
-          <!-- Chevron — default (closed state) -->
-          <svg class="shrink-0 text-slate-500 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-      </div>
+        `;
+      }
+      row.querySelector(".approve-button").addEventListener("click", () => approveAction(row));
+      row.querySelector(".decline-button").addEventListener("click", () => declineAction(row));
+      return row;
+    }
 
-      <!-- Row 3 — Collapsed -->
-      <div>
-        <div class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer select-none">
-          <div class="flex-1 min-w-0">
-            <!-- Line 1: sender + badges + gmail icon -->
-            <div class="flex items-center gap-1.5">
-              <span class="text-slate-200 text-sm font-medium truncate">Remko Kamer</span>
-              <!-- Classification badge: Action -->
-              <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-amber-900 text-amber-200">Action</span>
-              <!-- Triage status badge: Pending -->
-              <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-slate-700 text-slate-300">Pending</span>
-              <!-- Gmail link icon -->
+    function approveAction(row) {
+      const input = row.querySelector('input[type="text"]');
+      const datetimeInput = row.querySelector(".action-datetime");
+      const datetimeValue = datetimeInput ? datetimeInput.value : "";
+      const name  = input.value.trim() || (row.dataset.type === "Task" ? "Naamloze taak" : "Naamloos event");
+      row.querySelector(".action-controls").innerHTML =
+        '<span class="rounded-full bg-green-900 px-2.5 py-1 text-xs font-medium text-green-200">✓ Approved</span>';
+      input.disabled = true;
+      input.classList.add("text-slate-400");
+      if (datetimeInput) {
+        datetimeInput.disabled = true;
+        datetimeInput.classList.add("opacity-60");
+      }
+
+      const item    = row.closest(".email-item");
+      const log     = item.querySelector(".execution-log");
+      const logList = item.querySelector(".execution-log-list");
+      const entry   = document.createElement("li");
+      entry.className = "flex items-start justify-between gap-4 text-sm text-green-200";
+      let text = `✓ Task “${name}” aangemaakt`;
+      if (row.dataset.type === "Event") {
+        text = datetimeValue
+          ? `✓ Event “${name}” — ${formatDatetime(datetimeValue)} toegevoegd aan agenda`
+          : `✓ Event “${name}” toegevoegd aan agenda`;
+      }
+      entry.innerHTML = `<span>${text}</span><span class="shrink-0 text-xs text-slate-500">${nowLabel()}</span>`;
+      logList.appendChild(entry);
+      log.classList.remove("hidden");
+
+      checkDispositionGate(item);
+    }
+
+    function declineAction(row) {
+      row.querySelector(".action-controls").innerHTML =
+        '<span class="px-1 text-xs font-medium text-slate-500">Declined</span>';
+      const input = row.querySelector('input[type="text"]');
+      const datetimeInput = row.querySelector(".action-datetime");
+      input.disabled = true;
+      input.classList.add("text-slate-500");
+      if (datetimeInput) {
+        datetimeInput.disabled = true;
+        datetimeInput.classList.add("opacity-60");
+      }
+
+      checkDispositionGate(row.closest(".email-item"));
+    }
+
+    function markPendingRowProcessed(item) {
+      const status = item.querySelector(".email-row .status-indicator");
+      if (status) {
+        status.outerHTML = processedIndicatorHtml();
+      }
+    }
+
+    function scheduleMoveToProcessed(item, dispositionType) {
+      markPendingRowProcessed(item);
+      window.setTimeout(() => moveToProcessed(item, dispositionType), 350);
+    }
+
+    // Collect live log entries, append the disposition entry, move row to Processed.
+    // The disposition entry is the final entry; if it is the only entry it will only
+    // be visible in the read-only processed accordion (the live log was hidden in
+    // pending because no Approve had fired yet).
+    function moveToProcessed(item, dispositionType) {
+      const logList = item.querySelector(".execution-log-list");
+      const priorEntries = logList
+        ? Array.from(logList.querySelectorAll("li")).map((li) => li.innerHTML)
+        : [];
+
+      const dispLabel = dispositionType === "Archive"
+        ? "📥 Email gearchiveerd"
+        : "🗑 Email verwijderd";
+      const dispEntry = `<span>${dispLabel}</span><span class="shrink-0 text-xs text-slate-500">${nowLabel()}</span>`;
+      const allEntries = [...priorEntries, dispEntry];
+
+      const email = JSON.parse(item.dataset.email);
+      processedList.appendChild(createEmailItem(email, true, allEntries));
+      item.remove();
+      updateCounts();
+    }
+
+    // Actions block is always rendered for pending emails — both Action and Information.
+    // AI-suggested rows are only seeded for Action emails (done in createEmailItem, not here).
+    function createPendingActionsHtml() {
+      return `
+        <div class="actions-block border-t border-slate-700 pt-4">
+          <h4 class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Actions</h4>
+          <div class="action-list space-y-2"></div>
+          <div class="mt-3 flex justify-end gap-2">
+            <button type="button" class="add-task-button rounded-md border border-slate-600 px-3 py-2 text-xs font-medium text-slate-200 transition hover:bg-slate-700">+ Task</button>
+            <button type="button" class="add-event-button rounded-md border border-slate-600 px-3 py-2 text-xs font-medium text-slate-200 transition hover:bg-slate-700">+ Event</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function createEmailItem(email, processed, logEntries) {
+      logEntries = logEntries || [];
+
+      const item = document.createElement("article");
+      item.className = "email-item border-b border-slate-700 last:border-b-0";
+      item.dataset.email = JSON.stringify(email);
+
+      const rowText    = processed ? "text-slate-500" : "text-slate-200";
+      const subjectText = processed ? "text-slate-600" : "text-slate-400";
+      const dateText   = processed ? "text-slate-600" : "text-slate-500";
+      const hover      = processed ? "hover:bg-slate-800/80" : "hover:bg-slate-700/70";
+
+      const statusIndicator = processed
+        ? processedIndicatorHtml()
+        : `<span class="status-indicator rounded-full px-2 py-0.5 text-xs font-medium ${badgeClass(email.classification)}">${email.classification}</span>`;
+
+      // Execution log for processed accordion — always includes at least the disposition entry.
+      let processedLogHtml = "";
+      if (processed && logEntries.length > 0) {
+        const rows = logEntries
+          .map((inner) => `<li class="flex items-start justify-between gap-4 text-sm text-slate-400">${inner}</li>`)
+          .join("");
+        processedLogHtml = `
+          <div class="border-t border-slate-700 pt-4">
+            <h4 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Execution log</h4>
+            <ul class="space-y-1">${rows}</ul>
+          </div>
+        `;
+      }
+
+      item.innerHTML = `
+        <button type="button" class="email-row flex w-full items-center gap-3 px-4 py-3 text-left transition ${hover}">
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <span class="truncate text-sm font-medium ${rowText}">${email.sender}</span>
+              ${statusIndicator}
               <a
-                href="https://mail.google.com/mail/u/0/#all/example3"
+                href="${email.gmailLink}"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
-                aria-label="Open in Gmail"
-                onclick="event.stopPropagation()"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-              </a>
+                class="shrink-0 text-slate-500 transition hover:text-slate-300"
+                aria-label="Open email in Gmail"
+              >${gmailIcon()}</a>
             </div>
-            <!-- Line 2: subject + date -->
-            <div class="flex items-baseline justify-between gap-4 mt-0.5">
-              <p class="text-slate-400 text-xs truncate">Broederweekend datum prikken</p>
-              <span class="text-slate-600 text-xs shrink-0 whitespace-nowrap">13 jun, 11:20</span>
+            <div class="mt-1 flex items-baseline justify-between gap-4">
+              <p class="truncate text-xs ${subjectText}">${email.subject}</p>
+              <span class="shrink-0 whitespace-nowrap text-xs ${dateText}">${email.date}</span>
             </div>
           </div>
-          <!-- Chevron — default (closed state) -->
-          <svg class="shrink-0 text-slate-500 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
+          ${chevronIcon()}
+        </button>
+        <div class="email-panel hidden mx-3 mb-3 rounded-md border border-slate-700 bg-slate-900 p-4">
+          <div class="space-y-4">
+            <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${badgeClass(email.classification)}">${email.classification}</span>
+            <div>
+              <h3 class="mb-1 text-sm font-semibold text-slate-200">Email Summary</h3>
+              <p class="text-sm leading-6 text-slate-400">${email.summary}</p>
+            </div>
+            ${processed
+              ? processedLogHtml
+              : `
+                ${createPendingActionsHtml()}
+                <div class="execution-log hidden border-t border-slate-700 pt-4">
+                  <h4 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Execution log</h4>
+                  <ul class="execution-log-list space-y-1"></ul>
+                </div>
+                <div class="flex justify-end gap-2 border-t border-slate-700 pt-4">
+                  <button type="button" class="archive-button rounded-md border border-slate-600 px-3 py-2 text-xs font-medium text-slate-200 transition hover:bg-slate-700">Archive</button>
+                  <button type="button" class="delete-button rounded-md border border-slate-600 px-3 py-2 text-xs font-medium text-slate-300 transition hover:border-red-900 hover:bg-red-950 hover:text-red-200">Delete</button>
+                </div>
+              `
+            }
+          </div>
         </div>
-      </div>
+      `;
 
-    </div><!-- /inbox list -->
-  </main>
-</div>
+      // Toggle accordion on row click (not on Gmail link)
+      item.querySelector(".email-row").addEventListener("click", (event) => {
+        if (event.target.closest("a")) return;
+        toggleAccordion(item);
+      });
+      item.querySelector("a").addEventListener("click", (event) => event.stopPropagation());
 
+      if (!processed) {
+        const actionList = item.querySelector(".action-list");
+
+        // Seed AI-suggested rows for Action emails only
+        if (email.classification === "Action") {
+          email.actions.forEach((action) => {
+            actionList.appendChild(createActionRow(action.type, action.value, action.datetime || ""));
+          });
+        }
+
+        // + Task / + Event available for all classifications
+        item.querySelector(".add-task-button").addEventListener("click", () => {
+          actionList.appendChild(createActionRow("Task", ""));
+          checkDispositionGate(item);
+        });
+        item.querySelector(".add-event-button").addEventListener("click", () => {
+          actionList.appendChild(createActionRow("Event", "", ""));
+          checkDispositionGate(item);
+        });
+
+        item.querySelector(".archive-button").addEventListener("click", () => scheduleMoveToProcessed(item, "Archive"));
+        item.querySelector(".delete-button").addEventListener("click", () => scheduleMoveToProcessed(item, "Delete"));
+
+        // Set initial gate state — disables Archive/Delete when seeded rows exist
+        checkDispositionGate(item);
+      }
+
+      return item;
+    }
+
+    function renderPending() {
+      pendingList.innerHTML = "";
+      pendingSeed.map(cloneEmail).forEach((email) => {
+        pendingList.appendChild(createEmailItem(email, false));
+      });
+      updateCounts();
+    }
+
+    function renderProcessedInitial() {
+      processedList.innerHTML = "";
+      processedSeed.map(cloneEmail).forEach((email) => {
+        processedList.appendChild(createEmailItem(email, true, []));
+      });
+      updateCounts();
+    }
+
+    runTriageButton.addEventListener("click", () => {
+      runTriageButton.disabled = true;
+      triageSpinner.classList.remove("hidden");
+      triageLabel.textContent = "Triaging...";
+      window.setTimeout(() => {
+        renderPending();
+        runTriageButton.disabled = false;
+        triageSpinner.classList.add("hidden");
+        triageLabel.textContent = "Run Triage";
+      }, 1500);
+    });
+
+    renderProcessedInitial();
+    renderPending();
+  </script>
 </body>
 </html>
