@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-27 (3) — Email Management G3 complete (8 backend changes, 31/31 tests passing); Quinn UX-UI Designer hired; Kai AGENT.md SendMessage rule clarified.
+2026-06-27 (4) — System gaps resolved: Devon subagent registered, Kai Codex-first rule added, dashboard systemd auto-start live, subagent relay authorization deadlock fixed (CLAUDE.md + Kai/Devon AGENT.md).
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
