@@ -308,41 +308,23 @@ def test_get_emails_returns_all_ordered():
     assert emails[1]["gmail_url"] == "https://mail.google.com/mail/u/0/#all/older"
 
 
+def test_get_emails_returns_nested_actions():
+    """GET /emails includes a nested actions array per email."""
+    _insert_email("msg1", classification="Action")
+    _insert_action("msg1", "Task")
+
+    res = client.get("/api/email-management/emails", cookies=_auth_cookies())
+    assert res.status_code == 200
+    emails = res.json()["emails"]
+    assert len(emails) == 1
+    assert "actions" in emails[0]
+    assert len(emails[0]["actions"]) == 1
+    assert emails[0]["actions"][0]["type"] == "Task"
+
+
 # ════════════════════════════════════════════════════════════
 # SLICE 2 — Approve or decline email classification
 # ════════════════════════════════════════════════════════════
-
-def test_patch_email_approve():
-    _insert_email("msg1")
-    res = client.patch(
-        "/api/email-management/emails/msg1",
-        json={"triage_status": "approved"},
-        cookies=_auth_cookies(),
-    )
-    assert res.status_code == 200
-    data = res.json()
-    assert data["triage_status"] == "approved"
-    assert data["gmail_url"] == "https://mail.google.com/mail/u/0/#all/msg1"
-
-    conn = sqlite3.connect(TEST_DB_PATH)
-    row = conn.execute(
-        "SELECT triage_status, updated_at FROM emails WHERE id = 'msg1'"
-    ).fetchone()
-    conn.close()
-    assert row[0] == "approved"
-    assert row[1] is not None
-
-
-def test_patch_email_decline():
-    _insert_email("msg1")
-    res = client.patch(
-        "/api/email-management/emails/msg1",
-        json={"triage_status": "declined"},
-        cookies=_auth_cookies(),
-    )
-    assert res.status_code == 200
-    assert res.json()["triage_status"] == "declined"
-
 
 def test_patch_email_not_found():
     res = client.patch(
@@ -351,25 +333,6 @@ def test_patch_email_not_found():
         cookies=_auth_cookies(),
     )
     assert res.status_code == 404
-
-
-def test_patch_email_invalid_status():
-    _insert_email("msg1")
-    res = client.patch(
-        "/api/email-management/emails/msg1",
-        json={"triage_status": "banana"},
-        cookies=_auth_cookies(),
-    )
-    assert res.status_code == 422
-
-
-def test_patch_email_requires_auth():
-    _insert_email("msg1")
-    res = client.patch(
-        "/api/email-management/emails/msg1",
-        json={"triage_status": "approved"},
-    )
-    assert res.status_code == 401
 
 
 # ════════════════════════════════════════════════════════════
@@ -423,7 +386,7 @@ def test_patch_action_decline():
 
 def test_patch_action_approve_todoist():
     _insert_email("msg1")
-    action_id = _insert_action("msg1", "todoist")
+    action_id = _insert_action("msg1", "Task")
 
     with patch("email_management.execute_todoist_action", return_value="todoist-task-123"):
         res = client.patch(
@@ -434,14 +397,14 @@ def test_patch_action_approve_todoist():
 
     assert res.status_code == 200
     data = res.json()
-    assert data["status"] == "executed"
+    assert data["status"] == "approved"
     assert data["external_id"] == "todoist-task-123"
     assert data["executed_at"] is not None
 
 
 def test_patch_action_approve_calendar():
     _insert_email("msg1")
-    action_id = _insert_action("msg1", "calendar")
+    action_id = _insert_action("msg1", "Event")
 
     with patch("email_management.execute_calendar_action", return_value="cal-event-456"):
         res = client.patch(
@@ -452,15 +415,15 @@ def test_patch_action_approve_calendar():
 
     assert res.status_code == 200
     data = res.json()
-    assert data["status"] == "executed"
+    assert data["status"] == "approved"
     assert data["external_id"] == "cal-event-456"
 
 
 def test_patch_action_approve_archive():
     _insert_email("msg1")
-    action_id = _insert_action("msg1", "archive")
+    action_id = _insert_action("msg1", "Task")
 
-    with patch("email_management.execute_archive_action", return_value="msg1") as mock_archive:
+    with patch("email_management.execute_todoist_action", return_value="task-789") as mock_exec:
         res = client.patch(
             f"/api/email-management/actions/{action_id}",
             json={"status": "approved"},
@@ -469,14 +432,14 @@ def test_patch_action_approve_archive():
 
     assert res.status_code == 200
     data = res.json()
-    assert data["status"] == "executed"
-    mock_archive.assert_called_once()
+    assert data["status"] == "approved"
+    mock_exec.assert_called_once()
 
 
 def test_patch_action_execution_fails():
-    """When execution helper raises an exception: status=failed, no 500, response is 200."""
+    """When execution helper raises an exception, the endpoint returns 502."""
     _insert_email("msg1")
-    action_id = _insert_action("msg1", "todoist")
+    action_id = _insert_action("msg1", "Task")
 
     with patch("email_management.execute_todoist_action", side_effect=Exception("Todoist unavailable")):
         res = client.patch(
@@ -485,8 +448,7 @@ def test_patch_action_execution_fails():
             cookies=_auth_cookies(),
         )
 
-    assert res.status_code == 200
-    assert res.json()["status"] == "failed"
+    assert res.status_code == 502
 
 
 def test_patch_action_not_found():
@@ -519,6 +481,51 @@ def test_patch_action_requires_auth():
         json={"status": "declined"},
     )
     assert res.status_code == 401
+
+
+def test_create_action_for_email():
+    """POST /emails/{id}/actions inserts a manual action row."""
+    _insert_email("msg1")
+    res = client.post(
+        "/api/email-management/emails/msg1/actions",
+        json={"type": "Task", "name": "Follow up"},
+        cookies=_auth_cookies(),
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["type"] == "Task"
+    assert data["name"] == "Follow up"
+    assert data["status"] == "pending"
+
+
+def test_dispose_email_requires_resolved_actions():
+    """POST /emails/{id}/dispose → 409 while actions pending, 200 after all resolved."""
+    _insert_email("msg1")
+    action_id = _insert_action("msg1", "Task")
+
+    # Pending action blocks disposal
+    res = client.post(
+        "/api/email-management/emails/msg1/dispose",
+        json={"action": "archive"},
+        cookies=_auth_cookies(),
+    )
+    assert res.status_code == 409
+
+    # Resolve the action directly in DB
+    conn = sqlite3.connect(TEST_DB_PATH)
+    conn.execute("UPDATE actions SET status = 'approved' WHERE id = ?", (action_id,))
+    conn.commit()
+    conn.close()
+
+    # Now disposal succeeds
+    with patch("email_management.execute_archive_action", return_value="msg1"):
+        res = client.post(
+            "/api/email-management/emails/msg1/dispose",
+            json={"action": "archive"},
+            cookies=_auth_cookies(),
+        )
+    assert res.status_code == 200
+    assert res.json()["triage_status"] == "archived"
 
 
 # ════════════════════════════════════════════════════════════
