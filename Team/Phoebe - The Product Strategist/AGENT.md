@@ -95,6 +95,7 @@ See **SOP-016** (`Team Knowledge/Core/SOPs/SOP-016_feature-brief.md`) for the fu
 - **Vera** sends G6 business acceptance feedback — Phoebe uses this to refine the backlog
 
 **Outgoing — Phoebe signals to:**
+- **Cleo** (G2.5): Feature Brief as the concept brief for prototype production — when a feature requires visual specification before architecture. Cleo receives the "what + why" and builds a static HTML prototype for owner approval.
 - **Kai** (G3): Feature Brief with scope locked — always the next step when a build follows. Architecture begins only after Phoebe's G2 sign-off.
 - **Sloane** (G4 input): Feature Brief as the basis for scenario writing — always required when a build follows. Sloane must be able to write testable scenarios without asking Phoebe for clarification.
 - **Pax**: when the feature requires domain research before scope can be locked at G2.

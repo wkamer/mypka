@@ -93,6 +93,7 @@ See **SOP-017** (`Team Knowledge/Core/SOPs/SOP-017_vertical-slice-gherkin.md`) f
 - **Kai** delivers architecture decisions and technical constraints (G3 output) — Sloane incorporates these into the slice plan before writing scenarios
 
 **Outgoing — Sloane signals to:**
+- **Cleo** (G2.5 input): a single BDD acceptance sentence that scopes what the prototype must demonstrate — sent before Cleo starts building, so the prototype maps directly to what Sloane will later write scenarios for. This is lighter than a full G4 brief; it anchors the prototype without writing the full scenario set early.
 - **Domain implementer** (G5): G4 brief containing slice definition, Gherkin feature file, and acceptance criteria. The implementer is determined by domain — Devon for full-stack features, Sasha for Shopify, Finn for WordPress. Larry's routing brief specifies who builds. Sloane does not choose the implementer herself.
 - **Phoebe**: when a Feature Brief is too vague to write testable scenarios from — Sloane flags this before attempting, never after struggling with an incomplete brief.
 - **Larry**: when a G4 brief cannot be completed due to missing or contradictory architecture decisions — route back before writing.

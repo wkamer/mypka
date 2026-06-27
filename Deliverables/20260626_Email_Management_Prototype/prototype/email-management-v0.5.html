@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Management — Prototype v0.5</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+<div class="min-h-screen bg-slate-900 p-6">
+
+  <!-- Header -->
+  <header class="flex items-center gap-4 mb-8">
+    <button class="text-sm text-slate-400 hover:text-slate-200 transition-colors">
+      &larr; Back
+    </button>
+    <h1 class="text-xl font-semibold text-slate-100">Email Management</h1>
+  </header>
+
+  <!-- Main content -->
+  <main class="max-w-2xl mx-auto">
+
+    <!-- Run Triage button row -->
+    <div class="flex items-center gap-4 mb-6">
+      <button class="px-4 py-2 text-sm rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-100 transition-colors font-medium">
+        Run Triage
+      </button>
+    </div>
+
+    <!-- ─── PENDING SECTION ─────────────────────────────────────────── -->
+    <div>
+
+      <!-- Section header -->
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-medium whitespace-nowrap">
+          Pending &middot; <span id="pending-count">2</span>
+        </span>
+        <div class="flex-1 border-t border-slate-700"></div>
+      </div>
+
+      <!-- Pending card -->
+      <div class="bg-slate-800 rounded-lg overflow-hidden">
+        <div id="pending-list" class="divide-y divide-slate-700">
+
+
+          <!-- ============================================================
+               ROW 1 — Jan de Vries / Factuur april 2026
+               Action · 1 content action
+               ============================================================ -->
+          <div id="email-1">
+
+            <!-- List row (clickable) -->
+            <div class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer select-none"
+                 onclick="toggleAccordion('email-1')">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span id="email-1-sender" class="text-slate-200 text-sm font-medium truncate">Jan de Vries</span>
+                  <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-amber-900 text-amber-200">Action</span>
+                  <span id="email-1-processed"
+                        class="hidden inline-flex items-center gap-1 text-xs font-medium text-green-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="3"
+                         stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Processed
+                  </span>
+                  <a href="https://mail.google.com/mail/u/0/#all/example1"
+                     target="_blank" rel="noopener noreferrer"
+                     class="shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
+                     aria-label="Open in Gmail"
+                     onclick="event.stopPropagation()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                      <polyline points="15 3 21 3 21 9" />
+                      <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                  </a>
+                </div>
+                <div class="flex items-baseline justify-between gap-4 mt-0.5">
+                  <p id="email-1-subject" class="text-slate-400 text-xs truncate">Factuur april 2026</p>
+                  <span class="text-slate-600 text-xs shrink-0 whitespace-nowrap">15 jun, 09:42</span>
+                </div>
+              </div>
+              <svg id="email-1-chevron"
+                   class="shrink-0 text-slate-500 transition-transform duration-200 rotate-180"
+                   xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+
+            <!-- Accordion panel — OPEN -->
+            <div id="email-1-panel" class="mx-4 mb-3 border border-slate-700 rounded bg-slate-900 px-4 py-3">
+
+              <div class="mb-3">
+                <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-amber-900 text-amber-200">Action</span>
+              </div>
+
+              <p class="text-slate-300 text-sm mb-4">
+                Factuur van &euro;340 voor advieswerk april. Betaaltermijn 14 dagen.
+              </p>
+
+              <!-- Content action rows -->
+              <div class="border-t border-slate-700 pt-3 space-y-2">
+
+                <!-- Action row: Task -->
+                <div class="flex items-center justify-between gap-4 py-1">
+                  <div class="min-w-0 flex-1">
+                    <p class="text-xs text-slate-500 uppercase tracking-wide font-medium leading-none mb-0.5">Task</p>
+                    <p class="text-slate-200 text-sm">Factuur betalen voor 15 juli</p>
+                  </div>
+                  <div id="email-1-action-1-buttons" class="flex gap-2 shrink-0">
+                    <button onclick="approve('email-1', 'action-1')"
+                            class="px-3 py-1 text-xs font-medium rounded bg-slate-700 border border-slate-600 text-slate-200 hover:bg-green-900 hover:border-green-800 hover:text-green-200 transition-colors">
+                      Approve
+                    </button>
+                    <button onclick="decline('email-1', 'action-1')"
+                            class="px-3 py-1 text-xs font-medium rounded bg-slate-700 border border-slate-600 text-slate-200 hover:bg-slate-600 transition-colors">
+                      Decline
+                    </button>
+                  </div>
+                  <span id="email-1-action-1-approved"
+                        class="hidden text-xs font-medium px-2 py-0.5 rounded bg-green-900 text-green-200 shrink-0">
+                    &#10003; Approved
+                  </span>
+                  <span id="email-1-action-1-declined"
+                        class="hidden text-xs font-medium text-slate-500 shrink-0">
+                    Declined
+                  </span>
+                </div>
+
+              </div>
+
+              <!-- Add task -->
+              <div class="border-t border-slate-700 pt-3 mt-2">
+                <button onclick="toggleAddTask('email-1')"
+                        class="text-xs text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-1">
+                  <span class="text-sm leading-none font-light">+</span> Add task
+                </button>
+                <div id="email-1-add-task-input" class="hidden mt-2">
+                  <div class="flex gap-2 items-center">
+                    <input type="text" placeholder="Describe the task..."
+                           class="flex-1 text-xs bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-slate-500" />
+                    <button class="px-3 py-1.5 text-xs font-medium rounded bg-slate-700 border border-slate-600 text-slate-200 hover:bg-slate-600 transition-colors shrink-0">
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Disposition buttons -->
+              <div class="border-t border-slate-700 pt-3 mt-2 flex justify-end gap-2">
+                <button onclick="chooseDisposition('email-1')"
+                        class="px-3 py-1 text-xs font-medium rounded text-slate-300 hover:text-slate-100 hover:bg-slate-700 transition-colors">
+                  Archive
+                </button>
+                <button onclick="chooseDisposition('email-1')"
+                        class="px-3 py-1 text-xs font-medium rounded text-red-300 hover:text-red-200 hover:bg-red-950 transition-colors">
+                  Delete
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+
+          <!-- ============================================================
+               ROW 2 — Remko Kamer / Broederweekend datum prikken
+               Information · zero content actions
+               ============================================================ -->
+          <div id="email-2">
+
+            <!-- List row (clickable) -->
+            <div class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer select-none"
+                 onclick="toggleAccordion('email-2')">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span id="email-2-sender" class="text-slate-200 text-sm font-medium truncate">Remko Kamer</span>
+                  <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-200">Information</span>
+                  <span id="email-2-processed"
+                        class="hidden inline-flex items-center gap-1 text-xs font-medium text-green-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="3"
+                         stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Processed
+                  </span>
+                  <a href="https://mail.google.com/mail/u/0/#all/example2"
+                     target="_blank" rel="noopener noreferrer"
+                     class="shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
+                     aria-label="Open in Gmail"
+                     onclick="event.stopPropagation()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                      <polyline points="15 3 21 3 21 9" />
+                      <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                  </a>
+                </div>
+                <div class="flex items-baseline justify-between gap-4 mt-0.5">
+                  <p id="email-2-subject" class="text-slate-400 text-xs truncate">Broederweekend datum prikken</p>
+                  <span class="text-slate-600 text-xs shrink-0 whitespace-nowrap">13 jun, 11:20</span>
+                </div>
+              </div>
+              <svg id="email-2-chevron"
+                   class="shrink-0 text-slate-500 transition-transform duration-200 rotate-180"
+                   xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+
+            <!-- Accordion panel — OPEN, Information, zero content actions -->
+            <div id="email-2-panel" class="mx-4 mb-3 border border-slate-700 rounded bg-slate-900 px-4 py-3">
+
+              <div class="mb-3">
+                <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-200">Information</span>
+              </div>
+
+              <p class="text-slate-300 text-sm">
+                Remko vraagt om een datum voor het broederweekend. Geen actie vereist.
+              </p>
+
+              <!-- Add task -->
+              <div class="border-t border-slate-700 pt-3 mt-3">
+                <button onclick="toggleAddTask('email-2')"
+                        class="text-xs text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-1">
+                  <span class="text-sm leading-none font-light">+</span> Add task
+                </button>
+                <div id="email-2-add-task-input" class="hidden mt-2">
+                  <div class="flex gap-2 items-center">
+                    <input type="text" placeholder="Describe the task..."
+                           class="flex-1 text-xs bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-slate-500" />
+                    <button class="px-3 py-1.5 text-xs font-medium rounded bg-slate-700 border border-slate-600 text-slate-200 hover:bg-slate-600 transition-colors shrink-0">
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Disposition buttons -->
+              <div class="border-t border-slate-700 pt-3 mt-2 flex justify-end gap-2">
+                <button onclick="chooseDisposition('email-2')"
+                        class="px-3 py-1 text-xs font-medium rounded text-slate-300 hover:text-slate-100 hover:bg-slate-700 transition-colors">
+                  Archive
+                </button>
+                <button onclick="chooseDisposition('email-2')"
+                        class="px-3 py-1 text-xs font-medium rounded text-red-300 hover:text-red-200 hover:bg-red-950 transition-colors">
+                  Delete
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ─── PROCESSED SECTION ──────────────────────────────────────────── -->
+    <div class="mt-6">
+
+      <!-- Section header -->
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs uppercase tracking-widest text-slate-500 font-medium whitespace-nowrap">
+          Processed &middot; <span id="processed-count">1</span>
+        </span>
+        <div class="flex-1 border-t border-slate-700"></div>
+      </div>
+
+      <!-- Processed card -->
+      <div class="bg-slate-800 rounded-lg overflow-hidden">
+        <div id="processed-list" class="divide-y divide-slate-700">
+
+
+          <!-- ============================================================
+               ROW 3 — noreply@ing.nl / ING afschrift
+               Pre-existing processed state
+               ============================================================ -->
+          <div id="email-3">
+
+            <div class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer select-none"
+                 onclick="toggleAccordion('email-3')">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-slate-500 text-sm font-medium truncate">noreply@ing.nl</span>
+                  <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="3"
+                         stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Processed
+                  </span>
+                  <a href="https://mail.google.com/mail/u/0/#all/example3"
+                     target="_blank" rel="noopener noreferrer"
+                     class="shrink-0 text-slate-600 hover:text-slate-400 transition-colors"
+                     aria-label="Open in Gmail"
+                     onclick="event.stopPropagation()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                      <polyline points="15 3 21 3 21 9" />
+                      <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                  </a>
+                </div>
+                <div class="flex items-baseline justify-between gap-4 mt-0.5">
+                  <p class="text-slate-600 text-xs truncate">ING afschrift</p>
+                  <span class="text-slate-700 text-xs shrink-0 whitespace-nowrap">14 jun, 17:03</span>
+                </div>
+              </div>
+              <svg id="email-3-chevron"
+                   class="shrink-0 text-slate-600 transition-transform duration-200"
+                   xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+
+            <div id="email-3-panel" class="hidden mx-4 mb-3 border border-slate-700 rounded bg-slate-900 px-4 py-3">
+              <p class="text-slate-500 text-sm">This email has been processed.</p>
+            </div>
+
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* THROWAWAY — simulation only, Devon re-implements in React */
+
+// Per-email state: tracks disposition choice and content action resolution
+var emailState = {
+  'email-1': { dispositionChosen: false, totalActions: 1, resolvedActions: 0 },
+  'email-2': { dispositionChosen: false, totalActions: 0, resolvedActions: 0 }
+};
+
+function toggleAccordion(emailId) {
+  var panel = document.getElementById(emailId + '-panel');
+  var chevron = document.getElementById(emailId + '-chevron');
+  if (!panel || !chevron) return;
+  var isHidden = panel.classList.contains('hidden');
+  panel.classList.toggle('hidden', !isHidden);
+  chevron.classList.toggle('rotate-180', isHidden);
+}
+
+function approve(emailId, actionId) {
+  var buttons = document.getElementById(emailId + '-' + actionId + '-buttons');
+  var label = document.getElementById(emailId + '-' + actionId + '-approved');
+  if (!buttons || !label) return;
+  buttons.classList.add('hidden');
+  label.classList.remove('hidden');
+  if (emailState[emailId]) emailState[emailId].resolvedActions++;
+  checkReadyToProcess(emailId);
+}
+
+function decline(emailId, actionId) {
+  var buttons = document.getElementById(emailId + '-' + actionId + '-buttons');
+  var label = document.getElementById(emailId + '-' + actionId + '-declined');
+  if (!buttons || !label) return;
+  buttons.classList.add('hidden');
+  label.classList.remove('hidden');
+  if (emailState[emailId]) emailState[emailId].resolvedActions++;
+  checkReadyToProcess(emailId);
+}
+
+// Called by Archive or Delete — either choice resolves the disposition
+function chooseDisposition(emailId) {
+  if (emailState[emailId]) emailState[emailId].dispositionChosen = true;
+  checkReadyToProcess(emailId);
+}
+
+// Ready when: disposition chosen AND all content actions resolved
+// (emails with zero content actions move on disposition alone)
+function checkReadyToProcess(emailId) {
+  var state = emailState[emailId];
+  if (!state) return;
+  if (state.dispositionChosen && state.resolvedActions >= state.totalActions) {
+    moveToProcessed(emailId);
+  }
+}
+
+function moveToProcessed(emailId) {
+  // Collapse panel
+  var panel = document.getElementById(emailId + '-panel');
+  if (panel) panel.classList.add('hidden');
+
+  // Reset chevron to closed state
+  var chevron = document.getElementById(emailId + '-chevron');
+  if (chevron) chevron.classList.remove('rotate-180');
+
+  // Mute sender
+  var sender = document.getElementById(emailId + '-sender');
+  if (sender) {
+    sender.classList.remove('text-slate-200');
+    sender.classList.add('text-slate-500');
+  }
+
+  // Mute subject
+  var subject = document.getElementById(emailId + '-subject');
+  if (subject) {
+    subject.classList.remove('text-slate-400');
+    subject.classList.add('text-slate-600');
+  }
+
+  // Show processed indicator
+  var indicator = document.getElementById(emailId + '-processed');
+  if (indicator) indicator.classList.remove('hidden');
+
+  // Move DOM element into the processed list
+  var emailEl = document.getElementById(emailId);
+  var processedList = document.getElementById('processed-list');
+  if (emailEl && processedList) {
+    processedList.appendChild(emailEl);
+  }
+
+  updateCounts();
+}
+
+function updateCounts() {
+  var pendingList = document.getElementById('pending-list');
+  var processedList = document.getElementById('processed-list');
+  var pendingCount = document.getElementById('pending-count');
+  var processedCount = document.getElementById('processed-count');
+  if (pendingList && pendingCount) pendingCount.textContent = pendingList.children.length;
+  if (processedList && processedCount) processedCount.textContent = processedList.children.length;
+}
+
+function toggleAddTask(emailId) {
+  var inputArea = document.getElementById(emailId + '-add-task-input');
+  if (!inputArea) return;
+  inputArea.classList.toggle('hidden');
+}
+</script>
+
+</body>
+</html>

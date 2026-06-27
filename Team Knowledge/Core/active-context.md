@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-26 — CLAUDE.md orchestrator enforcement: Codex audit (9 gaps), Iris review (Correct, Gap 7 revised), all 9 applied and pushed. Larry's Iron Rule now has explicit domain-question prohibition and structural teeth.
+2026-06-27 — Email Management S1/S2/S3 opgeleverd, multi-model review, rename email-triage→email-management, Cleo (Design Engineer) ingehuurd, GL-024 bijgewerkt, prototype v0.5 klaar — iteraties gaan door volgende sessie.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -17,9 +17,12 @@
 - Tricolarae: S3 MODEL — wacht op Meta product-test data
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
-- Email triage S1/S2/S3: done — backend fixed, inbox list live, accordion live (commits 732a8b0, 2e6cac8, b850ad6)
-- Email triage accessibility findings (S3): parked in EmailTriage.jsx TODO block
-- Kai: email-triage.db toevoegen aan backup script — go-live blocker
+- Email management S1/S2/S3: done (commits 732a8b0, 2e6cac8, b850ad6, 3dadaf5)
+- Email management prototype: v0.5 klaar, iteraties gaan door volgende sessie (Cleo)
+- Phoebe: product-brief.md updaten met v0.5 beslissingen (team_task 110)
+- Kai: email-management.db toevoegen aan backup script — go-live blocker (team_task 109)
+- Sloane: slices + acceptatiezinnen na prototype goedkeuring
+- Dashboard: default password wijzigen (admin/admin)
 
 ## Active goals
 - G-Scheiding volledig afgerond

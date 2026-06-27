@@ -36,6 +36,25 @@ No gate may be skipped. No gate advances without the required output from the pr
 **Output:** Signed Feature Brief (see SOP-016)
 **Passes when:** Feature Brief contains problem statement, user value (observable), scope boundary, non-goals, and feature-level acceptance criteria — and Sloane can write testable scenarios from it without asking Phoebe
 
+#### G2 variant: UI features — Designing in the browser
+
+For any feature with a visible UI component, Phoebe produces a **flat HTML prototype** in addition to (or instead of) a prose brief. This is the primary G2 deliverable for UI features.
+
+**What it is:** A single `.html` file using Tailwind CDN (`<script src="https://cdn.tailwindcss.com">`). No build step, no React, no Node. Opens directly in a browser. Uses identical Tailwind classes to what Devon will build.
+
+**Who owns it:** Phoebe. She iterates on it until the owner approves. The approved flat file is the frozen design.
+
+**Where it lives:** `Deliverables/YYYYMMDD_Domain_feature/prototype/feature-name-v1.html`
+
+**Rules:**
+- Time-box: max 4 hours per prototype iteration
+- Owner approves visually before G3 begins
+- Devon does not touch the dashboard until the owner has approved the prototype
+- Devon ports the approved HTML to React — he does not redesign. No design decisions at G5.
+- The prototype is throwaway. Devon re-implements; copy-paste is not expected.
+
+**MVP gate:** A feature may not ship to the running dashboard until the owner has accepted the prototype at G2 and signed off at G6. "Designing in the browser" means no partial builds land in production while the design is still open.
+
 ### G3 — Kai (Architecture)
 
 **Input required:** G2 Feature Brief
@@ -82,3 +101,4 @@ No gate may be skipped. No gate advances without the required output from the pr
 |---|---|---|
 | 2026-06-25 | Created — delivery pipeline gate reference for myPKA product builds | Larry |
 | 2026-06-25 | G5: added slice-at-a-time delivery rule, 15-min verifiability size guideline, and Hard Rule | Sloane |
+| 2026-06-26 | G2: added "designing in the browser" variant for UI features — flat HTML prototype as primary G2 deliverable, MVP gate rule | Larry |

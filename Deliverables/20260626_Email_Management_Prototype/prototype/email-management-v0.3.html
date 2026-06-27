@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Management — Prototype v0.3</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+<div class="min-h-screen bg-slate-900 p-6">
+
+  <!-- Header -->
+  <header class="flex items-center gap-4 mb-8">
+    <button class="text-sm text-slate-400 hover:text-slate-200 transition-colors">
+      &larr; Back
+    </button>
+    <h1 class="text-xl font-semibold text-slate-100">Email Management</h1>
+  </header>
+
+  <!-- Main content -->
+  <main class="max-w-2xl mx-auto">
+
+    <!-- Run Triage button row -->
+    <div class="flex items-center gap-4 mb-6">
+      <button class="px-4 py-2 text-sm rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-100 transition-colors font-medium">
+        Run Triage
+      </button>
+    </div>
+
+    <!-- Inbox list -->
+    <div class="bg-slate-800 rounded-lg overflow-hidden divide-y divide-slate-700">
+
+
+      <!-- ============================================================
+           ROW 1 — Jan de Vries / Factuur april 2026
+           Accordion: OPEN
+           AC-12: AI summary shown inside panel
+           AC-13: Action badge at top of panel
+           AC-14: Two action rows — Todoist + Archive
+           AC-15/17/18: Approve hides buttons, shows Approved label
+                        Decline hides buttons, shows Declined label
+           AC-19: Processed indicator appears when all actions resolved
+           ============================================================ -->
+      <div id="email-1">
+
+        <!-- List row (clickable) -->
+        <div class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer select-none"
+             onclick="toggleAccordion('email-1')">
+          <div class="flex-1 min-w-0">
+            <!-- Line 1: sender + classification badge + processed indicator + gmail icon -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-slate-200 text-sm font-medium truncate">Jan de Vries</span>
+              <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-amber-900 text-amber-200">Action</span>
+              <!-- AC-19: appears only after all actions are approved or declined -->
+              <span id="email-1-processed"
+                    class="hidden inline-flex items-center gap-1 text-xs font-medium text-green-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="3"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Processed
+              </span>
+              <!-- Gmail icon -->
+              <a href="https://mail.google.com/mail/u/0/#all/example1"
+                 target="_blank" rel="noopener noreferrer"
+                 class="shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
+                 aria-label="Open in Gmail"
+                 onclick="event.stopPropagation()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
+            </div>
+            <!-- Line 2: subject + date -->
+            <div class="flex items-baseline justify-between gap-4 mt-0.5">
+              <p class="text-slate-400 text-xs truncate">Factuur april 2026</p>
+              <span class="text-slate-600 text-xs shrink-0 whitespace-nowrap">15 jun, 09:42</span>
+            </div>
+          </div>
+          <!-- Chevron — rotated = open -->
+          <svg id="email-1-chevron"
+               class="shrink-0 text-slate-500 transition-transform duration-200 rotate-180"
+               xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+
+        <!-- Accordion panel — OPEN (no hidden class) -->
+        <div id="email-1-panel" class="mx-4 mb-3 border border-slate-700 rounded bg-slate-900 px-4 py-3">
+
+          <!-- AC-13: classification badge at top of panel -->
+          <div class="mb-3">
+            <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-amber-900 text-amber-200">Action</span>
+          </div>
+
+          <!-- AC-12: AI summary — read-only -->
+          <p class="text-slate-300 text-sm mb-4">
+            Factuur van &euro;340 voor advieswerk april. Betaaltermijn 14 dagen.
+          </p>
+
+          <!-- AC-14: suggested action rows -->
+          <div class="border-t border-slate-700 pt-3 space-y-2">
+
+            <!-- Action row 1: Todoist — "Factuur betalen voor 15 juli" -->
+            <div class="flex items-center justify-between gap-4 py-1">
+              <div class="min-w-0 flex-1">
+                <p class="text-xs text-slate-500 uppercase tracking-wide font-medium leading-none mb-0.5">Todoist</p>
+                <p class="text-slate-200 text-sm">Factuur betalen voor 15 juli</p>
+              </div>
+              <!-- Buttons — hidden after Approve or Decline (AC-14) -->
+              <div id="email-1-action-1-buttons" class="flex gap-2 shrink-0">
+                <button onclick="approve('email-1', 'action-1', 2)"
+                        class="px-3 py-1 text-xs font-medium rounded bg-slate-700 border border-slate-600 text-slate-200 hover:bg-green-900 hover:border-green-800 hover:text-green-200 transition-colors">
+                  Approve
+                </button>
+                <button onclick="decline('email-1', 'action-1', 2)"
+                        class="px-3 py-1 text-xs font-medium rounded bg-slate-700 border border-slate-600 text-slate-200 hover:bg-slate-600 transition-colors">
+                  Decline
+                </button>
+              </div>
+              <!-- AC-15: Approved state — hidden until Approve clicked -->
+              <span id="email-1-action-1-approved"
+                    class="hidden text-xs font-medium px-2 py-0.5 rounded bg-green-900 text-green-200 shrink-0">
+                &#10003; Approved
+              </span>
+              <!-- AC-18: Declined state — hidden until Decline clicked -->
+              <span id="email-1-action-1-declined"
+                    class="hidden text-xs font-medium text-slate-500 shrink-0">
+                Declined
+              </span>
+            </div>
+
+            <!-- Action row 2: Archive — "Archiveer email na betaling" -->
+            <div class="flex items-center justify-between gap-4 py-1">
+              <div class="min-w-0 flex-1">
+                <p class="text-xs text-slate-500 uppercase tracking-wide font-medium leading-none mb-0.5">Archive</p>
+                <p class="text-slate-200 text-sm">Archiveer email na betaling</p>
+              </div>
+              <!-- Buttons — hidden after Approve or Decline (AC-14) -->
+              <div id="email-1-action-2-buttons" class="flex gap-2 shrink-0">
+                <button onclick="approve('email-1', 'action-2', 2)"
+                        class="px-3 py-1 text-xs font-medium rounded bg-slate-700 border border-slate-600 text-slate-200 hover:bg-green-900 hover:border-green-800 hover:text-green-200 transition-colors">
+                  Approve
+                </button>
+                <button onclick="decline('email-1', 'action-2', 2)"
+                        class="px-3 py-1 text-xs font-medium rounded bg-slate-700 border border-slate-600 text-slate-200 hover:bg-slate-600 transition-colors">
+                  Decline
+                </button>
+              </div>
+              <!-- AC-17: Approved state — hidden until Approve clicked -->
+              <span id="email-1-action-2-approved"
+                    class="hidden text-xs font-medium px-2 py-0.5 rounded bg-green-900 text-green-200 shrink-0">
+                &#10003; Approved
+              </span>
+              <!-- AC-18: Declined state — hidden until Decline clicked -->
+              <span id="email-1-action-2-declined"
+                    class="hidden text-xs font-medium text-slate-500 shrink-0">
+                Declined
+              </span>
+            </div>
+
+          </div><!-- /action rows -->
+        </div><!-- /panel email-1 -->
+      </div><!-- /row 1 -->
+
+
+      <!-- ============================================================
+           ROW 2 — Remko Kamer / Broederweekend datum prikken
+           Accordion: OPEN
+           AC-20: FYI with zero suggested actions
+                  Panel shows only classification badge + summary
+           ============================================================ -->
+      <div id="email-2">
+
+        <!-- List row (clickable) -->
+        <div class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer select-none"
+             onclick="toggleAccordion('email-2')">
+          <div class="flex-1 min-w-0">
+            <!-- Line 1 -->
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-200 text-sm font-medium truncate">Remko Kamer</span>
+              <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-200">FYI</span>
+              <!-- Gmail icon -->
+              <a href="https://mail.google.com/mail/u/0/#all/example2"
+                 target="_blank" rel="noopener noreferrer"
+                 class="shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
+                 aria-label="Open in Gmail"
+                 onclick="event.stopPropagation()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
+            </div>
+            <!-- Line 2 -->
+            <div class="flex items-baseline justify-between gap-4 mt-0.5">
+              <p class="text-slate-400 text-xs truncate">Broederweekend datum prikken</p>
+              <span class="text-slate-600 text-xs shrink-0 whitespace-nowrap">13 jun, 11:20</span>
+            </div>
+          </div>
+          <!-- Chevron — rotated = open -->
+          <svg id="email-2-chevron"
+               class="shrink-0 text-slate-500 transition-transform duration-200 rotate-180"
+               xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+
+        <!-- Accordion panel — OPEN, FYI, zero actions (AC-20) -->
+        <div id="email-2-panel" class="mx-4 mb-3 border border-slate-700 rounded bg-slate-900 px-4 py-3">
+
+          <!-- AC-13: classification badge at top of panel -->
+          <div class="mb-3">
+            <span class="inline-block px-2 py-0.5 rounded text-xs font-medium bg-blue-900 text-blue-200">FYI</span>
+          </div>
+
+          <!-- AC-12: AI summary — read-only -->
+          <!-- AC-20: no action rows below — panel ends here -->
+          <p class="text-slate-300 text-sm">
+            Remko vraagt om een datum voor het broederweekend. Geen actie vereist.
+          </p>
+
+        </div><!-- /panel email-2 -->
+      </div><!-- /row 2 -->
+
+
+      <!-- ============================================================
+           ROW 3 — noreply@ing.nl / ING afschrift
+           Accordion: CLOSED
+           AC-19: visual Processed state — muted text, green checkmark
+           ============================================================ -->
+      <div id="email-3">
+
+        <!-- List row — processed visual state (muted, checkmark) -->
+        <div class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer select-none"
+             onclick="toggleAccordion('email-3')">
+          <div class="flex-1 min-w-0">
+            <!-- Line 1: muted sender + green checkmark + processed label -->
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500 text-sm font-medium truncate">noreply@ing.nl</span>
+              <!-- Green checkmark — processed indicator (AC-19) -->
+              <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="3"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Processed
+              </span>
+              <!-- Gmail icon — muted -->
+              <a href="https://mail.google.com/mail/u/0/#all/example3"
+                 target="_blank" rel="noopener noreferrer"
+                 class="shrink-0 text-slate-600 hover:text-slate-400 transition-colors"
+                 aria-label="Open in Gmail"
+                 onclick="event.stopPropagation()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
+            </div>
+            <!-- Line 2: muted subject + date -->
+            <div class="flex items-baseline justify-between gap-4 mt-0.5">
+              <p class="text-slate-600 text-xs truncate">ING afschrift</p>
+              <span class="text-slate-700 text-xs shrink-0 whitespace-nowrap">14 jun, 17:03</span>
+            </div>
+          </div>
+          <!-- Chevron — not rotated = closed -->
+          <svg id="email-3-chevron"
+               class="shrink-0 text-slate-600 transition-transform duration-200"
+               xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+
+        <!-- Accordion panel — CLOSED (hidden) -->
+        <div id="email-3-panel" class="hidden mx-4 mb-3 border border-slate-700 rounded bg-slate-900 px-4 py-3">
+          <p class="text-slate-500 text-sm">This email has been processed.</p>
+        </div>
+
+      </div><!-- /row 3 -->
+
+
+    </div><!-- /inbox list -->
+  </main>
+</div>
+
+<script>
+/* THROWAWAY — simulation only, Devon re-implements in React */
+
+function toggleAccordion(emailId) {
+  var panel = document.getElementById(emailId + '-panel');
+  var chevron = document.getElementById(emailId + '-chevron');
+  if (!panel || !chevron) return;
+  var isHidden = panel.classList.contains('hidden');
+  panel.classList.toggle('hidden', !isHidden);
+  chevron.classList.toggle('rotate-180', isHidden);
+}
+
+function approve(emailId, actionId, totalActions) {
+  var buttons = document.getElementById(emailId + '-' + actionId + '-buttons');
+  var label = document.getElementById(emailId + '-' + actionId + '-approved');
+  if (!buttons || !label) return;
+  buttons.classList.add('hidden');
+  label.classList.remove('hidden');
+  checkAllResolved(emailId, totalActions);
+}
+
+function decline(emailId, actionId, totalActions) {
+  var buttons = document.getElementById(emailId + '-' + actionId + '-buttons');
+  var label = document.getElementById(emailId + '-' + actionId + '-declined');
+  if (!buttons || !label) return;
+  buttons.classList.add('hidden');
+  label.classList.remove('hidden');
+  checkAllResolved(emailId, totalActions);
+}
+
+function checkAllResolved(emailId, totalActions) {
+  var resolved = 0;
+  for (var i = 1; i <= totalActions; i++) {
+    var approved = document.getElementById(emailId + '-action-' + i + '-approved');
+    var declined = document.getElementById(emailId + '-action-' + i + '-declined');
+    if (approved && !approved.classList.contains('hidden')) resolved++;
+    if (declined && !declined.classList.contains('hidden')) resolved++;
+  }
+  if (resolved >= totalActions) {
+    var indicator = document.getElementById(emailId + '-processed');
+    if (indicator) indicator.classList.remove('hidden');
+  }
+}
+</script>
+
+</body>
+</html>
