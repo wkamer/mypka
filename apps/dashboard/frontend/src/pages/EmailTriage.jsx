@@ -45,59 +45,307 @@ function TriageStatusBadge({ value }) {
   );
 }
 
-function ActionTypeBadge({ value }) {
-  const styles = {
-    todoist: "bg-red-900 text-red-200",
-    calendar: "bg-indigo-900 text-indigo-200",
-    archive: "bg-slate-600 text-slate-300",
-  };
-  return (
-    <span
-      className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-        styles[value] || "bg-slate-700 text-slate-400"
-      }`}
-    >
-      {value}
-    </span>
-  );
-}
-
-function ActionStatusBadge({ value, externalId }) {
-  const styles = {
-    pending: "bg-slate-700 text-slate-300",
-    executed: "bg-green-900 text-green-200",
-    failed: "bg-red-900 text-red-300",
-    declined: "bg-slate-600 text-slate-400",
-  };
-  const label = {
-    pending: "Pending",
-    executed: externalId ? `Executed (${externalId})` : "Executed",
-    failed: "Failed",
-    declined: "Declined",
-  };
-  const cls = styles[value] || "bg-slate-700 text-slate-400";
-  return (
-    <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${cls}`}>
-      {label[value] || value}
-    </span>
-  );
-}
-
 // ── Sender parsing ──
 
 function parseSenderName(sender) {
   if (!sender) return "";
-  // "Display Name <addr@domain>" — extract display name
   const match = sender.match(/^([^<]+?)\s*</);
   if (match) {
     const name = match[1].trim().replace(/^["']|["']$/g, "");
     if (name) return name;
   }
-  // fallback: return raw sender string (plain address or unknown format)
   return sender;
 }
 
-// ── Inbox row (S3: accordion) ──
+// ── ActionRowV3 — Slice 3 editable action row ──
+
+/**
+ * Props:
+ *   action       — action object from API: { id, type, name, event_datetime, status, ... }
+ *   editName     — current value in the name input (controlled)
+ *   editDatetime — current value in the datetime input (controlled, Event rows only)
+ *   onNameChange     — (value: string) => void
+ *   onDatetimeChange — (value: string) => void
+ *   onApprove    — () => void
+ *   onDecline    — () => void
+ */
+function ActionRowV3({
+  action,
+  editName,
+  editDatetime,
+  onNameChange,
+  onDatetimeChange,
+  onApprove,
+  onDecline,
+}) {
+  const isResolved = action.status !== "pending";
+  const isApproved = action.status === "approved";
+  const isDeclined = action.status === "declined";
+
+  return (
+    <div
+      className={`rounded px-3 py-2 text-sm border ${
+        isDeclined
+          ? "bg-slate-800 border-slate-700 opacity-50"
+          : "bg-slate-900 border-slate-700"
+      }`}
+    >
+      <div className="flex items-start gap-2">
+        <span className="text-xs text-slate-500 uppercase mt-2 w-10 shrink-0 font-medium">
+          {action.type}
+        </span>
+        <div className="flex-1 min-w-0 space-y-1.5">
+          <input
+            type="text"
+            value={editName}
+            onChange={(e) => onNameChange(e.target.value)}
+            disabled={isResolved}
+            placeholder="Enter name..."
+            aria-label="Action name"
+            className="w-full bg-slate-800 text-slate-200 text-sm px-2 py-1 rounded border border-slate-700 placeholder-slate-600 focus:outline-none focus:border-slate-500 disabled:opacity-60 disabled:cursor-default"
+          />
+          {action.type === "Event" && (
+            <input
+              type="datetime-local"
+              value={editDatetime ? editDatetime.slice(0, 16) : ""}
+              onChange={(e) => onDatetimeChange(e.target.value)}
+              disabled={isResolved}
+              aria-label="Event datetime"
+              className="w-full bg-slate-800 text-slate-200 text-sm px-2 py-1 rounded border border-slate-700 focus:outline-none focus:border-slate-500 disabled:opacity-60 disabled:cursor-default"
+            />
+          )}
+        </div>
+        <div className="flex items-center gap-2 shrink-0 mt-1">
+          {!isResolved ? (
+            <>
+              <button
+                onClick={onApprove}
+                className="text-xs text-green-400 hover:text-green-300 transition-colors"
+                aria-label="Approve action"
+              >
+                Approve
+              </button>
+              <button
+                onClick={onDecline}
+                className="text-xs text-slate-500 hover:text-slate-400 transition-colors"
+                aria-label="Decline action"
+              >
+                Decline
+              </button>
+            </>
+          ) : (
+            <span
+              className={`text-xs font-medium ${
+                isApproved ? "text-green-400" : "text-slate-500"
+              }`}
+            >
+              {isApproved ? "Approved" : "Declined"}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── ActionsPanel — fetches and manages actions for one email ──
+
+/**
+ * Mounts when the accordion opens. Fetches actions, tracks local edit state and
+ * in-session execution log. Unmounts (and resets) when accordion closes.
+ */
+function ActionsPanel({ emailId }) {
+  const [actions, setActions] = useState(null); // null = loading
+  const [loadError, setLoadError] = useState(null);
+  const [log, setLog] = useState([]);
+
+  // Controlled edit state per action: { [actionId]: { name, event_datetime } }
+  const [edits, setEdits] = useState({});
+
+  // Load actions on mount (accordion open)
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .get(`/api/email-management/emails/${emailId}/actions`)
+      .then((d) => {
+        if (cancelled) return;
+        setActions(d.actions);
+        const initial = {};
+        d.actions.forEach((a) => {
+          initial[a.id] = {
+            name: a.name || "",
+            event_datetime: a.event_datetime || "",
+          };
+        });
+        setEdits(initial);
+      })
+      .catch((e) => {
+        if (!cancelled) setLoadError(e.message);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [emailId]);
+
+  const updateEdit = useCallback((actionId, field, value) => {
+    setEdits((prev) => ({
+      ...prev,
+      [actionId]: { ...(prev[actionId] || {}), [field]: value },
+    }));
+  }, []);
+
+  const handleApprove = useCallback(
+    async (action) => {
+      const editedName = edits[action.id]?.name ?? action.name ?? "";
+      const editedDatetime =
+        edits[action.id]?.event_datetime ?? action.event_datetime ?? null;
+
+      try {
+        const patchBody = { status: "approved", name: editedName };
+        if (action.type === "Event") {
+          patchBody.event_datetime = editedDatetime || undefined;
+        }
+        const updated = await api.patch(
+          `/api/email-management/actions/${action.id}`,
+          patchBody
+        );
+        setActions((prev) =>
+          prev.map((a) => (a.id === action.id ? updated : a))
+        );
+
+        // Append log entry
+        const ts = new Date().toLocaleString("nl-NL", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        let entry;
+        if (action.type === "Event") {
+          entry = `Event ${editedName} — ${editedDatetime || ""} added to calendar — ${ts}`;
+        } else {
+          entry = `Task ${editedName} created — ${ts}`;
+        }
+        setLog((prev) => [...prev, entry]);
+      } catch (e) {
+        console.error("Approve failed:", e);
+      }
+    },
+    [edits]
+  );
+
+  const handleDecline = useCallback(async (action) => {
+    try {
+      const updated = await api.patch(
+        `/api/email-management/actions/${action.id}`,
+        { status: "declined" }
+      );
+      setActions((prev) =>
+        prev.map((a) => (a.id === action.id ? updated : a))
+      );
+      // No log entry on decline
+    } catch (e) {
+      console.error("Decline failed:", e);
+    }
+  }, []);
+
+  const handleAddTask = useCallback(async () => {
+    try {
+      const newAction = await api.post(
+        `/api/email-management/emails/${emailId}/actions`,
+        { type: "Task", name: null }
+      );
+      setActions((prev) => [...prev, newAction]);
+      setEdits((prev) => ({
+        ...prev,
+        [newAction.id]: { name: "", event_datetime: "" },
+      }));
+    } catch (e) {
+      console.error("Add task failed:", e);
+    }
+  }, [emailId]);
+
+  const handleAddEvent = useCallback(async () => {
+    try {
+      const newAction = await api.post(
+        `/api/email-management/emails/${emailId}/actions`,
+        { type: "Event", name: null }
+      );
+      setActions((prev) => [...prev, newAction]);
+      setEdits((prev) => ({
+        ...prev,
+        [newAction.id]: { name: "", event_datetime: "" },
+      }));
+    } catch (e) {
+      console.error("Add event failed:", e);
+    }
+  }, [emailId]);
+
+  if (loadError) {
+    return (
+      <p className="text-red-400 text-xs mt-2">
+        Failed to load actions: {loadError}
+      </p>
+    );
+  }
+  if (actions === null) {
+    return <p className="text-slate-500 text-xs mt-2">Loading actions...</p>;
+  }
+
+  return (
+    <div className="space-y-2 mt-2">
+      {actions.map((action) => (
+        <ActionRowV3
+          key={action.id}
+          action={action}
+          editName={edits[action.id]?.name ?? action.name ?? ""}
+          editDatetime={
+            edits[action.id]?.event_datetime ?? action.event_datetime ?? ""
+          }
+          onNameChange={(v) => updateEdit(action.id, "name", v)}
+          onDatetimeChange={(v) => updateEdit(action.id, "event_datetime", v)}
+          onApprove={() => handleApprove(action)}
+          onDecline={() => handleDecline(action)}
+        />
+      ))}
+
+      {/* Manual add controls — always visible */}
+      <div className="flex gap-2 pt-1">
+        <button
+          onClick={handleAddTask}
+          className="text-xs text-slate-400 hover:text-slate-200 border border-slate-700 rounded px-2 py-1 transition-colors"
+        >
+          + Task
+        </button>
+        <button
+          onClick={handleAddEvent}
+          className="text-xs text-slate-400 hover:text-slate-200 border border-slate-700 rounded px-2 py-1 transition-colors"
+        >
+          + Event
+        </button>
+      </div>
+
+      {/* Execution log — only shown after at least one approval */}
+      {log.length > 0 && (
+        <div className="mt-3 pt-3 border-t border-slate-700">
+          <p className="text-slate-500 text-xs font-medium mb-2">
+            Execution log
+          </p>
+          <div className="space-y-1">
+            {log.map((entry, i) => (
+              <p key={i} className="text-slate-400 text-xs font-mono">
+                {entry}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Inbox row (accordion) ──
 
 function InboxRow({ email, isOpen, onToggle }) {
   const senderName = parseSenderName(email.sender);
@@ -159,7 +407,9 @@ function InboxRow({ email, isOpen, onToggle }) {
           </div>
         </div>
         <svg
-          className={`shrink-0 text-slate-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          className={`shrink-0 text-slate-500 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
           xmlns="http://www.w3.org/2000/svg"
           width="14"
           height="14"
@@ -175,64 +425,9 @@ function InboxRow({ email, isOpen, onToggle }) {
       </div>
       {isOpen && (
         <div className="mx-4 mb-3 border border-slate-700 rounded bg-slate-900 px-4 py-3">
-          {/* AC-10: detail panel — intentionally empty for MVP */}
+          <ActionsPanel emailId={email.id} />
         </div>
       )}
-    </div>
-  );
-}
-
-// ── Action row ──
-
-function ActionRow({ action, onStatusChange }) {
-  const [loading, setLoading] = useState(false);
-
-  const handle = async (newStatus) => {
-    setLoading(true);
-    try {
-      const updated = await api.patch(
-        `/api/email-management/actions/${action.id}`,
-        { status: newStatus }
-      );
-      onStatusChange(updated);
-    } catch (e) {
-      console.error("Action update failed:", e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="flex items-start gap-3 bg-slate-900 rounded px-3 py-2 text-sm">
-      <div className="mt-0.5">
-        <ActionTypeBadge value={action.action_type} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-slate-200 font-medium truncate">{action.suggested_title}</p>
-        <p className="text-slate-500 text-xs mt-0.5 truncate">{action.description}</p>
-      </div>
-      <div className="flex items-center gap-2 shrink-0">
-        {action.status === "pending" ? (
-          <>
-            <button
-              onClick={() => handle("approved")}
-              disabled={loading}
-              className="text-xs text-green-400 hover:text-green-300 disabled:opacity-50 transition-colors"
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => handle("declined")}
-              disabled={loading}
-              className="text-xs text-slate-500 hover:text-slate-400 disabled:opacity-50 transition-colors"
-            >
-              Decline
-            </button>
-          </>
-        ) : (
-          <ActionStatusBadge value={action.status} externalId={action.external_id} />
-        )}
-      </div>
     </div>
   );
 }
@@ -247,6 +442,7 @@ export default function EmailTriage() {
   const [runResult, setRunResult] = useState(null);
   const [openEmailId, setOpenEmailId] = useState(null);
 
+  // Exclusive accordion: opening a row collapses any other open row.
   const handleToggle = useCallback((id) => {
     setOpenEmailId((prev) => (prev === id ? null : id));
   }, []);
@@ -277,17 +473,13 @@ export default function EmailTriage() {
     }
   };
 
-  const handleEmailStatusChange = (updated) => {
-    setEmails((prev) =>
-      prev ? prev.map((e) => (e.id === updated.id ? { ...e, ...updated } : e)) : prev
-    );
-  };
-
   return (
     <div className="min-h-screen bg-slate-900 p-6">
       <header className="flex items-center gap-4 mb-8">
         <button
-          onClick={() => { window.location.href = "/dashboard"; }}
+          onClick={() => {
+            window.location.href = "/dashboard";
+          }}
           className="text-sm text-slate-400 hover:text-slate-200 transition-colors"
         >
           &larr; Back
@@ -306,8 +498,8 @@ export default function EmailTriage() {
           </button>
           {runResult && (
             <span className="text-slate-400 text-xs">
-              Processed: {runResult.processed} | Skipped: {runResult.skipped} | Errors:{" "}
-              {runResult.errors}
+              Processed: {runResult.processed} | Skipped: {runResult.skipped} |
+              Errors: {runResult.errors}
             </span>
           )}
         </div>
@@ -318,9 +510,7 @@ export default function EmailTriage() {
           </div>
         )}
 
-        {loading && (
-          <p className="text-slate-500 text-sm">Loading...</p>
-        )}
+        {loading && <p className="text-slate-500 text-sm">Loading...</p>}
 
         {!loading && emails && emails.length === 0 && !error && (
           <div className="text-center py-16">

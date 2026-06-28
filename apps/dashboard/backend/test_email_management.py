@@ -496,6 +496,118 @@ def test_create_action_for_email():
     assert data["type"] == "Task"
     assert data["name"] == "Follow up"
     assert data["status"] == "pending"
+    # No event_datetime for a Task
+    assert data["event_datetime"] is None
+
+
+def test_get_actions_shape_per_item():
+    """GET /emails/{id}/actions returns actions with the correct shape per item."""
+    _insert_email("msg1", classification="Action")
+    conn = sqlite3.connect(TEST_DB_PATH)
+    conn.execute(
+        """INSERT INTO actions
+           (email_id, action_type, description, suggested_title,
+            due_date, calendar_start, calendar_end, status, created_at, updated_at)
+           VALUES ('msg1', 'Task', 'Do something', 'Task Title',
+                   null, null, null, 'pending', datetime('now'), datetime('now'))"""
+    )
+    conn.commit()
+    conn.close()
+
+    res = client.get("/api/email-management/emails/msg1/actions", cookies=_auth_cookies())
+    assert res.status_code == 200
+    actions = res.json()["actions"]
+    assert len(actions) == 1
+    a = actions[0]
+    for field in ("id", "email_id", "type", "name", "event_datetime", "status", "external_id", "executed_at"):
+        assert field in a, f"actions shape missing field: {field}"
+    assert a["type"] == "Task"
+    assert a["name"] == "Task Title"
+    assert a["status"] == "pending"
+    assert a["external_id"] is None
+    assert a["executed_at"] is None
+
+
+def test_create_event_action_with_datetime():
+    """POST /emails/{id}/actions with type=Event and event_datetime returns event row with datetime."""
+    _insert_email("msg1")
+    res = client.post(
+        "/api/email-management/emails/msg1/actions",
+        json={"type": "Event", "name": "Team standup", "event_datetime": "2026-07-01T10:00"},
+        cookies=_auth_cookies(),
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["type"] == "Event"
+    assert data["name"] == "Team standup"
+    assert data["event_datetime"] == "2026-07-01T10:00"
+    assert data["status"] == "pending"
+
+
+def test_create_action_unknown_email():
+    """POST /emails/{id}/actions for an unknown email returns 404."""
+    res = client.post(
+        "/api/email-management/emails/nonexistent/actions",
+        json={"type": "Task", "name": "Orphan task"},
+        cookies=_auth_cookies(),
+    )
+    assert res.status_code == 404
+
+
+def test_patch_action_approve_with_name_override():
+    """PATCH action with name override — execute_todoist_action receives the override name."""
+    _insert_email("msg1")
+    action_id = _insert_action("msg1", "Task")  # default suggested_title = 'Task Title'
+
+    captured = {}
+
+    def capture_exec(action_row):
+        captured["suggested_title"] = action_row["suggested_title"]
+        return "task-override-123"
+
+    with patch("email_management.execute_todoist_action", side_effect=capture_exec):
+        res = client.patch(
+            f"/api/email-management/actions/{action_id}",
+            json={"status": "approved", "name": "My Custom Task Name"},
+            cookies=_auth_cookies(),
+        )
+
+    assert res.status_code == 200
+    assert res.json()["status"] == "approved"
+    assert captured.get("suggested_title") == "My Custom Task Name"
+
+
+def test_patch_action_approve_event_with_datetime_override():
+    """PATCH event action with event_datetime override — execute_calendar_action receives override datetime."""
+    _insert_email("msg1")
+    conn = sqlite3.connect(TEST_DB_PATH)
+    conn.execute(
+        """INSERT INTO actions
+           (email_id, action_type, description, suggested_title,
+            due_date, calendar_start, calendar_end, status, created_at, updated_at)
+           VALUES ('msg1', 'Event', 'Meeting', 'Team standup',
+                   null, '2026-07-01T10:00:00Z', null, 'pending', datetime('now'), datetime('now'))"""
+    )
+    conn.commit()
+    action_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+    conn.close()
+
+    captured = {}
+
+    def capture_exec(action_row):
+        captured["calendar_start"] = action_row["calendar_start"]
+        return "cal-override-456"
+
+    with patch("email_management.execute_calendar_action", side_effect=capture_exec):
+        res = client.patch(
+            f"/api/email-management/actions/{action_id}",
+            json={"status": "approved", "event_datetime": "2026-07-02T14:00"},
+            cookies=_auth_cookies(),
+        )
+
+    assert res.status_code == 200
+    assert res.json()["status"] == "approved"
+    assert captured.get("calendar_start") == "2026-07-02T14:00"
 
 
 def test_dispose_email_requires_resolved_actions():
