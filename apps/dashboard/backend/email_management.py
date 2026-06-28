@@ -579,6 +579,42 @@ def create_action(
         conn.close()
 
 
+@router.get("/api/email-management/emails/{email_id}/log")
+def get_execution_log(
+    email_id: str,
+    pka_token: str = Cookie(default=None),
+):
+    _require_auth(pka_token)
+    conn = _get_db()
+    try:
+        email = conn.execute(
+            "SELECT id FROM emails WHERE id = ?", (email_id,)
+        ).fetchone()
+        if not email:
+            raise HTTPException(status_code=404, detail="Email not found")
+
+        rows = conn.execute(
+            """SELECT action_type, suggested_title, calendar_start, executed_at
+               FROM actions
+               WHERE email_id = ? AND status = 'approved'
+               ORDER BY executed_at DESC""",
+            (email_id,),
+        ).fetchall()
+
+        entries = [
+            {
+                "action_type": row["action_type"],
+                "name": row["suggested_title"],
+                "event_datetime": row["calendar_start"],
+                "executed_at": row["executed_at"],
+            }
+            for row in rows
+        ]
+        return {"entries": entries}
+    finally:
+        conn.close()
+
+
 @router.patch("/api/email-management/actions/{action_id}")
 def patch_action(
     action_id: int,
@@ -634,9 +670,18 @@ def patch_action(
             conn.execute(
                 """UPDATE actions
                    SET status = 'approved', external_id = ?,
-                       executed_at = ?, updated_at = ?
+                       executed_at = ?, updated_at = ?,
+                       suggested_title = ?,
+                       calendar_start = ?
                    WHERE id = ?""",
-                (external_id, now, now, action_id),
+                (
+                    external_id,
+                    now,
+                    now,
+                    effective_row["suggested_title"],
+                    effective_row["calendar_start"],
+                    action_id,
+                ),
             )
             conn.commit()
 

@@ -1,5 +1,56 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { api } from "../api/client";
+
+// ── Log formatting helpers ──
+
+const _MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/**
+ * Format a Date or ISO string as "DD Mon YYYY HH:MM" (24-hour).
+ * @param {Date|string} ts
+ * @returns {string}
+ */
+function fmtTimestamp(ts) {
+  const d = ts instanceof Date ? ts : new Date(ts);
+  const day = String(d.getDate()).padStart(2, "0");
+  const mon = _MONTHS[d.getMonth()];
+  const year = d.getFullYear();
+  const h = String(d.getHours()).padStart(2, "0");
+  const m = String(d.getMinutes()).padStart(2, "0");
+  return `${day} ${mon} ${year} ${h}:${m}`;
+}
+
+/**
+ * Format a datetime-local string like "2026-07-12T10:00" as "12 Jul 2026 10:00".
+ * Returns "(no date)" when value is falsy.
+ * @param {string|null|undefined} value
+ * @returns {string}
+ */
+function fmtEventDatetime(value) {
+  if (!value) return "(no date)";
+  const [datePart, timePart = "00:00"] = value.split("T");
+  const [year, mon, day] = datePart.split("-");
+  return `${day} ${_MONTHS[parseInt(mon, 10) - 1]} ${year} ${timePart.slice(0, 5)}`;
+}
+
+/**
+ * Build a log entry string with timestamp FIRST.
+ * Task:  "DD Mon YYYY HH:MM  Task [name] created"
+ * Event: "DD Mon YYYY HH:MM  Event [name] — [datetime] added to calendar"
+ * @param {string} type - "Task" or "Event"
+ * @param {string|null|undefined} name
+ * @param {string|null|undefined} eventDatetime
+ * @param {Date|string} ts
+ * @returns {string}
+ */
+function buildLogEntry(type, name, eventDatetime, ts) {
+  const displayName = name || "(untitled)";
+  const prefix = fmtTimestamp(ts);
+  if (type === "Event") {
+    return `${prefix}  Event ${displayName} — ${fmtEventDatetime(eventDatetime)} added to calendar`;
+  }
+  return `${prefix}  Task ${displayName} created`;
+}
 
 // ── Parked (S3 review — defer to later) ──
 // MEDIUM: InboxRow clickable div needs role="button", tabIndex={0}, onKeyDown for keyboard nav
@@ -61,13 +112,15 @@ function parseSenderName(sender) {
 
 /**
  * Props:
- *   action       — action object from API: { id, type, name, event_datetime, status, ... }
- *   editName     — current value in the name input (controlled)
- *   editDatetime — current value in the datetime input (controlled, Event rows only)
- *   onNameChange     — (value: string) => void
+ *   action          — action object from API: { id, type, name, event_datetime, status, ... }
+ *   editName        — current value in the name input (controlled)
+ *   editDatetime    — current value in the datetime input (controlled, Event rows only)
+ *   onNameChange    — (value: string) => void
  *   onDatetimeChange — (value: string) => void
- *   onApprove    — () => void
- *   onDecline    — () => void
+ *   onApprove       — () => void
+ *   onDecline       — () => void
+ *   shouldFocus     — boolean: auto-focus the name field on mount when true
+ *   onFocusHandled  — () => void: called after auto-focus fires so parent can clear the flag
  */
 function ActionRowV3({
   action,
@@ -77,10 +130,21 @@ function ActionRowV3({
   onDatetimeChange,
   onApprove,
   onDecline,
+  shouldFocus,
+  onFocusHandled,
 }) {
   const isResolved = action.status !== "pending";
   const isApproved = action.status === "approved";
   const isDeclined = action.status === "declined";
+
+  // Auto-focus name field when this is a newly added row
+  const nameInputRef = useRef(null);
+  useEffect(() => {
+    if (shouldFocus && nameInputRef.current) {
+      nameInputRef.current.focus();
+      onFocusHandled?.();
+    }
+  }, [shouldFocus, onFocusHandled]);
 
   return (
     <div
@@ -95,24 +159,40 @@ function ActionRowV3({
           {action.type}
         </span>
         <div className="flex-1 min-w-0 space-y-1.5">
-          <input
-            type="text"
-            value={editName}
-            onChange={(e) => onNameChange(e.target.value)}
-            disabled={isResolved}
-            placeholder="Enter name..."
-            aria-label="Action name"
-            className="w-full bg-slate-800 text-slate-200 text-sm px-2 py-1 rounded border border-slate-700 placeholder-slate-600 focus:outline-none focus:border-slate-500 disabled:opacity-60 disabled:cursor-default"
-          />
-          {action.type === "Event" && (
-            <input
-              type="datetime-local"
-              value={editDatetime ? editDatetime.slice(0, 16) : ""}
-              onChange={(e) => onDatetimeChange(e.target.value)}
-              disabled={isResolved}
-              aria-label="Event datetime"
-              className="w-full bg-slate-800 text-slate-200 text-sm px-2 py-1 rounded border border-slate-700 focus:outline-none focus:border-slate-500 disabled:opacity-60 disabled:cursor-default"
-            />
+          {isResolved ? (
+            // Resolved state: static text (not a disabled input)
+            <>
+              <p className="text-slate-300 text-sm px-2 py-1">
+                {editName || "(untitled)"}
+              </p>
+              {action.type === "Event" && (
+                <p className="text-slate-400 text-xs px-2 py-1">
+                  {editDatetime ? fmtEventDatetime(editDatetime) : "(no date)"}
+                </p>
+              )}
+            </>
+          ) : (
+            // Pending state: editable inputs
+            <>
+              <input
+                ref={nameInputRef}
+                type="text"
+                value={editName}
+                onChange={(e) => onNameChange(e.target.value)}
+                placeholder="Enter name..."
+                aria-label="Action name"
+                className="w-full bg-slate-800 text-slate-200 text-sm px-2 py-1 rounded border border-slate-700 placeholder-slate-600 focus:outline-none focus:border-slate-500"
+              />
+              {action.type === "Event" && (
+                <input
+                  type="datetime-local"
+                  value={editDatetime ? editDatetime.slice(0, 16) : ""}
+                  onChange={(e) => onDatetimeChange(e.target.value)}
+                  aria-label="Event datetime"
+                  className="w-full bg-slate-800 text-slate-200 text-sm px-2 py-1 rounded border border-slate-700 focus:outline-none focus:border-slate-500"
+                />
+              )}
+            </>
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0 mt-1">
@@ -151,20 +231,28 @@ function ActionRowV3({
 // ── ActionsPanel — fetches and manages actions for one email ──
 
 /**
- * Mounts when the accordion opens. Fetches actions, tracks local edit state and
- * in-session execution log. Unmounts (and resets) when accordion closes.
+ * Mounts when the accordion opens. Fetches actions and execution log in parallel.
+ * Unmounts (and resets) when accordion closes.
  */
 function ActionsPanel({ emailId }) {
   const [actions, setActions] = useState(null); // null = loading
   const [loadError, setLoadError] = useState(null);
-  const [log, setLog] = useState([]);
+
+  // Log state — separate from actions
+  const [logEntries, setLogEntries] = useState([]); // array of formatted strings
+  const [logStatus, setLogStatus] = useState("loading"); // 'loading' | 'loaded' | 'error'
 
   // Controlled edit state per action: { [actionId]: { name, event_datetime } }
   const [edits, setEdits] = useState({});
 
-  // Load actions on mount (accordion open)
+  // Auto-focus: id of the action row that should receive focus
+  const [pendingFocusId, setPendingFocusId] = useState(null);
+
+  // Load actions and log in parallel on mount (accordion open)
   useEffect(() => {
     let cancelled = false;
+
+    // Fetch actions
     api
       .get(`/api/email-management/emails/${emailId}/actions`)
       .then((d) => {
@@ -182,6 +270,22 @@ function ActionsPanel({ emailId }) {
       .catch((e) => {
         if (!cancelled) setLoadError(e.message);
       });
+
+    // Fetch execution log
+    api
+      .get(`/api/email-management/emails/${emailId}/log`)
+      .then((d) => {
+        if (cancelled) return;
+        const formatted = d.entries.map((e) =>
+          buildLogEntry(e.action_type, e.name, e.event_datetime, e.executed_at)
+        );
+        setLogEntries(formatted);
+        setLogStatus("loaded");
+      })
+      .catch(() => {
+        if (!cancelled) setLogStatus("error");
+      });
+
     return () => {
       cancelled = true;
     };
@@ -213,21 +317,10 @@ function ActionsPanel({ emailId }) {
           prev.map((a) => (a.id === action.id ? updated : a))
         );
 
-        // Append log entry
-        const ts = new Date().toLocaleString("nl-NL", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-        let entry;
-        if (action.type === "Event") {
-          entry = `Event ${editedName} — ${editedDatetime || ""} added to calendar — ${ts}`;
-        } else {
-          entry = `Task ${editedName} created — ${ts}`;
-        }
-        setLog((prev) => [...prev, entry]);
+        // Build log entry with timestamp first and prepend (newest at top)
+        const entry = buildLogEntry(action.type, editedName, editedDatetime, new Date());
+        setLogEntries((prev) => [entry, ...prev]);
+        setLogStatus("loaded");
       } catch (e) {
         console.error("Approve failed:", e);
       }
@@ -261,6 +354,7 @@ function ActionsPanel({ emailId }) {
         ...prev,
         [newAction.id]: { name: "", event_datetime: "" },
       }));
+      setPendingFocusId(newAction.id);
     } catch (e) {
       console.error("Add task failed:", e);
     }
@@ -277,6 +371,7 @@ function ActionsPanel({ emailId }) {
         ...prev,
         [newAction.id]: { name: "", event_datetime: "" },
       }));
+      setPendingFocusId(newAction.id);
     } catch (e) {
       console.error("Add event failed:", e);
     }
@@ -307,10 +402,12 @@ function ActionsPanel({ emailId }) {
           onDatetimeChange={(v) => updateEdit(action.id, "event_datetime", v)}
           onApprove={() => handleApprove(action)}
           onDecline={() => handleDecline(action)}
+          shouldFocus={pendingFocusId === action.id}
+          onFocusHandled={() => setPendingFocusId(null)}
         />
       ))}
 
-      {/* Manual add controls — always visible */}
+      {/* Manual add controls — always visible, no cancel path */}
       <div className="flex gap-2 pt-1">
         <button
           onClick={handleAddTask}
@@ -326,14 +423,32 @@ function ActionsPanel({ emailId }) {
         </button>
       </div>
 
-      {/* Execution log — only shown after at least one approval */}
-      {log.length > 0 && (
+      {/* Execution log — loading state */}
+      {logStatus === "loading" && (
         <div className="mt-3 pt-3 border-t border-slate-700">
+          <p className="text-slate-500 text-xs">Loading log...</p>
+        </div>
+      )}
+
+      {/* Execution log — error state */}
+      {logStatus === "error" && (
+        <div className="mt-3 pt-3 border-t border-slate-700">
+          <p className="text-slate-500 text-xs">Execution log unavailable.</p>
+        </div>
+      )}
+
+      {/* Execution log — loaded, only shown when entries exist */}
+      {logStatus === "loaded" && logEntries.length > 0 && (
+        <div
+          className="mt-3 pt-3 border-t border-slate-700"
+          aria-live="polite"
+          aria-label="Execution log"
+        >
           <p className="text-slate-500 text-xs font-medium mb-2">
             Execution log
           </p>
           <div className="space-y-1">
-            {log.map((entry, i) => (
+            {logEntries.map((entry, i) => (
               <p key={i} className="text-slate-400 text-xs font-mono">
                 {entry}
               </p>

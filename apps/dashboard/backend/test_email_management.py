@@ -41,7 +41,11 @@ import email_management
 # Build test app with email management router
 _test_app = FastAPI()
 _test_app.include_router(email_management.router)
-client = TestClient(_test_app, raise_server_exceptions=False)
+client = TestClient(
+    _test_app,
+    raise_server_exceptions=False,
+    backend_options={"use_uvloop": True},
+)
 
 
 # ── Helpers ──
@@ -640,6 +644,138 @@ def test_dispose_email_requires_resolved_actions():
     assert res.json()["triage_status"] == "archived"
 
 
+def test_get_execution_log_empty():
+    """GET /log for email with no approved actions returns empty entries."""
+    _insert_email("msg1")
+    _insert_action("msg1", "Task")  # pending, not approved
+
+    res = client.get("/api/email-management/emails/msg1/log", cookies=_auth_cookies())
+    assert res.status_code == 200
+    assert res.json()["entries"] == []
+
+
+def test_get_execution_log_returns_approved_actions():
+    """GET /log returns one entry per approved action with correct fields."""
+    _insert_email("msg1", classification="Action")
+    conn = sqlite3.connect(TEST_DB_PATH)
+    conn.execute(
+        """INSERT INTO actions
+           (email_id, action_type, description, suggested_title,
+            due_date, calendar_start, calendar_end, status, external_id,
+            executed_at, created_at, updated_at)
+           VALUES ('msg1', 'Task', 'Do something', 'My Task',
+                   null, null, null, 'approved', 'task-123',
+                   '2026-06-28T14:03:00Z', datetime('now'), datetime('now'))"""
+    )
+    conn.commit()
+    conn.close()
+
+    res = client.get("/api/email-management/emails/msg1/log", cookies=_auth_cookies())
+    assert res.status_code == 200
+    entries = res.json()["entries"]
+    assert len(entries) == 1
+    entry = entries[0]
+    assert entry["action_type"] == "Task"
+    assert entry["name"] == "My Task"
+    assert entry["event_datetime"] is None
+    assert entry["executed_at"] == "2026-06-28T14:03:00Z"
+
+
+def test_get_execution_log_sorted_newest_first():
+    """GET /log returns entries sorted by executed_at DESC."""
+    _insert_email("msg1")
+    conn = sqlite3.connect(TEST_DB_PATH)
+    conn.executemany(
+        """INSERT INTO actions
+           (email_id, action_type, description, suggested_title,
+            due_date, calendar_start, calendar_end, status, external_id,
+            executed_at, created_at, updated_at)
+           VALUES ('msg1', 'Task', 'desc', ?,
+                   null, null, null, 'approved', ?,
+                   ?, datetime('now'), datetime('now'))""",
+        [
+            ("Older task", "old-1", "2026-06-28T10:00:00Z"),
+            ("Newer task", "new-1", "2026-06-28T14:00:00Z"),
+        ],
+    )
+    conn.commit()
+    conn.close()
+
+    res = client.get("/api/email-management/emails/msg1/log", cookies=_auth_cookies())
+    assert res.status_code == 200
+    entries = res.json()["entries"]
+    assert len(entries) == 2
+    assert entries[0]["name"] == "Newer task"
+    assert entries[1]["name"] == "Older task"
+
+
+def test_get_execution_log_not_found():
+    """GET /log for unknown email returns 404."""
+    res = client.get("/api/email-management/emails/nonexistent/log", cookies=_auth_cookies())
+    assert res.status_code == 404
+
+
+def test_get_execution_log_requires_auth():
+    """GET /log without auth token returns 401."""
+    _insert_email("msg1")
+    res = client.get("/api/email-management/emails/msg1/log")
+    assert res.status_code == 401
+
+
+def test_patch_action_approve_saves_name_to_db():
+    """PATCH approve with name override persists the name to suggested_title in DB."""
+    _insert_email("msg1")
+    action_id = _insert_action("msg1", "Task")  # default suggested_title = 'Task Title'
+
+    with patch("email_management.execute_todoist_action", return_value="task-persisted"):
+        res = client.patch(
+            f"/api/email-management/actions/{action_id}",
+            json={"status": "approved", "name": "Persisted Name"},
+            cookies=_auth_cookies(),
+        )
+
+    assert res.status_code == 200
+
+    conn = sqlite3.connect(TEST_DB_PATH)
+    row = conn.execute(
+        "SELECT suggested_title FROM actions WHERE id = ?", (action_id,)
+    ).fetchone()
+    conn.close()
+    assert row[0] == "Persisted Name"
+
+
+def test_patch_action_approve_saves_event_datetime_to_db():
+    """PATCH approve with event_datetime override persists calendar_start to DB."""
+    _insert_email("msg1")
+    conn = sqlite3.connect(TEST_DB_PATH)
+    conn.execute(
+        """INSERT INTO actions
+           (email_id, action_type, description, suggested_title,
+            due_date, calendar_start, calendar_end, status, created_at, updated_at)
+           VALUES ('msg1', 'Event', 'Meeting', 'Team standup',
+                   null, '2026-07-01T10:00:00Z', null, 'pending', datetime('now'), datetime('now'))"""
+    )
+    conn.commit()
+    action_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+    conn.close()
+
+    with patch("email_management.execute_calendar_action", return_value="cal-persisted"):
+        res = client.patch(
+            f"/api/email-management/actions/{action_id}",
+            json={"status": "approved", "event_datetime": "2026-07-05T14:00"},
+            cookies=_auth_cookies(),
+        )
+
+    assert res.status_code == 200
+
+    conn = sqlite3.connect(TEST_DB_PATH)
+    row = conn.execute(
+        "SELECT calendar_start FROM actions WHERE id = ?", (action_id,)
+    ).fetchone()
+    conn.close()
+    assert row[0] == "2026-07-05T14:00"
+
+
 # ════════════════════════════════════════════════════════════
 # REGRESSION — Existing endpoints unaffected after router mount
 # ════════════════════════════════════════════════════════════
@@ -651,7 +787,11 @@ import importlib
 import main as _main_module
 
 
-_regression_client = TestClient(_main_module.app, raise_server_exceptions=False)
+_regression_client = TestClient(
+    _main_module.app,
+    raise_server_exceptions=False,
+    backend_options={"use_uvloop": True},
+)
 
 
 def _regression_auth_cookie():

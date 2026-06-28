@@ -72,7 +72,7 @@ function makeEventAction(id, overrides = {}) {
 
 // ── Mock setup helpers ────────────────────────────────────────────────────────
 
-function setupMocks({ emails = [makeEmail(EMAIL_ID)], actionsByEmailId = {} } = {}) {
+function setupMocks({ emails = [makeEmail(EMAIL_ID)], actionsByEmailId = {}, logsByEmailId = {} } = {}) {
   api.get.mockImplementation((path) => {
     if (path === '/api/email-management/emails') {
       return Promise.resolve({ emails });
@@ -81,6 +81,15 @@ function setupMocks({ emails = [makeEmail(EMAIL_ID)], actionsByEmailId = {} } = 
       if (path === `/api/email-management/emails/${emailId}/actions`) {
         return Promise.resolve({ actions });
       }
+    }
+    for (const [emailId, entries] of Object.entries(logsByEmailId)) {
+      if (path === `/api/email-management/emails/${emailId}/log`) {
+        return Promise.resolve({ entries });
+      }
+    }
+    // Default: empty log for any /log path
+    if (path.endsWith('/log')) {
+      return Promise.resolve({ entries: [] });
     }
     // Default: empty actions
     return Promise.resolve({ actions: [] });
@@ -536,4 +545,329 @@ it('collapses the open accordion when its header is clicked a second time', asyn
   await waitFor(() => {
     expect(screen.queryByRole('button', { name: /approve/i })).not.toBeInTheDocument();
   });
+});
+
+// ── ISSUE 1 — Log loads from backend on accordion open ────────────────────────
+
+it('shows loading indicator in log area on accordion open', async () => {
+  const user = userEvent.setup();
+  // Make log fetch hang so we can observe loading state
+  let resolveLog;
+  api.get.mockImplementation((path) => {
+    if (path === '/api/email-management/emails') {
+      return Promise.resolve({ emails: [makeEmail(EMAIL_ID)] });
+    }
+    if (path === `/api/email-management/emails/${EMAIL_ID}/actions`) {
+      return Promise.resolve({ actions: [] });
+    }
+    if (path === `/api/email-management/emails/${EMAIL_ID}/log`) {
+      return new Promise((resolve) => { resolveLog = resolve; });
+    }
+    return Promise.resolve({ entries: [] });
+  });
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  // Wait for actions to load (empty), log still pending
+  await screen.findByRole('button', { name: /\+ task/i });
+  expect(screen.getByText('Loading log...')).toBeInTheDocument();
+
+  // Resolve the log fetch
+  resolveLog({ entries: [] });
+  await waitFor(() => {
+    expect(screen.queryByText('Loading log...')).not.toBeInTheDocument();
+  });
+});
+
+it('loads log entries from backend and renders them on accordion open', async () => {
+  const user = userEvent.setup();
+  const logEntry = {
+    action_type: 'Task',
+    name: 'Previously approved task',
+    event_datetime: null,
+    executed_at: '2026-06-28T10:00:00Z',
+  };
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [] },
+    logsByEmailId: { [EMAIL_ID]: [logEntry] },
+  });
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  // Log entry rendered from backend
+  await screen.findByText(/Previously approved task/i);
+  await screen.findByText(/Execution log/i);
+});
+
+it('shows execution log unavailable when log fetch fails', async () => {
+  const user = userEvent.setup();
+  api.get.mockImplementation((path) => {
+    if (path === '/api/email-management/emails') {
+      return Promise.resolve({ emails: [makeEmail(EMAIL_ID)] });
+    }
+    if (path === `/api/email-management/emails/${EMAIL_ID}/actions`) {
+      return Promise.resolve({ actions: [] });
+    }
+    if (path === `/api/email-management/emails/${EMAIL_ID}/log`) {
+      return Promise.reject(new Error('Network error'));
+    }
+    return Promise.resolve({ actions: [] });
+  });
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  await screen.findByRole('button', { name: /\+ task/i });
+  await waitFor(() => {
+    expect(screen.getByText('Execution log unavailable.')).toBeInTheDocument();
+  });
+});
+
+// ── ISSUE 2 — Log format: timestamp first ────────────────────────────────────
+
+it('log entry has timestamp as first token in DD Mon YYYY HH:MM format', async () => {
+  const user = userEvent.setup();
+  const taskAction = makeTaskAction(1, { name: 'Timestamp test task' });
+  const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-ts' };
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [taskAction] },
+  });
+  api.patch.mockResolvedValue(approvedAction);
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  await user.click(await screen.findByRole('button', { name: /approve/i }));
+
+  // Entry format: starts with "DD Mon YYYY HH:MM  Task ..."
+  await waitFor(() => {
+    const entries = screen.getAllByText(/\d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}.*Task.*created/i);
+    expect(entries.length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+it('log entries are ordered newest at top — most recent approval appears first', async () => {
+  const user = userEvent.setup();
+  const task1 = makeTaskAction(1, { name: 'First task' });
+  const task2 = makeTaskAction(2, { name: 'Second task' });
+  const approved1 = { ...task1, status: 'approved', external_id: 't-1' };
+  const approved2 = { ...task2, status: 'approved', external_id: 't-2' };
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [task1, task2] },
+  });
+  api.patch
+    .mockResolvedValueOnce(approved1)
+    .mockResolvedValueOnce(approved2);
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  const approveBtns = await screen.findAllByRole('button', { name: /approve/i });
+  await user.click(approveBtns[0]); // approve first
+  await waitFor(() => {
+    expect(screen.getAllByRole('button', { name: /approve/i })).toHaveLength(1);
+  });
+
+  const approveBtns2 = screen.getAllByRole('button', { name: /approve/i });
+  await user.click(approveBtns2[0]); // approve second
+
+  await waitFor(() => {
+    const logSection = document.querySelector('[aria-label="Execution log"]');
+    expect(logSection).not.toBeNull();
+    const text = logSection.textContent;
+    const idxSecond = text.indexOf('Second task');
+    const idxFirst = text.indexOf('First task');
+    expect(idxSecond).toBeLessThan(idxFirst);
+  });
+});
+
+// ── ISSUE 3 — +Task/+Event not cancelable: auto-focus ─────────────────────────
+
+it('auto-focuses name field of new task row after add-task click', async () => {
+  const user = userEvent.setup();
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [] },
+  });
+  const newTaskAction = makeTaskAction(10, { name: null });
+  api.post.mockResolvedValue(newTaskAction);
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  await user.click(await screen.findByRole('button', { name: /\+ task/i }));
+
+  // Name input should appear and have focus
+  await waitFor(() => {
+    const inputs = screen.getAllByRole('textbox');
+    const nameInputs = inputs.filter((el) => el.getAttribute('aria-label') === 'Action name');
+    expect(nameInputs.length).toBeGreaterThanOrEqual(1);
+    const focused = nameInputs.some((el) => document.activeElement === el);
+    expect(focused).toBe(true);
+  });
+});
+
+it('does not render a cancel/remove button on manually added rows', async () => {
+  const user = userEvent.setup();
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [] },
+  });
+  const newTaskAction = makeTaskAction(10, { name: null });
+  api.post.mockResolvedValue(newTaskAction);
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  await user.click(await screen.findByRole('button', { name: /\+ task/i }));
+  await screen.findByRole('button', { name: /approve/i });
+
+  // No cancel / close / remove / X button present
+  expect(screen.queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /remove/i })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /close/i })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /approve/i })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /decline/i })).toBeInTheDocument();
+});
+
+// ── ISSUE 4 — Resolved state shows submitted name as static text ───────────────
+
+it('resolved task row shows static text not a disabled input', async () => {
+  const user = userEvent.setup();
+  const taskAction = makeTaskAction(1, { name: 'My task name' });
+  const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-static' };
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [taskAction] },
+  });
+  api.patch.mockResolvedValue(approvedAction);
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  await user.click(await screen.findByRole('button', { name: /approve/i }));
+
+  await waitFor(() => {
+    const inputs = document.querySelectorAll('input[aria-label="Action name"]');
+    expect(inputs.length).toBe(0);
+    expect(screen.getByText('My task name')).toBeInTheDocument();
+  });
+});
+
+it('resolved task row shows (untitled) when name is empty on approve', async () => {
+  const user = userEvent.setup();
+  const taskAction = makeTaskAction(10, { name: null });
+  const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-untitled' };
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [] },
+  });
+  api.post.mockResolvedValue(taskAction);
+  api.patch.mockResolvedValue(approvedAction);
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  await user.click(await screen.findByRole('button', { name: /\+ task/i }));
+  await user.click(await screen.findByRole('button', { name: /approve/i }));
+
+  await waitFor(() => {
+    expect(screen.getByText('(untitled)')).toBeInTheDocument();
+  });
+});
+
+it('resolved task row shows submitted name even when backend action.name is null', async () => {
+  const user = userEvent.setup();
+  const taskAction = makeTaskAction(10, { name: null });
+  const approvedAction = { ...taskAction, status: 'approved', name: null, external_id: 'task-manual' };
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [] },
+  });
+  api.post.mockResolvedValue(taskAction);
+  api.patch.mockResolvedValue(approvedAction);
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  await user.click(await screen.findByRole('button', { name: /\+ task/i }));
+
+  const nameInputs = await screen.findAllByRole('textbox');
+  const emptyInput = nameInputs.find((el) => el.value === '');
+  expect(emptyInput).toBeTruthy();
+  await user.type(emptyInput, 'Typed task name');
+
+  await user.click(screen.getByRole('button', { name: /approve/i }));
+
+  await waitFor(() => {
+    expect(screen.getByText('Typed task name')).toBeInTheDocument();
+  });
+});
+
+it('resolved event row shows formatted datetime as static text', async () => {
+  const user = userEvent.setup();
+  const eventAction = makeEventAction(2, { event_datetime: '2026-07-15T09:30' });
+  const approvedAction = { ...eventAction, status: 'approved', external_id: 'cal-dt' };
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [eventAction] },
+  });
+  api.patch.mockResolvedValue(approvedAction);
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  await user.click(await screen.findByRole('button', { name: /approve/i }));
+
+  await waitFor(() => {
+    expect(screen.getByText('15 Jul 2026 09:30')).toBeInTheDocument();
+    expect(document.querySelectorAll('input[type="datetime-local"]').length).toBe(0);
+  });
+});
+
+it('resolved event row shows (no date) when datetime is empty', async () => {
+  const user = userEvent.setup();
+  const eventAction = makeEventAction(11, { name: null, event_datetime: null });
+  const approvedAction = { ...eventAction, status: 'approved', external_id: 'cal-nodate' };
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [] },
+  });
+  api.post.mockResolvedValue(eventAction);
+  api.patch.mockResolvedValue(approvedAction);
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  await user.click(await screen.findByRole('button', { name: /\+ event/i }));
+  await user.click(await screen.findByRole('button', { name: /approve/i }));
+
+  await waitFor(() => {
+    expect(screen.getByText('(no date)')).toBeInTheDocument();
+  });
+});
+
+it('log entry shows (untitled) when approved name is empty', async () => {
+  const user = userEvent.setup();
+  const taskAction = makeTaskAction(10, { name: null });
+  const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-nolog' };
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [] },
+  });
+  api.post.mockResolvedValue(taskAction);
+  api.patch.mockResolvedValue(approvedAction);
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  await user.click(await screen.findByRole('button', { name: /\+ task/i }));
+  await user.click(await screen.findByRole('button', { name: /approve/i }));
+
+  await screen.findByText(/\(untitled\).*created|Task.*\(untitled\)/i);
 });
