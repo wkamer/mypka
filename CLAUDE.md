@@ -115,6 +115,8 @@ Current plan means explicitly listed in `active-context.md`, an active Goal/Proj
 
 Kai owns architecture, credentials, deployments, production services, and integration boundaries. Devon owns application code after Kai defines the boundary. If a feature touches external services, credentials, deployment, or production config, route Kai first; Devon only builds after Kai's brief is accepted.
 
+**Quinn activation rule:** Any feature with a UI layer activates Quinn by default after G2, before G3 and before Cleo. Larry only skips Quinn when the feature is purely backend or the UI is a trivial read-only display with no interactive states. Quinn's interaction spec is a required input for Sloane (G4) and Devon (G5) on all UI features.
+
 **Every Devon brief must include this line verbatim:**
 > Route all code writes through the Codex CLI runtime (`codex:codex-cli-runtime` skill). Do not use Edit/Write tools for implementation. Claude native tools are fallback only if Codex is explicitly unavailable.
 
@@ -191,6 +193,7 @@ All resource tasks use `* ` prefix (removes checkbox). File path in description:
 | 2026-06-25 | Iron Rule updated — coding removed, replaced by integrations/infrastructure (Kai) and feature builds (Devon). Devon added to team table and routing rules. | Larry / Iris audit |
 | 2026-06-26 | 9 orchestrator enforcement gaps applied — Codex audit + Iris governance review. Gaps cover: domain question prohibition, hard stop triggers expanded, hard stop blocking rule, Kai/Devon boundary, new initiative definition, briefing template validation, session-close write authorization, Sienna failure path. | Larry / Iris / Codex |
 | 2026-06-28 | Codex enforcement added to build routing — every Devon brief must include explicit Codex CLI runtime instruction. Devon AGENT.md updated with hard mechanical step. | Larry / owner |
+| 2026-06-28 | Quinn activation rule added — UI features activate Quinn by default after G2. On-demand was insufficient; G6 rejection on Email Management Slice 3 proved the gap. | Larry / owner |
 
 ---
 
