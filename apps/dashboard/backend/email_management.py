@@ -647,7 +647,8 @@ def patch_action(
             # approved — apply owner-supplied overrides, then execute
             effective_row = dict(row_dict)
             effective_row["suggested_title"] = (
-                body.name if body.name is not None else row_dict["suggested_title"]
+                body.name if body.name is not None
+                else (row_dict["suggested_title"] or "")
             )
             effective_row["calendar_start"] = (
                 body.event_datetime if body.event_datetime is not None

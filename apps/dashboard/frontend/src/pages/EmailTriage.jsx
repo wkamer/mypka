@@ -263,6 +263,7 @@ function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
 
   // Controlled edit state per action: { [actionId]: { name, event_datetime } }
   const [edits, setEdits] = useState({});
+  const latestEditsRef = useRef({});
 
   // Auto-focus: id of the action row that should receive focus
   const [pendingFocusId, setPendingFocusId] = useState(null);
@@ -301,6 +302,7 @@ function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
           };
         });
         setEdits(initial);
+        latestEditsRef.current = initial;
 
         const approvedActions = mergedActions
           .filter((a) => a.status === "approved" && a.executed_at)
@@ -325,6 +327,13 @@ function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
   }, [emailId]);
 
   const updateEdit = useCallback((actionId, field, value) => {
+    latestEditsRef.current = {
+      ...latestEditsRef.current,
+      [actionId]: {
+        ...(latestEditsRef.current[actionId] || {}),
+        [field]: value,
+      },
+    };
     setEdits((prev) => ({
       ...prev,
       [actionId]: { ...(prev[actionId] || {}), [field]: value },
@@ -340,9 +349,11 @@ function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
 
   const handleApprove = useCallback(
     async (action) => {
-      const editedName = edits[action.id]?.name ?? action.name ?? "";
+      const currentEdit =
+        latestEditsRef.current[action.id] || edits[action.id] || {};
+      const editedName = currentEdit.name ?? action.name ?? "";
       const editedDatetime =
-        edits[action.id]?.event_datetime ?? action.event_datetime ?? null;
+        currentEdit.event_datetime ?? action.event_datetime ?? null;
 
       try {
         const patchBody = { status: "approved", name: editedName };
@@ -414,6 +425,10 @@ function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
         `/api/email-management/emails/${emailId}/actions`,
         { type: "Task", name: null }
       );
+      latestEditsRef.current = {
+        ...latestEditsRef.current,
+        [newAction.id]: { name: "", event_datetime: "" },
+      };
       setActions((prev) => [...prev, newAction]);
       setEdits((prev) => ({
         ...prev,
@@ -439,6 +454,10 @@ function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
         `/api/email-management/emails/${emailId}/actions`,
         { type: "Event", name: null }
       );
+      latestEditsRef.current = {
+        ...latestEditsRef.current,
+        [newAction.id]: { name: "", event_datetime: "" },
+      };
       setActions((prev) => [...prev, newAction]);
       setEdits((prev) => ({
         ...prev,
