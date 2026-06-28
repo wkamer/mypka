@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-28 — Email Management accordion bug fixes + system discipline corrections. Fixed state loss on accordion collapse/reopen, Dutch strings, and persistence (log now reconstructed from DB via GET /actions). Devon Codex prompt gate + Quinn relay rule added to AGENT.md files. Frontend rebuild pending — browser not yet verified.
+2026-06-28 — Email Management bug fixes + dev workflow governance. Fixed execution log (approved_at/executed_at mismatch), task name persistence (stale backend + SQL fix), and frontend rebuild. Backend restarted. Devon AGENT.md updated: local dev server management rule added. Governance: local dev restarts belong to Devon, not Kai.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -16,7 +16,7 @@
 - Tricolarae: S3 MODEL — wacht op Meta product-test data
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
-- Email management S1-S3: persistence fix done (commit 8cd8299) — browser verify pending (team_task 112)
+- Email management S1-S3: all bugs fixed and verified (commits 8c4485e, ed91e40)
 - Email management design review (Quinn Part 2 spec ready) — not yet started
 
 ## Active goals
