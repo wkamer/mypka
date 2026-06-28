@@ -52,6 +52,7 @@ function makeTaskAction(id, overrides = {}) {
     status: 'pending',
     external_id: null,
     executed_at: null,
+    approved_at: null,
     ...overrides,
   };
 }
@@ -66,13 +67,14 @@ function makeEventAction(id, overrides = {}) {
     status: 'pending',
     external_id: null,
     executed_at: null,
+    approved_at: null,
     ...overrides,
   };
 }
 
 // ── Mock setup helpers ────────────────────────────────────────────────────────
 
-function setupMocks({ emails = [makeEmail(EMAIL_ID)], actionsByEmailId = {}, logsByEmailId = {} } = {}) {
+function setupMocks({ emails = [makeEmail(EMAIL_ID)], actionsByEmailId = {} } = {}) {
   api.get.mockImplementation((path) => {
     if (path === '/api/email-management/emails') {
       return Promise.resolve({ emails });
@@ -81,15 +83,6 @@ function setupMocks({ emails = [makeEmail(EMAIL_ID)], actionsByEmailId = {}, log
       if (path === `/api/email-management/emails/${emailId}/actions`) {
         return Promise.resolve({ actions });
       }
-    }
-    for (const [emailId, entries] of Object.entries(logsByEmailId)) {
-      if (path === `/api/email-management/emails/${emailId}/log`) {
-        return Promise.resolve({ entries });
-      }
-    }
-    // Default: empty log for any /log path
-    if (path.endsWith('/log')) {
-      return Promise.resolve({ entries: [] });
     }
     // Default: empty actions
     return Promise.resolve({ actions: [] });
@@ -551,62 +544,54 @@ it('collapses the open accordion when its header is clicked a second time', asyn
   });
 });
 
-// ── ISSUE 1 — Log loads from backend on accordion open ────────────────────────
+// ── ISSUE 1 — Log reconstructs from actions on accordion open ────────────────
 
-it('shows loading indicator in log area on accordion open', async () => {
+it('does not fetch the execution log independently on accordion open', async () => {
   const user = userEvent.setup();
-  // Make log fetch hang so we can observe loading state
-  let resolveLog;
-  api.get.mockImplementation((path) => {
-    if (path === '/api/email-management/emails') {
-      return Promise.resolve({ emails: [makeEmail(EMAIL_ID)] });
-    }
-    if (path === `/api/email-management/emails/${EMAIL_ID}/actions`) {
-      return Promise.resolve({ actions: [] });
-    }
-    if (path === `/api/email-management/emails/${EMAIL_ID}/log`) {
-      return new Promise((resolve) => { resolveLog = resolve; });
-    }
-    return Promise.resolve({ entries: [] });
-  });
-
-  render(<EmailTriage />);
-  await openAccordion(user, EMAIL_ID);
-
-  // Wait for actions to load (empty), log still pending
-  await screen.findByRole('button', { name: /\+ task/i });
-  expect(screen.getByText('Loading log...')).toBeInTheDocument();
-
-  // Resolve the log fetch
-  resolveLog({ entries: [] });
-  await waitFor(() => {
-    expect(screen.queryByText('Loading log...')).not.toBeInTheDocument();
-  });
-});
-
-it('loads log entries from backend and renders them on accordion open', async () => {
-  const user = userEvent.setup();
-  const logEntry = {
-    action_type: 'Task',
-    name: 'Previously approved task',
-    event_datetime: null,
-    executed_at: '2026-06-28T10:00:00Z',
-  };
   setupMocks({
     emails: [makeEmail(EMAIL_ID)],
     actionsByEmailId: { [EMAIL_ID]: [] },
-    logsByEmailId: { [EMAIL_ID]: [logEntry] },
   });
 
   render(<EmailTriage />);
   await openAccordion(user, EMAIL_ID);
 
-  // Log entry rendered from backend
-  await screen.findByText(/Previously approved task/i);
-  await screen.findByText(/Execution log/i);
+  await screen.findByRole('button', { name: /\+ task/i });
+  expect(api.get).not.toHaveBeenCalledWith(`/api/email-management/emails/${EMAIL_ID}/log`);
+  expect(screen.queryByText('Loading log...')).not.toBeInTheDocument();
 });
 
-it('shows execution log unavailable when log fetch fails', async () => {
+it('reconstructs approved action log entries from actions on accordion open', async () => {
+  const user = userEvent.setup();
+  const olderApprovedAction = makeTaskAction(1, {
+    name: 'Previously approved task',
+    status: 'approved',
+    approved_at: '2026-06-28T10:00:00Z',
+  });
+  const newerApprovedAction = makeTaskAction(2, {
+    name: 'More recently approved task',
+    status: 'approved',
+    approved_at: '2026-06-28T11:00:00Z',
+  });
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [olderApprovedAction, newerApprovedAction] },
+  });
+
+  render(<EmailTriage />);
+  await openAccordion(user, EMAIL_ID);
+
+  await screen.findByText(/Execution log/i);
+  expect(screen.queryByRole('button', { name: /approve/i })).not.toBeInTheDocument();
+  const logSection = document.querySelector('[aria-label="Execution log"]');
+  expect(logSection.textContent).toContain('Previously approved task');
+  expect(logSection.textContent).toContain('More recently approved task');
+  expect(logSection.textContent.indexOf('More recently approved task')).toBeLessThan(
+    logSection.textContent.indexOf('Previously approved task')
+  );
+});
+
+it('does not render an independent log error when actions load succeeds', async () => {
   const user = userEvent.setup();
   api.get.mockImplementation((path) => {
     if (path === '/api/email-management/emails') {
@@ -614,9 +599,6 @@ it('shows execution log unavailable when log fetch fails', async () => {
     }
     if (path === `/api/email-management/emails/${EMAIL_ID}/actions`) {
       return Promise.resolve({ actions: [] });
-    }
-    if (path === `/api/email-management/emails/${EMAIL_ID}/log`) {
-      return Promise.reject(new Error('Network error'));
     }
     return Promise.resolve({ actions: [] });
   });
@@ -625,9 +607,7 @@ it('shows execution log unavailable when log fetch fails', async () => {
   await openAccordion(user, EMAIL_ID);
 
   await screen.findByRole('button', { name: /\+ task/i });
-  await waitFor(() => {
-    expect(screen.getByText('Execution log unavailable.')).toBeInTheDocument();
-  });
+  expect(screen.queryByText('Execution log unavailable.')).not.toBeInTheDocument();
 });
 
 // ── ISSUE 2 — Log format: timestamp first ────────────────────────────────────
@@ -940,7 +920,6 @@ it('log entries persist after accordion close and reopen', async () => {
   const taskAction = makeTaskAction(1, { name: 'Follow up with client' });
   const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-persist-log' };
 
-  // Backend log always returns empty (simulating backend not persisting in-session entries)
   api.get.mockImplementation((path) => {
     if (path === '/api/email-management/emails') {
       return Promise.resolve({ emails: [makeEmail(EMAIL_ID)] });
@@ -948,9 +927,6 @@ it('log entries persist after accordion close and reopen', async () => {
     if (path === `/api/email-management/emails/${EMAIL_ID}/actions`) {
       // After approve, return approved status (name null to stress-test)
       return Promise.resolve({ actions: [{ ...taskAction }] });
-    }
-    if (path.endsWith('/log')) {
-      return Promise.resolve({ entries: [] });
     }
     return Promise.resolve({ actions: [] });
   });
@@ -999,9 +975,6 @@ it('approved action name persists after accordion close and reopen even when bac
       }
       // Reopen: approved action, backend returns null for name
       return Promise.resolve({ actions: [{ ...taskAction, status: 'approved', name: null }] });
-    }
-    if (path.endsWith('/log')) {
-      return Promise.resolve({ entries: [] });
     }
     return Promise.resolve({ actions: [] });
   });

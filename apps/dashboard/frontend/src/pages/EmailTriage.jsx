@@ -245,7 +245,7 @@ function ActionRowV3({
 // ── ActionsPanel — fetches and manages actions for one email ──
 
 /**
- * Mounts when the accordion opens. Fetches actions and execution log in parallel.
+ * Mounts when the accordion opens. Fetches actions and reconstructs the execution log.
  * Unmounts (and resets) when accordion closes.
  */
 function mergeActionSnapshot(actions, action) {
@@ -258,9 +258,8 @@ function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
   const [actions, setActions] = useState(null); // null = loading
   const [loadError, setLoadError] = useState(null);
 
-  // Log state — separate from actions
+  // Execution log reconstructed from approved actions plus in-session approvals.
   const [logEntries, setLogEntries] = useState([]); // array of formatted strings
-  const [logStatus, setLogStatus] = useState("loading"); // 'loading' | 'loaded' | 'error'
 
   // Controlled edit state per action: { [actionId]: { name, event_datetime } }
   const [edits, setEdits] = useState({});
@@ -268,20 +267,22 @@ function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
   // Auto-focus: id of the action row that should receive focus
   const [pendingFocusId, setPendingFocusId] = useState(null);
 
-  // Load actions and log in parallel on mount (accordion open)
+  // Load actions on mount (accordion open)
   useEffect(() => {
     let cancelled = false;
 
-    // Fetch actions
     api
       .get(`/api/email-management/emails/${emailId}/actions`)
       .then((d) => {
         if (cancelled) return;
         const savedActions = emailSession?.actions || [];
         const savedById = new Map(savedActions.map((a) => [a.id, a]));
-        const mergedActions = d.actions.map((a) =>
-          savedById.has(a.id) ? { ...a, ...savedById.get(a.id) } : a
-        );
+        const mergedActions = d.actions.map((a) => {
+          const saved = savedById.get(a.id);
+          if (!saved) return a;
+          const resolvedInSession = saved.status && saved.status !== "pending";
+          return resolvedInSession ? { ...a, ...saved } : { ...saved, ...a };
+        });
         savedActions.forEach((saved) => {
           if (!mergedActions.some((a) => a.id === saved.id)) {
             mergedActions.push(saved);
@@ -300,30 +301,22 @@ function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
           };
         });
         setEdits(initial);
-      })
-      .catch((e) => {
-        if (!cancelled) setLoadError(e.message);
-      });
 
-    // Fetch execution log
-    api
-      .get(`/api/email-management/emails/${emailId}/log`)
-      .then((d) => {
-        if (cancelled) return;
-        const backendFormatted = d.entries.map((e) =>
-          buildLogEntry(e.action_type, e.name, e.event_datetime, e.executed_at)
+        const approvedActions = mergedActions
+          .filter((a) => a.status === "approved" && a.approved_at)
+          .sort((a, b) => new Date(b.approved_at) - new Date(a.approved_at));
+        const backendLogEntries = approvedActions.map((a) =>
+          buildLogEntry(a.type, a.name, a.event_datetime, a.approved_at)
         );
         const ssLog = emailSession?.logEntries || [];
-        // Session entries are newest (prepended at top); backend entries are appended below
         const merged = [...ssLog];
-        backendFormatted.forEach((e) => {
+        backendLogEntries.forEach((e) => {
           if (!merged.includes(e)) merged.push(e);
         });
         setLogEntries(merged);
-        setLogStatus("loaded");
       })
-      .catch(() => {
-        if (!cancelled) setLogStatus("error");
+      .catch((e) => {
+        if (!cancelled) setLoadError(e.message);
       });
 
     return () => {
@@ -376,7 +369,6 @@ function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
         // Build log entry with timestamp first and prepend (newest at top)
         const entry = buildLogEntry(action.type, editedName, editedDatetime, new Date());
         setLogEntries((prev) => [entry, ...prev]);
-        setLogStatus("loaded");
         updateEmailSession(emailId, (prev) => ({
           ...prev,
           actions: mergeActionSnapshot(prev.actions || [], resolvedAction),
@@ -512,22 +504,8 @@ function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
         </button>
       </div>
 
-      {/* Execution log — loading state */}
-      {logStatus === "loading" && (
-        <div className="mt-3 pt-3 border-t border-slate-700">
-          <p className="text-slate-500 text-xs">Loading log...</p>
-        </div>
-      )}
-
-      {/* Execution log — error state */}
-      {logStatus === "error" && (
-        <div className="mt-3 pt-3 border-t border-slate-700">
-          <p className="text-slate-500 text-xs">Execution log unavailable.</p>
-        </div>
-      )}
-
-      {/* Execution log — loaded, only shown when entries exist */}
-      {logStatus === "loaded" && logEntries.length > 0 && (
+      {/* Execution log — only shown when entries exist */}
+      {logEntries.length > 0 && (
         <div
           className="mt-3 pt-3 border-t border-slate-700"
           aria-live="polite"
