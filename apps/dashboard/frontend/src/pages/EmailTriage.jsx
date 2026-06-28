@@ -303,10 +303,10 @@ function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
         setEdits(initial);
 
         const approvedActions = mergedActions
-          .filter((a) => a.status === "approved" && a.approved_at)
-          .sort((a, b) => new Date(b.approved_at) - new Date(a.approved_at));
+          .filter((a) => a.status === "approved" && a.executed_at)
+          .sort((a, b) => new Date(b.executed_at) - new Date(a.executed_at));
         const backendLogEntries = approvedActions.map((a) =>
-          buildLogEntry(a.type, a.name, a.event_datetime, a.approved_at)
+          buildLogEntry(a.type, a.name, a.event_datetime, a.executed_at)
         );
         const ssLog = emailSession?.logEntries || [];
         const merged = [...ssLog];
