@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-28 — Email Management G6 fixes (4 issues resolved by Devon, 72 tests green) + system rules hardened: Quinn mandatory after G2 for UI features, Codex invocation pattern corrected for Devon/Kai, Cleo reverted.
+2026-06-28 — Email Management accordion bug fixes + system discipline corrections. Fixed state loss on accordion collapse/reopen, Dutch strings, and persistence (log now reconstructed from DB via GET /actions). Devon Codex prompt gate + Quinn relay rule added to AGENT.md files. Frontend rebuild pending — browser not yet verified.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -16,7 +16,8 @@
 - Tricolarae: S3 MODEL — wacht op Meta product-test data
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
-- Email management S1-S3: G6 complete (commit a4ff3af) — pipeline done
+- Email management S1-S3: persistence fix done (commit 8cd8299) — browser verify pending (team_task 112)
+- Email management design review (Quinn Part 2 spec ready) — not yet started
 
 ## Active goals
 - G-Scheiding volledig afgerond
