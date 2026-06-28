@@ -232,7 +232,7 @@ it('appends log entry with task name and timestamp after approval', async () => 
   await user.click(approveBtn);
 
   // Log entry shows task name
-  await screen.findByText(/Task "Follow up with client" aangemaakt/i);
+  await screen.findByText(/Task "Follow up with client" created/i);
 });
 
 // ── SCENARIO 5b — Approve task after editing: log shows edited name ───────────
@@ -265,7 +265,7 @@ it('sends edited name on approve and log records edited name', async () => {
   );
 
   // Log shows edited name
-  await screen.findByText(/Task "Edited task name" aangemaakt/i);
+  await screen.findByText(/Task "Edited task name" created/i);
 });
 
 // ── SCENARIO 6 — Approve event: log entry with name, datetime, timestamp ──────
@@ -288,7 +288,7 @@ it('appends event log entry with name, datetime, and timestamp after approval', 
 
   // Log entry shows event format with name and datetime
   await screen.findByText(/Event "Team standup"/i);
-  await screen.findByText(/toegevoegd aan agenda/i);
+  await screen.findByText(/added to calendar/i);
 });
 
 // ── SCENARIO 7 — Decline: no log entry ───────────────────────────────────────
@@ -314,7 +314,7 @@ it('transitions to declined state on decline without adding a log entry', async 
     expect(screen.queryByRole('button', { name: /decline/i })).not.toBeInTheDocument();
   });
   expect(screen.getByText(/declined/i)).toBeInTheDocument();
-  expect(screen.queryByText(/Task.*aangemaakt/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Task.*created/i)).not.toBeInTheDocument();
   expect(screen.queryByText(/Execution log/i)).not.toBeInTheDocument();
 });
 
@@ -399,7 +399,7 @@ it('logs entered name when approving a manually added task', async () => {
   await user.click(screen.getByRole('button', { name: /approve/i }));
 
   // Log shows the entered name
-  await screen.findByText(/Task "Manual task" aangemaakt/i);
+  await screen.findByText(/Task "Manual task" created/i);
 });
 
 // ── SCENARIO 11 — Approve manual event: log entry ────────────────────────────
@@ -436,7 +436,7 @@ it('logs entered name and datetime when approving a manually added event', async
 
   // Log shows event format
   await screen.findByText(/Event "Manual event"/i);
-  await screen.findByText(/toegevoegd aan agenda/i);
+  await screen.findByText(/added to calendar/i);
 });
 
 // ── SCENARIO 12 — Cumulative log ─────────────────────────────────────────────
@@ -461,15 +461,15 @@ it('accumulates two log entries when two actions are approved in order', async (
   // Approve first action
   const approveBtns = await screen.findAllByRole('button', { name: /approve/i });
   await user.click(approveBtns[0]);
-  await screen.findByText(/Task "First task" aangemaakt/i);
+  await screen.findByText(/Task "First task" created/i);
 
   // Approve second action
   const approveBtns2 = await screen.findAllByRole('button', { name: /approve/i });
   await user.click(approveBtns2[0]);
 
   // Both entries present
-  await screen.findByText(/Task "Second task" aangemaakt/i);
-  const logEntries = screen.getAllByText(/Task .* aangemaakt/i);
+  await screen.findByText(/Task "Second task" created/i);
+  const logEntries = screen.getAllByText(/Task .* created/i);
   expect(logEntries.length).toBe(2);
 });
 
@@ -649,7 +649,7 @@ it('log entry has timestamp as first token in DD Mon YYYY HH:MM format', async (
 
   // Entry format: starts with "DD Mon YYYY HH:MM  Task ..."
   await waitFor(() => {
-    const entries = screen.getAllByText(/\d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}.*Task.*aangemaakt/i);
+    const entries = screen.getAllByText(/\d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}.*Task.*created/i);
     expect(entries.length).toBeGreaterThanOrEqual(1);
   });
 });
@@ -763,7 +763,7 @@ it('resolved task row shows static text not a disabled input', async () => {
   });
 });
 
-it('resolved task row shows (naamloze taak) when name is empty on approve', async () => {
+it('resolved task row shows (untitled) when name is empty on approve', async () => {
   const user = userEvent.setup();
   const taskAction = makeTaskAction(10, { name: null });
   const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-untitled' };
@@ -781,7 +781,7 @@ it('resolved task row shows (naamloze taak) when name is empty on approve', asyn
   await user.click(await screen.findByRole('button', { name: /approve/i }));
 
   await waitFor(() => {
-    expect(screen.getByText('(naamloze taak)')).toBeInTheDocument();
+    expect(screen.getByText('(untitled)')).toBeInTheDocument();
   });
 });
 
@@ -834,7 +834,7 @@ it('resolved event row shows formatted datetime as static text', async () => {
   });
 });
 
-it('resolved event row shows (geen datum) when datetime is empty', async () => {
+it('resolved event row shows (no date) when datetime is empty', async () => {
   const user = userEvent.setup();
   const eventAction = makeEventAction(11, { name: null, event_datetime: null });
   const approvedAction = { ...eventAction, status: 'approved', external_id: 'cal-nodate' };
@@ -852,11 +852,11 @@ it('resolved event row shows (geen datum) when datetime is empty', async () => {
   await user.click(await screen.findByRole('button', { name: /approve/i }));
 
   await waitFor(() => {
-    expect(screen.getByText('(geen datum)')).toBeInTheDocument();
+    expect(screen.getByText('(no date)')).toBeInTheDocument();
   });
 });
 
-it('log entry shows (naamloze taak) when approved task name is empty', async () => {
+it('log entry shows (untitled) when approved task name is empty', async () => {
   const user = userEvent.setup();
   const taskAction = makeTaskAction(10, { name: null });
   const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-nolog' };
@@ -873,7 +873,7 @@ it('log entry shows (naamloze taak) when approved task name is empty', async () 
   await user.click(await screen.findByRole('button', { name: /\+ task/i }));
   await user.click(await screen.findByRole('button', { name: /approve/i }));
 
-  await screen.findByText(/Task.*\(naamloze taak\).*aangemaakt/i);
+  await screen.findByText(/Task.*\(untitled\).*created/i);
 });
 
 // ── ACCORDION BUG REGRESSIONS ────────────────────────────────────────────────
@@ -893,7 +893,7 @@ it('preserves approval log entries after accordion collapse and reopen', async (
   const senderEl = await screen.findByText(/Sender email-test-1/i);
   await user.click(senderEl);
   await user.click(await screen.findByRole('button', { name: /approve/i }));
-  await screen.findByText(/Task "Persistent log task" aangemaakt/i);
+  await screen.findByText(/Task "Persistent log task" created/i);
 
   await user.click(senderEl);
   await waitFor(() => {
@@ -901,7 +901,7 @@ it('preserves approval log entries after accordion collapse and reopen', async (
   });
 
   await user.click(senderEl);
-  await screen.findByText(/Task "Persistent log task" aangemaakt/i);
+  await screen.findByText(/Task "Persistent log task" created/i);
   expect(screen.getByText(/Execution log/i)).toBeInTheDocument();
 });
 
@@ -961,7 +961,7 @@ it('log entries persist after accordion close and reopen', async () => {
   // First open: approve an action
   await openAccordion(user, EMAIL_ID);
   await user.click(await screen.findByRole('button', { name: /approve/i }));
-  await screen.findByText(/Task "Follow up with client" aangemaakt/i);
+  await screen.findByText(/Task "Follow up with client" created/i);
   await screen.findByText(/Execution log/i);
 
   // Close accordion by clicking header again
@@ -975,7 +975,7 @@ it('log entries persist after accordion close and reopen', async () => {
   await user.click(senderEl);
 
   // Log entry must still be visible from session state
-  await screen.findByText(/Task "Follow up with client" aangemaakt/i);
+  await screen.findByText(/Task "Follow up with client" created/i);
   await screen.findByText(/Execution log/i);
 });
 
@@ -1029,6 +1029,6 @@ it('approved action name persists after accordion close and reopen even when bac
   // Name must still be visible from session state (not the nameless fallback)
   await waitFor(() => {
     expect(screen.getByText('Specific task name')).toBeInTheDocument();
-    expect(screen.queryByText('(naamloze taak)')).not.toBeInTheDocument();
+    expect(screen.queryByText('(untitled)')).not.toBeInTheDocument();
   });
 });

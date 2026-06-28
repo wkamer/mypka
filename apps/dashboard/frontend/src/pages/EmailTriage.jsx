@@ -22,12 +22,12 @@ function fmtTimestamp(ts) {
 
 /**
  * Format a datetime-local string like "2026-07-12T10:00" as "12 Jul 2026 10:00".
- * Returns "(geen datum)" when value is falsy.
+ * Returns "(no date)" when value is falsy.
  * @param {string|null|undefined} value
  * @returns {string}
  */
 function fmtEventDatetime(value) {
-  if (!value) return "(geen datum)";
+  if (!value) return "(no date)";
   const [datePart, timePart = "00:00"] = value.split("T");
   const [year, mon, day] = datePart.split("-");
   return `${day} ${_MONTHS[parseInt(mon, 10) - 1]} ${year} ${timePart.slice(0, 5)}`;
@@ -35,8 +35,8 @@ function fmtEventDatetime(value) {
 
 /**
  * Build a log entry string with timestamp FIRST.
- * Task:  "DD Mon YYYY HH:MM  Task "[name]" aangemaakt"
- * Event: "DD Mon YYYY HH:MM  Event "[name]" — [datetime] toegevoegd aan agenda"
+ * Task:  "DD Mon YYYY HH:MM  Task "[name]" created"
+ * Event: "DD Mon YYYY HH:MM  Event "[name]" — [datetime] added to calendar"
  * @param {string} type - "Task" or "Event"
  * @param {string|null|undefined} name
  * @param {string|null|undefined} eventDatetime
@@ -46,11 +46,11 @@ function fmtEventDatetime(value) {
 function buildLogEntry(type, name, eventDatetime, ts) {
   const prefix = fmtTimestamp(ts);
   if (type === "Event") {
-    const displayName = name || "(naamloos event)";
-    return `${prefix}  Event "${displayName}" — ${fmtEventDatetime(eventDatetime)} toegevoegd aan agenda`;
+    const displayName = name || "(untitled)";
+    return `${prefix}  Event "${displayName}" — ${fmtEventDatetime(eventDatetime)} added to calendar`;
   }
-  const displayName = name || "(naamloze taak)";
-  return `${prefix}  Task "${displayName}" aangemaakt`;
+  const displayName = name || "(untitled)";
+  return `${prefix}  Task "${displayName}" created`;
 }
 
 // ── Parked (S3 review — defer to later) ──
@@ -139,7 +139,7 @@ function ActionRowV3({
   const isDeclined = action.status === "declined";
   const displayName =
     editName ||
-    (action.type === "Event" ? "(naamloos event)" : "(naamloze taak)");
+    "(untitled)";
   const hasDisplayName = Boolean(editName);
   const hasDisplayDatetime = Boolean(editDatetime);
 
@@ -555,7 +555,7 @@ function InboxRow({ email, isOpen, onToggle, emailSession, updateEmailSession })
   const senderName = parseSenderName(email.sender);
 
   const receivedAt = email.received_at
-    ? new Date(email.received_at).toLocaleString("nl-NL", {
+    ? new Date(email.received_at).toLocaleString("en-GB", {
         day: "2-digit",
         month: "short",
         hour: "2-digit",
