@@ -4,8 +4,8 @@
  * Written before implementation per SOP-018 TDD protocol.
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { vi, it, expect, beforeEach, afterEach } from 'vitest';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import EmailTriage from './EmailTriage';
@@ -113,6 +113,10 @@ beforeEach(() => {
   api.get.mockResolvedValue({ emails: [] });
   api.post.mockResolvedValue(null);
   api.patch.mockResolvedValue(null);
+});
+
+afterEach(() => {
+  cleanup();
 });
 
 // ── SCENARIO 1 — Actions load on accordion open ───────────────────────────────
@@ -228,7 +232,7 @@ it('appends log entry with task name and timestamp after approval', async () => 
   await user.click(approveBtn);
 
   // Log entry shows task name
-  await screen.findByText(/Task Follow up with client created/i);
+  await screen.findByText(/Task "Follow up with client" aangemaakt/i);
 });
 
 // ── SCENARIO 5b — Approve task after editing: log shows edited name ───────────
@@ -261,7 +265,7 @@ it('sends edited name on approve and log records edited name', async () => {
   );
 
   // Log shows edited name
-  await screen.findByText(/Task Edited task name created/i);
+  await screen.findByText(/Task "Edited task name" aangemaakt/i);
 });
 
 // ── SCENARIO 6 — Approve event: log entry with name, datetime, timestamp ──────
@@ -283,8 +287,8 @@ it('appends event log entry with name, datetime, and timestamp after approval', 
   await user.click(approveBtn);
 
   // Log entry shows event format with name and datetime
-  await screen.findByText(/Event Team standup/i);
-  await screen.findByText(/added to calendar/i);
+  await screen.findByText(/Event "Team standup"/i);
+  await screen.findByText(/toegevoegd aan agenda/i);
 });
 
 // ── SCENARIO 7 — Decline: no log entry ───────────────────────────────────────
@@ -310,7 +314,7 @@ it('transitions to declined state on decline without adding a log entry', async 
     expect(screen.queryByRole('button', { name: /decline/i })).not.toBeInTheDocument();
   });
   expect(screen.getByText(/declined/i)).toBeInTheDocument();
-  expect(screen.queryByText(/Task.*created/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Task.*aangemaakt/i)).not.toBeInTheDocument();
   expect(screen.queryByText(/Execution log/i)).not.toBeInTheDocument();
 });
 
@@ -395,7 +399,7 @@ it('logs entered name when approving a manually added task', async () => {
   await user.click(screen.getByRole('button', { name: /approve/i }));
 
   // Log shows the entered name
-  await screen.findByText(/Task Manual task created/i);
+  await screen.findByText(/Task "Manual task" aangemaakt/i);
 });
 
 // ── SCENARIO 11 — Approve manual event: log entry ────────────────────────────
@@ -431,8 +435,8 @@ it('logs entered name and datetime when approving a manually added event', async
   await user.click(screen.getByRole('button', { name: /approve/i }));
 
   // Log shows event format
-  await screen.findByText(/Event Manual event/i);
-  await screen.findByText(/added to calendar/i);
+  await screen.findByText(/Event "Manual event"/i);
+  await screen.findByText(/toegevoegd aan agenda/i);
 });
 
 // ── SCENARIO 12 — Cumulative log ─────────────────────────────────────────────
@@ -457,15 +461,15 @@ it('accumulates two log entries when two actions are approved in order', async (
   // Approve first action
   const approveBtns = await screen.findAllByRole('button', { name: /approve/i });
   await user.click(approveBtns[0]);
-  await screen.findByText(/Task First task created/i);
+  await screen.findByText(/Task "First task" aangemaakt/i);
 
   // Approve second action
   const approveBtns2 = await screen.findAllByRole('button', { name: /approve/i });
   await user.click(approveBtns2[0]);
 
   // Both entries present
-  await screen.findByText(/Task Second task created/i);
-  const logEntries = screen.getAllByText(/Task .* created/i);
+  await screen.findByText(/Task "Second task" aangemaakt/i);
+  const logEntries = screen.getAllByText(/Task .* aangemaakt/i);
   expect(logEntries.length).toBe(2);
 });
 
@@ -645,7 +649,7 @@ it('log entry has timestamp as first token in DD Mon YYYY HH:MM format', async (
 
   // Entry format: starts with "DD Mon YYYY HH:MM  Task ..."
   await waitFor(() => {
-    const entries = screen.getAllByText(/\d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}.*Task.*created/i);
+    const entries = screen.getAllByText(/\d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}.*Task.*aangemaakt/i);
     expect(entries.length).toBeGreaterThanOrEqual(1);
   });
 });
@@ -759,7 +763,7 @@ it('resolved task row shows static text not a disabled input', async () => {
   });
 });
 
-it('resolved task row shows (untitled) when name is empty on approve', async () => {
+it('resolved task row shows (naamloze taak) when name is empty on approve', async () => {
   const user = userEvent.setup();
   const taskAction = makeTaskAction(10, { name: null });
   const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-untitled' };
@@ -777,7 +781,7 @@ it('resolved task row shows (untitled) when name is empty on approve', async () 
   await user.click(await screen.findByRole('button', { name: /approve/i }));
 
   await waitFor(() => {
-    expect(screen.getByText('(untitled)')).toBeInTheDocument();
+    expect(screen.getByText('(naamloze taak)')).toBeInTheDocument();
   });
 });
 
@@ -830,7 +834,7 @@ it('resolved event row shows formatted datetime as static text', async () => {
   });
 });
 
-it('resolved event row shows (no date) when datetime is empty', async () => {
+it('resolved event row shows (geen datum) when datetime is empty', async () => {
   const user = userEvent.setup();
   const eventAction = makeEventAction(11, { name: null, event_datetime: null });
   const approvedAction = { ...eventAction, status: 'approved', external_id: 'cal-nodate' };
@@ -848,11 +852,11 @@ it('resolved event row shows (no date) when datetime is empty', async () => {
   await user.click(await screen.findByRole('button', { name: /approve/i }));
 
   await waitFor(() => {
-    expect(screen.getByText('(no date)')).toBeInTheDocument();
+    expect(screen.getByText('(geen datum)')).toBeInTheDocument();
   });
 });
 
-it('log entry shows (untitled) when approved name is empty', async () => {
+it('log entry shows (naamloze taak) when approved task name is empty', async () => {
   const user = userEvent.setup();
   const taskAction = makeTaskAction(10, { name: null });
   const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-nolog' };
@@ -869,5 +873,162 @@ it('log entry shows (untitled) when approved name is empty', async () => {
   await user.click(await screen.findByRole('button', { name: /\+ task/i }));
   await user.click(await screen.findByRole('button', { name: /approve/i }));
 
-  await screen.findByText(/\(untitled\).*created|Task.*\(untitled\)/i);
+  await screen.findByText(/Task.*\(naamloze taak\).*aangemaakt/i);
+});
+
+// ── ACCORDION BUG REGRESSIONS ────────────────────────────────────────────────
+
+it('preserves approval log entries after accordion collapse and reopen', async () => {
+  const user = userEvent.setup();
+  const taskAction = makeTaskAction(1, { name: 'Persistent log task' });
+  const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-persist-log' };
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [taskAction] },
+  });
+  api.patch.mockResolvedValue(approvedAction);
+
+  render(<EmailTriage />);
+
+  const senderEl = await screen.findByText(/Sender email-test-1/i);
+  await user.click(senderEl);
+  await user.click(await screen.findByRole('button', { name: /approve/i }));
+  await screen.findByText(/Task "Persistent log task" aangemaakt/i);
+
+  await user.click(senderEl);
+  await waitFor(() => {
+    expect(screen.queryByText(/Execution log/i)).not.toBeInTheDocument();
+  });
+
+  await user.click(senderEl);
+  await screen.findByText(/Task "Persistent log task" aangemaakt/i);
+  expect(screen.getByText(/Execution log/i)).toBeInTheDocument();
+});
+
+it('preserves approved task title as static text after accordion collapse and reopen', async () => {
+  const user = userEvent.setup();
+  const taskAction = makeTaskAction(1, { name: 'Task title survives' });
+  const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-persist-title' };
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [taskAction] },
+  });
+  api.patch.mockResolvedValue(approvedAction);
+
+  render(<EmailTriage />);
+
+  const senderEl = await screen.findByText(/Sender email-test-1/i);
+  await user.click(senderEl);
+  await user.click(await screen.findByRole('button', { name: /approve/i }));
+  await screen.findByText('Task title survives');
+
+  await user.click(senderEl);
+  await waitFor(() => {
+    expect(screen.queryByText('Task title survives')).not.toBeInTheDocument();
+  });
+
+  await user.click(senderEl);
+  await screen.findByText('Task title survives');
+  expect(screen.queryByRole('textbox', { name: /action name/i })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /approve/i })).not.toBeInTheDocument();
+});
+
+// ── SESSION STATE — Log entries persist across accordion close/reopen ──────────
+
+it('log entries persist after accordion close and reopen', async () => {
+  const user = userEvent.setup();
+  const taskAction = makeTaskAction(1, { name: 'Follow up with client' });
+  const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-persist-log' };
+
+  // Backend log always returns empty (simulating backend not persisting in-session entries)
+  api.get.mockImplementation((path) => {
+    if (path === '/api/email-management/emails') {
+      return Promise.resolve({ emails: [makeEmail(EMAIL_ID)] });
+    }
+    if (path === `/api/email-management/emails/${EMAIL_ID}/actions`) {
+      // After approve, return approved status (name null to stress-test)
+      return Promise.resolve({ actions: [{ ...taskAction }] });
+    }
+    if (path.endsWith('/log')) {
+      return Promise.resolve({ entries: [] });
+    }
+    return Promise.resolve({ actions: [] });
+  });
+  api.patch.mockResolvedValue(approvedAction);
+
+  render(<EmailTriage />);
+
+  // First open: approve an action
+  await openAccordion(user, EMAIL_ID);
+  await user.click(await screen.findByRole('button', { name: /approve/i }));
+  await screen.findByText(/Task "Follow up with client" aangemaakt/i);
+  await screen.findByText(/Execution log/i);
+
+  // Close accordion by clicking header again
+  const senderEl = screen.getByText(/Sender email-test-1/i);
+  await user.click(senderEl);
+  await waitFor(() => {
+    expect(screen.queryByText(/Execution log/i)).not.toBeInTheDocument();
+  });
+
+  // Reopen accordion
+  await user.click(senderEl);
+
+  // Log entry must still be visible from session state
+  await screen.findByText(/Task "Follow up with client" aangemaakt/i);
+  await screen.findByText(/Execution log/i);
+});
+
+// ── SESSION STATE — Approved name persists across accordion close/reopen ───────
+
+it('approved action name persists after accordion close and reopen even when backend returns null name', async () => {
+  const user = userEvent.setup();
+  const taskAction = makeTaskAction(1, { name: 'Specific task name' });
+  const approvedActionFromPatch = { ...taskAction, status: 'approved', name: null, external_id: 'task-persist-name' };
+
+  let actionsCallCount = 0;
+  api.get.mockImplementation((path) => {
+    if (path === '/api/email-management/emails') {
+      return Promise.resolve({ emails: [makeEmail(EMAIL_ID)] });
+    }
+    if (path === `/api/email-management/emails/${EMAIL_ID}/actions`) {
+      actionsCallCount += 1;
+      if (actionsCallCount === 1) {
+        // First open: pending action with name
+        return Promise.resolve({ actions: [taskAction] });
+      }
+      // Reopen: approved action, backend returns null for name
+      return Promise.resolve({ actions: [{ ...taskAction, status: 'approved', name: null }] });
+    }
+    if (path.endsWith('/log')) {
+      return Promise.resolve({ entries: [] });
+    }
+    return Promise.resolve({ actions: [] });
+  });
+  api.patch.mockResolvedValue(approvedActionFromPatch);
+
+  render(<EmailTriage />);
+
+  // First open: approve the action
+  await openAccordion(user, EMAIL_ID);
+  await user.click(await screen.findByRole('button', { name: /approve/i }));
+  await waitFor(() => {
+    expect(screen.getByText('Specific task name')).toBeInTheDocument();
+  });
+
+  // Close accordion
+  const senderEl = screen.getByText(/Sender email-test-1/i);
+  await user.click(senderEl);
+  await waitFor(() => {
+    expect(screen.queryByRole('button', { name: /approve/i })).not.toBeInTheDocument();
+  });
+
+  // Reopen accordion — backend now returns approved action with null name
+  await user.click(senderEl);
+
+  // Name must still be visible from session state (not the nameless fallback)
+  await waitFor(() => {
+    expect(screen.getByText('Specific task name')).toBeInTheDocument();
+    expect(screen.queryByText('(naamloze taak)')).not.toBeInTheDocument();
+  });
 });

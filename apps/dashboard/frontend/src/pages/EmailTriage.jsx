@@ -22,12 +22,12 @@ function fmtTimestamp(ts) {
 
 /**
  * Format a datetime-local string like "2026-07-12T10:00" as "12 Jul 2026 10:00".
- * Returns "(no date)" when value is falsy.
+ * Returns "(geen datum)" when value is falsy.
  * @param {string|null|undefined} value
  * @returns {string}
  */
 function fmtEventDatetime(value) {
-  if (!value) return "(no date)";
+  if (!value) return "(geen datum)";
   const [datePart, timePart = "00:00"] = value.split("T");
   const [year, mon, day] = datePart.split("-");
   return `${day} ${_MONTHS[parseInt(mon, 10) - 1]} ${year} ${timePart.slice(0, 5)}`;
@@ -35,8 +35,8 @@ function fmtEventDatetime(value) {
 
 /**
  * Build a log entry string with timestamp FIRST.
- * Task:  "DD Mon YYYY HH:MM  Task [name] created"
- * Event: "DD Mon YYYY HH:MM  Event [name] — [datetime] added to calendar"
+ * Task:  "DD Mon YYYY HH:MM  Task "[name]" aangemaakt"
+ * Event: "DD Mon YYYY HH:MM  Event "[name]" — [datetime] toegevoegd aan agenda"
  * @param {string} type - "Task" or "Event"
  * @param {string|null|undefined} name
  * @param {string|null|undefined} eventDatetime
@@ -44,12 +44,13 @@ function fmtEventDatetime(value) {
  * @returns {string}
  */
 function buildLogEntry(type, name, eventDatetime, ts) {
-  const displayName = name || "(untitled)";
   const prefix = fmtTimestamp(ts);
   if (type === "Event") {
-    return `${prefix}  Event ${displayName} — ${fmtEventDatetime(eventDatetime)} added to calendar`;
+    const displayName = name || "(naamloos event)";
+    return `${prefix}  Event "${displayName}" — ${fmtEventDatetime(eventDatetime)} toegevoegd aan agenda`;
   }
-  return `${prefix}  Task ${displayName} created`;
+  const displayName = name || "(naamloze taak)";
+  return `${prefix}  Task "${displayName}" aangemaakt`;
 }
 
 // ── Parked (S3 review — defer to later) ──
@@ -136,6 +137,11 @@ function ActionRowV3({
   const isResolved = action.status !== "pending";
   const isApproved = action.status === "approved";
   const isDeclined = action.status === "declined";
+  const displayName =
+    editName ||
+    (action.type === "Event" ? "(naamloos event)" : "(naamloze taak)");
+  const hasDisplayName = Boolean(editName);
+  const hasDisplayDatetime = Boolean(editDatetime);
 
   // Auto-focus name field when this is a newly added row
   const nameInputRef = useRef(null);
@@ -162,12 +168,20 @@ function ActionRowV3({
           {isResolved ? (
             // Resolved state: static text (not a disabled input)
             <>
-              <p className="text-slate-300 text-sm px-2 py-1">
-                {editName || "(untitled)"}
+              <p
+                className={`text-sm px-2 py-1 ${
+                  hasDisplayName ? "text-slate-300" : "text-slate-500 italic"
+                }`}
+              >
+                {displayName}
               </p>
               {action.type === "Event" && (
-                <p className="text-slate-400 text-xs px-2 py-1">
-                  {editDatetime ? fmtEventDatetime(editDatetime) : "(no date)"}
+                <p
+                  className={`text-sm px-2 py-1 ${
+                    hasDisplayDatetime ? "text-slate-400" : "text-slate-500 italic"
+                  }`}
+                >
+                  {fmtEventDatetime(editDatetime)}
                 </p>
               )}
             </>
@@ -234,7 +248,13 @@ function ActionRowV3({
  * Mounts when the accordion opens. Fetches actions and execution log in parallel.
  * Unmounts (and resets) when accordion closes.
  */
-function ActionsPanel({ emailId }) {
+function mergeActionSnapshot(actions, action) {
+  return actions.some((a) => a.id === action.id)
+    ? actions.map((a) => (a.id === action.id ? { ...a, ...action } : a))
+    : [...actions, action];
+}
+
+function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
   const [actions, setActions] = useState(null); // null = loading
   const [loadError, setLoadError] = useState(null);
 
@@ -257,12 +277,26 @@ function ActionsPanel({ emailId }) {
       .get(`/api/email-management/emails/${emailId}/actions`)
       .then((d) => {
         if (cancelled) return;
-        setActions(d.actions);
+        const savedActions = emailSession?.actions || [];
+        const savedById = new Map(savedActions.map((a) => [a.id, a]));
+        const mergedActions = d.actions.map((a) =>
+          savedById.has(a.id) ? { ...a, ...savedById.get(a.id) } : a
+        );
+        savedActions.forEach((saved) => {
+          if (!mergedActions.some((a) => a.id === saved.id)) {
+            mergedActions.push(saved);
+          }
+        });
+        setActions(mergedActions);
         const initial = {};
-        d.actions.forEach((a) => {
+        mergedActions.forEach((a) => {
+          const sessionEdit = emailSession?.edits?.[a.id];
           initial[a.id] = {
-            name: a.name || "",
-            event_datetime: a.event_datetime || "",
+            name: sessionEdit !== undefined ? sessionEdit.name : (a.name || ""),
+            event_datetime:
+              sessionEdit !== undefined
+                ? sessionEdit.event_datetime
+                : (a.event_datetime || ""),
           };
         });
         setEdits(initial);
@@ -276,10 +310,16 @@ function ActionsPanel({ emailId }) {
       .get(`/api/email-management/emails/${emailId}/log`)
       .then((d) => {
         if (cancelled) return;
-        const formatted = d.entries.map((e) =>
+        const backendFormatted = d.entries.map((e) =>
           buildLogEntry(e.action_type, e.name, e.event_datetime, e.executed_at)
         );
-        setLogEntries(formatted);
+        const ssLog = emailSession?.logEntries || [];
+        // Session entries are newest (prepended at top); backend entries are appended below
+        const merged = [...ssLog];
+        backendFormatted.forEach((e) => {
+          if (!merged.includes(e)) merged.push(e);
+        });
+        setLogEntries(merged);
         setLogStatus("loaded");
       })
       .catch(() => {
@@ -296,7 +336,14 @@ function ActionsPanel({ emailId }) {
       ...prev,
       [actionId]: { ...(prev[actionId] || {}), [field]: value },
     }));
-  }, []);
+    updateEmailSession(emailId, (prev) => ({
+      ...prev,
+      edits: {
+        ...(prev.edits || {}),
+        [actionId]: { ...(prev.edits?.[actionId] || {}), [field]: value },
+      },
+    }));
+  }, [emailId, updateEmailSession]);
 
   const handleApprove = useCallback(
     async (action) => {
@@ -313,19 +360,40 @@ function ActionsPanel({ emailId }) {
           `/api/email-management/actions/${action.id}`,
           patchBody
         );
+        const updatedAction = updated || {};
+        const resolvedAction = {
+          ...action,
+          ...updatedAction,
+          status: "approved",
+          name: editedName,
+          event_datetime:
+            action.type === "Event" ? editedDatetime || null : updatedAction.event_datetime,
+        };
         setActions((prev) =>
-          prev.map((a) => (a.id === action.id ? updated : a))
+          prev.map((a) => (a.id === action.id ? resolvedAction : a))
         );
 
         // Build log entry with timestamp first and prepend (newest at top)
         const entry = buildLogEntry(action.type, editedName, editedDatetime, new Date());
         setLogEntries((prev) => [entry, ...prev]);
         setLogStatus("loaded");
+        updateEmailSession(emailId, (prev) => ({
+          ...prev,
+          actions: mergeActionSnapshot(prev.actions || [], resolvedAction),
+          edits: {
+            ...(prev.edits || {}),
+            [action.id]: {
+              name: editedName,
+              event_datetime: editedDatetime || "",
+            },
+          },
+          logEntries: [entry, ...(prev.logEntries || [])],
+        }));
       } catch (e) {
         console.error("Approve failed:", e);
       }
     },
-    [edits]
+    [edits, emailId, updateEmailSession]
   );
 
   const handleDecline = useCallback(async (action) => {
@@ -334,14 +402,19 @@ function ActionsPanel({ emailId }) {
         `/api/email-management/actions/${action.id}`,
         { status: "declined" }
       );
+      const resolvedAction = { ...action, ...(updated || {}), status: "declined" };
       setActions((prev) =>
-        prev.map((a) => (a.id === action.id ? updated : a))
+        prev.map((a) => (a.id === action.id ? resolvedAction : a))
       );
+      updateEmailSession(emailId, (prev) => ({
+        ...prev,
+        actions: mergeActionSnapshot(prev.actions || [], resolvedAction),
+      }));
       // No log entry on decline
     } catch (e) {
       console.error("Decline failed:", e);
     }
-  }, []);
+  }, [emailId, updateEmailSession]);
 
   const handleAddTask = useCallback(async () => {
     try {
@@ -354,11 +427,19 @@ function ActionsPanel({ emailId }) {
         ...prev,
         [newAction.id]: { name: "", event_datetime: "" },
       }));
+      updateEmailSession(emailId, (prev) => ({
+        ...prev,
+        actions: mergeActionSnapshot(prev.actions || [], newAction),
+        edits: {
+          ...(prev.edits || {}),
+          [newAction.id]: { name: "", event_datetime: "" },
+        },
+      }));
       setPendingFocusId(newAction.id);
     } catch (e) {
       console.error("Add task failed:", e);
     }
-  }, [emailId]);
+  }, [emailId, updateEmailSession]);
 
   const handleAddEvent = useCallback(async () => {
     try {
@@ -371,11 +452,19 @@ function ActionsPanel({ emailId }) {
         ...prev,
         [newAction.id]: { name: "", event_datetime: "" },
       }));
+      updateEmailSession(emailId, (prev) => ({
+        ...prev,
+        actions: mergeActionSnapshot(prev.actions || [], newAction),
+        edits: {
+          ...(prev.edits || {}),
+          [newAction.id]: { name: "", event_datetime: "" },
+        },
+      }));
       setPendingFocusId(newAction.id);
     } catch (e) {
       console.error("Add event failed:", e);
     }
-  }, [emailId]);
+  }, [emailId, updateEmailSession]);
 
   if (loadError) {
     return (
@@ -447,13 +536,13 @@ function ActionsPanel({ emailId }) {
           <p className="text-slate-500 text-xs font-medium mb-2">
             Execution log
           </p>
-          <div className="space-y-1">
+          <ul className="space-y-1">
             {logEntries.map((entry, i) => (
-              <p key={i} className="text-slate-400 text-xs font-mono">
+              <li key={i} className="text-slate-400 text-xs font-mono">
                 {entry}
-              </p>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       )}
     </div>
@@ -462,7 +551,7 @@ function ActionsPanel({ emailId }) {
 
 // ── Inbox row (accordion) ──
 
-function InboxRow({ email, isOpen, onToggle }) {
+function InboxRow({ email, isOpen, onToggle, emailSession, updateEmailSession }) {
   const senderName = parseSenderName(email.sender);
 
   const receivedAt = email.received_at
@@ -540,7 +629,11 @@ function InboxRow({ email, isOpen, onToggle }) {
       </div>
       {isOpen && (
         <div className="mx-4 mb-3 border border-slate-700 rounded bg-slate-900 px-4 py-3">
-          <ActionsPanel emailId={email.id} />
+          <ActionsPanel
+            emailId={email.id}
+            emailSession={emailSession}
+            updateEmailSession={updateEmailSession}
+          />
         </div>
       )}
     </div>
@@ -556,6 +649,17 @@ export default function EmailTriage() {
   const [error, setError] = useState(null);
   const [runResult, setRunResult] = useState(null);
   const [openEmailId, setOpenEmailId] = useState(null);
+  const [emailSessions, setEmailSessions] = useState({});
+
+  const updateEmailSession = useCallback((emailId, updater) => {
+    setEmailSessions((prev) => {
+      const current = prev[emailId] || { actions: [], edits: {}, logEntries: [] };
+      return {
+        ...prev,
+        [emailId]: updater(current),
+      };
+    });
+  }, []);
 
   // Exclusive accordion: opening a row collapses any other open row.
   const handleToggle = useCallback((id) => {
@@ -643,6 +747,8 @@ export default function EmailTriage() {
                 email={email}
                 isOpen={openEmailId === email.id}
                 onToggle={handleToggle}
+                emailSession={emailSessions[email.id]}
+                updateEmailSession={updateEmailSession}
               />
             ))}
           </div>
