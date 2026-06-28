@@ -117,8 +117,8 @@ Kai owns architecture, credentials, deployments, production services, and integr
 
 **Quinn activation rule:** Any feature with a UI layer activates Quinn by default after G2, before G3 and before Cleo. Larry only skips Quinn when the feature is purely backend or the UI is a trivial read-only display with no interactive states. Quinn's interaction spec is a required input for Sloane (G4) and Devon (G5) on all UI features.
 
-**Every Devon brief must include this line verbatim:**
-> Route all code writes through the Codex CLI runtime (`codex:codex-cli-runtime` skill). Do not use Edit/Write tools for implementation. Claude native tools are fallback only if Codex is explicitly unavailable.
+**Every Devon and Kai brief must include this line verbatim:**
+> Delegate all code writing to a `codex:codex-rescue` subagent (Agent tool, subagent_type: `codex:codex-rescue`). Read and plan using Claude-side tools, then spawn Codex with `--write` for the implementation. Do not write code yourself using Edit/Write/Bash.
 
 ---
 
