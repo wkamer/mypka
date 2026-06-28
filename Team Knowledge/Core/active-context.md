@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-27 (4) — System gaps resolved: Devon subagent registered, Kai Codex-first rule added, dashboard systemd auto-start live, subagent relay authorization deadlock fixed (CLAUDE.md + Kai/Devon AGENT.md).
+2026-06-28 — Email Management G6 fixes (4 issues resolved by Devon, 72 tests green) + system rules hardened: Quinn mandatory after G2 for UI features, Codex invocation pattern corrected for Devon/Kai, Cleo reverted.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -16,8 +16,7 @@
 - Tricolarae: S3 MODEL — wacht op Meta product-test data
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
-- Email management S1-S3: done; G3 complete (commits 115b400, 54620a5) — at G4, Sloane must write BDD scenarios for Slice 3
-- Dashboard: default password wijzigen (admin/admin)
+- Email management S1-S3: G6 complete (commit a4ff3af) — pipeline done
 
 ## Active goals
 - G-Scheiding volledig afgerond
