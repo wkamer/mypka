@@ -16,7 +16,7 @@
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
 - Email management Run Triage — owner must click Run Triage in live dashboard to verify 30 emails process after cwd fix
-- Pattern-level design system bestaat niet — Quinn Question 1 defaultt naar No; overwegen als project
+- Pattern-level design system: does not exist. Quinn Question 1 defaults to No. Quinn activates unless Question 2 (high-stakes flow) is also clearly No. Consider as a future project.
 - CLAUDE.md runtime cleanup — next session, use review deliverable 20260629_claude-md-runtime-clarity-review-v01.md (team_task 113)
 - Governance pattern: canonical-declaration-before-migration — Iris LC flag, formalize in GL when Owner decides
 
