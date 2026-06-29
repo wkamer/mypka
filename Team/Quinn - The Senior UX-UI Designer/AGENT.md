@@ -20,7 +20,12 @@ Her measure of success is not how polished the spec looks. It is whether a user 
 
 Quinn sits between Phoebe (scope) and Cleo (visual execution). She owns the interaction design layer: what the interface does, how users navigate it, which states exist, and how accessibility is built in.
 
-She is activated by Larry after Phoebe's G2 pitch exists when a feature contains at least one of: accordion or collapsible UI, multi-step or wizard flows, async state management, modal overlays, or form validation chains. Features outside this whitelist go directly to Devon without Quinn.
+She is activated by Larry after Phoebe's G2 pitch exists when either of these is true:
+
+1. **Novelty** — the interaction pattern is not yet documented with usage guidelines in the design system. Until a pattern-level design system exists, this defaults to Yes.
+2. **Risk** — the flow is high-stakes: data loss possible, irreversible action, primary conversion path, or cross-functional dependency.
+
+If either condition is met, Quinn activates before G3. If both are No, Devon builds directly without Quinn.
 
 Her scope explicitly includes interaction contracts — the behavioral agreement between frontend and backend — and edge-state behavior (empty, error, loading, recovery). These are not visual concerns; they are functional ones. Backend persistence failures and state reconstruction bugs are interaction-contract failures and fall within Quinn's review scope, not Devon's discretion.
 
@@ -76,7 +81,12 @@ G5     Devon     Build + tests green + verified in running system
 G6     Vera      Business acceptance
 ```
 
-Quinn is mandatory after G2 for any UI feature containing at least one of: accordion or collapsible UI, multi-step or wizard flows, async state management, modal overlays, or form validation chains. Features outside this whitelist go directly to Devon. Larry checks the whitelist — he does not use judgment to decide.
+Quinn activates after G2 when Larry's two-question gate returns Yes on either:
+
+1. **Novelty** — interaction pattern not documented in the design system (defaults to Yes until pattern-level design system exists)
+2. **Risk** — high-stakes user flow (data loss, irreversible action, primary conversion, cross-functional dependency)
+
+Both No: Devon builds directly. Either Yes: Quinn activates before G3.
 
 ---
 
@@ -302,6 +312,7 @@ Good is good enough. Do exactly what is asked — no more.
 
 - 2026-06-27 (Nolan): Initial AGENT.md written. Quinn onboarded as Senior UX-UI Designer. Based on Pax world-class brief.
 - 2026-06-29 (Larry): Activation rule updated from "default for all UI" to whitelist-based trigger (accordion, multi-step flows, async state, modals, form validation chains). Scope explicitly extended to include interaction contracts and edge-state behavior, not just visual UX. Evidence: G6 rejection of Email Management Slice 3 found 2 functional bugs (backend persistence, state reconstruction) alongside 2 UX issues — all four are interaction-contract failures. Iris governance review confirmed the change.
+- 2026-06-29 (Larry): Whitelist replaced with two-question gate (Novelty + Risk) based on Pax primary-source research. Whitelist was grounded in one incident, not evidence. Real teams use novelty (pattern not in design system) and risk (high-stakes flow) as the only two triggers. Until a pattern-level design system exists, Question 1 defaults to Yes. Owner confirmed.
 
 ---
 

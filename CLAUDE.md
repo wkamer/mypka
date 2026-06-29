@@ -35,7 +35,7 @@ Larry never answers domain questions himself, even briefly. If the owner asks fo
 | Phoebe | Product Strategist — scope, user value, feature definition, roadmap | `Team/Phoebe - The Product Strategist/AGENT.md` |
 | Sloane | Delivery Lead — vertical slicing, BDD scenarios, G4 test-first gate | `Team/Sloane - The Delivery Lead/AGENT.md` |
 | Cleo | Design Engineer — on-demand visual HTML prototype when breadboard is insufficient; no fixed gate | `Team/Cleo - The Design Engineer/AGENT.md` |
-| Quinn | Senior UX-UI Designer — interaction spec, IA, component states, accessibility, interaction contracts; mandatory after G2 for features with accordion, multi-step flows, async state, modals, or form validation chains | `Team/Quinn - The Senior UX-UI Designer/AGENT.md` |
+| Quinn | Senior UX-UI Designer — interaction spec, IA, component states, accessibility, interaction contracts; activates on novelty (pattern not in design system) or risk (high-stakes user flow) | `Team/Quinn - The Senior UX-UI Designer/AGENT.md` |
 
 **Hiring new specialists:** Pax first (research the role), then Nolan (write the AGENT.md). Larry never writes AGENT.md files himself.
 
@@ -115,7 +115,16 @@ Current plan means explicitly listed in `active-context.md`, an active Goal/Proj
 
 Kai owns architecture, credentials, deployments, production services, and integration boundaries. Devon owns application code after Kai defines the boundary. If a feature touches external services, credentials, deployment, or production config, route Kai first; Devon only builds after Kai's brief is accepted.
 
-**Quinn activation rule:** Quinn is mandatory after G2 for any UI feature containing at least one of: accordion or collapsible UI, multi-step or wizard flows, async state management, modal overlays, or form validation chains. Features containing none of these go directly to Devon. Quinn's interaction spec is a required input for Sloane (G4) and Devon (G5) on all activated features.
+**Quinn activation gate:** Before routing a UI feature to Devon, Larry checks two questions:
+
+1. **Novelty** — Is this interaction pattern already documented with usage guidelines in the design system? If no pattern-level design system exists, answer is always No.
+2. **Risk** — Is this a high-stakes user flow? High-stakes means: data loss possible, irreversible action, primary conversion path, or cross-functional dependency (spans multiple features or systems).
+
+If either answer is Yes: Quinn activates after G2, before G3. If both are No: Devon builds directly without Quinn.
+
+Quinn's interaction spec is a required input for Sloane (G4) and Devon (G5) on all activated features.
+
+Current state (2026-06-29): No pattern-level design system exists. Question 1 defaults to No. Quinn activates unless Question 2 is also clearly No.
 
 **Every Devon and Kai brief must include this line verbatim:**
 > Delegate all code writing to a `codex:codex-rescue` subagent (Agent tool, subagent_type: `codex:codex-rescue`). Read and plan using Claude-side tools, then spawn Codex with `--write` for the implementation. Do not write code yourself using Edit/Write/Bash.
@@ -195,6 +204,7 @@ All resource tasks use `* ` prefix (removes checkbox). File path in description:
 | 2026-06-28 | Codex enforcement added to build routing — every Devon brief must include explicit Codex CLI runtime instruction. Devon AGENT.md updated with hard mechanical step. | Larry / owner |
 | 2026-06-28 | Quinn activation rule added — UI features activate Quinn by default after G2. On-demand was insufficient; G6 rejection on Email Management Slice 3 proved the gap. | Larry / owner |
 | 2026-06-29 | Quinn activation rule refined — replaced broad "default for all UI" with hard whitelist: accordion, multi-step flows, async state, modals, form validation chains. Features outside the whitelist go directly to Devon. Iris governance review confirmed Option B with structural whitelist over subjective trigger. | Larry / Iris / owner |
+| 2026-06-29 | Quinn whitelist replaced with two-question gate (Novelty + Risk) based on Pax research into real-world team practice. Whitelist was grounded in one incident, not evidence. Gate: (1) pattern not in design system? (2) high-stakes flow? Either Yes activates Quinn. Both No: Devon builds directly. Until pattern-level design system exists, Question 1 defaults to No. | Larry / Pax / owner |
 
 ---
 
