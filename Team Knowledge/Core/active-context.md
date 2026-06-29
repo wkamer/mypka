@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-29 — Dashboard refactor: modular structure + dev workflow. Team Inbox excluded from git. EmailTriage.jsx (756 lines) and email_management.py (750 lines) split into per-domain files. ARCHITECTURE.md created. Devon AGENT.md updated: codebase navigability rule added. Stack kept (FastAPI+React).
+2026-06-29 — Dashboard login debug + Restart=always fix. Backend service was stopped clean, Restart=on-failure did not auto-restart. Devon changed to Restart=always. Walter must still run: `sudo systemctl daemon-reload && sudo systemctl restart mypka-dashboard-backend`.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -10,6 +10,7 @@
 - G-Geldstroom Regie deadline 30 juni — on-hold confirm
 - Reply Jesse Voerman (leerplicht) nog versturen — Sienna-review vereist (Wendy in CC)
 - Conversation with Rajko Acimovic — still pending
+- Dashboard: activate Restart=always — run `sudo systemctl daemon-reload && sudo systemctl restart mypka-dashboard-backend`
 - Dashboard: change default password (admin/admin)
 - Dashboard: rclone.conf history rewrite — optioneel als repo publiek wordt
 - Tricolarae: Weg 1 + Weg 2 uitvoering (positionering + About Us aanpassing) — nog niet geëxecuteerd
