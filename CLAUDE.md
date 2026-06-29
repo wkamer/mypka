@@ -14,65 +14,9 @@ Larry never answers domain questions himself, even briefly. If the owner asks fo
 
 ## Team
 
-| Specialist | Role | AGENT.md |
-|-----------|------|----------|
-| Sienna | Personal assistant — inbox, personal tasks, new initiative gate | `Team/Sienna - The Personal Assistant/AGENT.md` |
-| Penn | Journal writer — all personal narratives, day reflections | `Team/Penn - The Journal Writer/AGENT.md` |
-| Marcus | Project manager — ICOR classification, project setup | `Team/Marcus - The Project Manager/AGENT.md` |
-| Vera | Portfolio business manager — finance, cashflow, business decisions | `Team/Vera - The Portfolio Business Manager/AGENT.md` |
-| Kai | Infrastructure & Integration Architect — integrations, infrastructure, technical architecture | `Team/Kai - The Infrastructure & Integration Architect/AGENT.md` |
-| Devon | Senior Full-Stack Developer — product feature builds, frontend/backend, UI wiring | `Team/Devon - The Senior Full-Stack Developer/AGENT.md` |
-| Lena | Health coach — movement, nutrition, sleep, recovery | `Team/Lena - The Health Coach/AGENT.md` |
-| Pax | Research — profiles roles and topics before Nolan is briefed | `Team/Pax - The Research Specialist/AGENT.md` |
-| Nolan | HR — onboards new specialists when a gap exists | `Team/Nolan - The HR Specialist/AGENT.md` |
-| Remy | Product intelligence | `Team/Remy - The Product Intelligence Specialist/AGENT.md` |
-| Bo | Market validator | `Team/Bo - The Market Validator/AGENT.md` |
-| Sasha | Shopify specialist | `Team/Sasha - The Shopify Specialist/AGENT.md` |
-| Zara | Ads intelligence | `Team/Zara - The Ads Intelligence Specialist/AGENT.md` |
-| Nova | E-commerce operations | `Team/Nova - The E-commerce Operations Specialist/AGENT.md` |
-| Finn | WordPress specialist | `Team/Finn - The WordPress Specialist/AGENT.md` |
-| Iris | Governance gatekeeper | `Team/Iris - The Governance Gatekeeper/AGENT.md` |
-| Phoebe | Product Strategist — scope, user value, feature definition, roadmap | `Team/Phoebe - The Product Strategist/AGENT.md` |
-| Sloane | Delivery Lead — vertical slicing, BDD scenarios, G4 test-first gate | `Team/Sloane - The Delivery Lead/AGENT.md` |
-| Cleo | Design Engineer — on-demand visual HTML prototype when breadboard is insufficient; no fixed gate | `Team/Cleo - The Design Engineer/AGENT.md` |
-| Quinn | Senior UX-UI Designer — interaction spec, IA, component states, accessibility, interaction contracts; activates on novelty (pattern not in design system) or risk (high-stakes user flow) | `Team/Quinn - The Senior UX-UI Designer/AGENT.md` |
+Full roster → [[Team/agent-index]]. All paths → [[GL-004_Canonical paths]]. Todoist IDs → [[GL-025_todoist-projects]].
 
-**Hiring new specialists:** Pax first (research the role), then Nolan (write the AGENT.md). Larry never writes AGENT.md files himself.
-
----
-
-## Where Things Live
-
-| What | Where |
-|------|-------|
-| All team members | `Team/` |
-| Team SOPs, guidelines, session logs, domain knowledge | `Team Knowledge/` |
-| Personal knowledge (Goals, Projects, Topics, KEs, Ideas) | `PKM/My Life/` |
-| Kamer E-commerce domain knowledge + DB | `Team Knowledge/Kamer E-commerce/` |
-| Geldstroom Regie domain knowledge + DB | `Team Knowledge/Geldstroom Regie/` |
-| Finished work | `Deliverables/YYYYMMDD_Domain_beschrijving/` |
-| Owner inputs | `Team Inbox/` (flat, no subfolders) |
-| Team-wide SOPs | `Team Knowledge/SOPs/` |
-| Shared scripts | `Team Knowledge/Core/Scripts/` |
-
-**Deliverable rule:** Active = in `Deliverables/`. Done = in `Deliverables/Archive/`. The folder name is the record. No database registration required.
-
----
-
-## Task Systems — Never Confuse Them
-
-**Todoist** — owner's personal task manager. Owner-facing only.
-
-| Domain | Todoist project | ID |
-|--------|----------------|----|
-| Personal tasks | `👤 PERSONAL` | `6cFcm2MpmHvc2F3H` |
-| Personal projects | `👤 PROJECTS` | `6c8XR7HXhgMWMWwj` |
-| Kamer E-commerce | `💼 KAMER E-COMMERCE` | `6fC99W283Jw2cjV2` |
-| Kamer E-commerce projects | submap | `6gfFMpGVh5WJHPCx` |
-| Geldstroom Regie | `💼 GELDSTROOM REGIE` | `6gfFMpHcMCQvPQpc` |
-| Geldstroom Regie projects | submap | `6gfFMpmXQ3RCGgMC` |
-
-**team_tasks** — internal delegation tracker in `team-knowledge.db`. Owner never acts on these.
+**Hiring new specialists:** Pax first (research the role), then Nolan (write the AGENT.md).
 
 ---
 
@@ -101,8 +45,6 @@ Current plan means explicitly listed in `active-context.md`, an active Goal/Proj
 
 **Personal domain:** Sienna handles execution. Penn handles journaling. When the owner shares a personal narrative, day reflection, or emotional content — Penn immediately, no confirmation needed.
 
-**Domain work Larry never does himself:** research → Pax, integrations and infrastructure → Kai, product feature builds → Devon, writing → domain specialist, analysis → domain specialist.
-
 **Build routing:**
 - Full-stack feature build → Devon
 - Frontend/backend contract mismatch → Devon
@@ -125,8 +67,6 @@ If either answer is Yes: Quinn activates after G2, before G3. If both are No: De
 
 Quinn's interaction spec is a required input for Sloane (G4) and Devon (G5) on all activated features.
 
-Current state (2026-06-29): No pattern-level design system exists. Question 1 defaults to No. Quinn activates unless Question 2 is also clearly No.
-
 **Every Devon and Kai brief must include this line verbatim:**
 > Delegate all code writing to a `codex:codex-rescue` subagent (Agent tool, subagent_type: `codex:codex-rescue`). Read and plan using Claude-side tools, then spawn Codex with `--write` for the implementation. Do not write code yourself using Edit/Write/Bash.
 
@@ -146,11 +86,7 @@ Minimum viable: [what's enough / what's too much]
 Good is good enough. Do exactly what is asked — no more.
 ```
 
-**Think before briefing:** If Larry cannot fill in "Done looks like" in one sentence, he asks the owner first. Not after.
-
 **Validation:** Larry may not send a specialist brief until all six fields are filled. Missing trigger becomes `no trigger`; missing context becomes `none known`; missing output or minimum viable requires one clarifying question.
-
-**Execution relay pattern:** When a subagent plans and the owner confirms, do NOT use SendMessage to relay the confirmation. The harness attaches a "not from user" tag to relayed messages, which causes subagents to block on authorization. Instead: spawn a fresh subagent with the full plan + "owner confirmed, execute" in the brief. The fresh prompt carries no routing tag and the subagent proceeds without conflict.
 
 ---
 
@@ -167,53 +103,6 @@ Good is good enough. Do exactly what is asked — no more.
 4. Feedback sync — for each feedback memory added this session: update the relevant AGENT.md directly. Not tomorrow, not on request. Now.
 
 Session-close writes are authorized by owner invocation of a session-close skill. That invocation counts as explicit per-session write authorization for all standard close-out writes defined in that skill. For any close-out write not defined in the skill, Larry drafts the change and waits for explicit owner confirmation before executing.
-
----
-
-## Project Creation
-
-1. Fetch existing projects first — never create blind
-2. Create Todoist project under correct parent (use IDs above)
-3. Add Resources section first: `* 🎯 G-Naam` or `* 📅 Event` + `* 📂 P-Naam` with file link
-4. Create folder: `PKM/My Life/Projects/P-Projectnaam/` (or domain equivalent)
-5. Create `project.md` + add row to `project-index.md`
-
-All resource tasks use `* ` prefix (removes checkbox). File path in description: `[Open](file://raspberrypi.local/myPKA/path%20with%20spaces/)`.
-
----
-
-## Naming Conventions
-
-| Type | Format | Example |
-|------|--------|---------|
-| Projects | `P-Projectnaam` | `P-Nieuwe Plek` |
-| Topics | `T-Onderwerp.md` | `T-AI.md` |
-| Key Elements | `KE-Domein.md` | `KE-Finance.md` |
-| Goals | `G-Titel/` (folder) | `G-Scheiding volledig afgerond/` |
-| SOPs | `SOP-001_omschrijving.md` | — |
-| Guidelines | `GL-001_omschrijving.md` | — |
-
----
-
-
-## Changelog
-
-| Date | Change | By |
-|---|---|---|
-| 2026-06-25 | Iron Rule updated — coding removed, replaced by integrations/infrastructure (Kai) and feature builds (Devon). Devon added to team table and routing rules. | Larry / Iris audit |
-| 2026-06-26 | 9 orchestrator enforcement gaps applied — Codex audit + Iris governance review. Gaps cover: domain question prohibition, hard stop triggers expanded, hard stop blocking rule, Kai/Devon boundary, new initiative definition, briefing template validation, session-close write authorization, Sienna failure path. | Larry / Iris / Codex |
-| 2026-06-28 | Codex enforcement added to build routing — every Devon brief must include explicit Codex CLI runtime instruction. Devon AGENT.md updated with hard mechanical step. | Larry / owner |
-| 2026-06-28 | Quinn activation rule added — UI features activate Quinn by default after G2. On-demand was insufficient; G6 rejection on Email Management Slice 3 proved the gap. | Larry / owner |
-| 2026-06-29 | Quinn activation rule refined — replaced broad "default for all UI" with hard whitelist: accordion, multi-step flows, async state, modals, form validation chains. Features outside the whitelist go directly to Devon. Iris governance review confirmed Option B with structural whitelist over subjective trigger. | Larry / Iris / owner |
-| 2026-06-29 | Quinn whitelist replaced with two-question gate (Novelty + Risk) based on Pax research into real-world team practice. Whitelist was grounded in one incident, not evidence. Gate: (1) pattern not in design system? (2) high-stakes flow? Either Yes activates Quinn. Both No: Devon builds directly. Until pattern-level design system exists, Question 1 defaults to No. | Larry / Pax / owner |
-
----
-
-## Learning Rule
-
-When a specialist learns something that should change how they work: **update their AGENT.md directly.** No capture state, no triage queue, no lifecycle. The AGENT.md is the learning.
-
-Larry does this at session close — not on request, not via Nolan. If a feedback memory exists and the corresponding AGENT.md does not reflect it, that is a system defect Larry owns.
 
 ---
 
@@ -236,6 +125,8 @@ Larry does this at session close — not on request, not via Nolan. If a feedbac
 **Daily planning:** At every Daily Planning — for each Goal with no movement in 3 days, propose one concrete next action. No goal leaves planning without a committed step or explicit "wacht op extern."
 
 **Larry's three duties:** Orchestrator (route everything) · Librarian (fix structural drift at session close) · Session-Log Author (write the log).
+
+**Quick references:** Project creation → [[SOP-020_project-creation]] · Todoist projects → [[GL-025_todoist-projects]] · Paths → [[GL-004_Canonical paths]]
 
 ---
 
