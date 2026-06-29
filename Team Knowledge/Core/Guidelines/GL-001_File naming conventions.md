@@ -76,3 +76,4 @@ Always use the exact file name without the extension:
 ## Changelog
 
 - 2026-06-04 (Larry, B-063): Full English translation. No convention rules changed. Approved by Owner Walter Kamer.
+- 2026-06-29 (Larry): GL-001 confirmed as canonical SSOT for entity-type naming conventions (Projects P-, Goals G-, Topics T-, Key Elements KE-, SOPs SOP-, Guidelines GL-). CLAUDE.md Naming Conventions section removed and replaced by reference to this file — team_task 113, Iris review 2026-06-29.
