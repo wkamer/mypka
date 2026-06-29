@@ -84,7 +84,7 @@ export default function EmailTriage() {
       setRunResult(result);
       await loadEmails();
     } catch (e) {
-      setError(e.message);
+      setError("Triage failed. Check your connection and try again.");
     } finally {
       setRunLoading(false);
     }
@@ -107,16 +107,38 @@ export default function EmailTriage() {
           <button
             onClick={handleRunTriage}
             disabled={runLoading}
-            className="px-4 py-2 text-sm rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-100 disabled:opacity-50 transition-colors font-medium"
+            aria-busy={runLoading}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-slate-400"
           >
+            {runLoading && (
+              <svg
+                aria-hidden="true"
+                className="w-3.5 h-3.5 animate-spin text-slate-300"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+            )}
             {runLoading ? "Running..." : "Run Triage"}
           </button>
-          {runResult && (
-            <span className="text-slate-400 text-xs">
-              Processed: {runResult.processed} | Skipped: {runResult.skipped} |
-              Errors: {runResult.errors}
-            </span>
-          )}
+          <span
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className="text-slate-400 text-xs"
+          >
+            {runLoading && "Running triage..."}
+            {!runLoading && !error && runResult && runResult.processed > 0 &&
+              `${runResult.processed} email${runResult.processed === 1 ? "" : "s"} processed${runResult.errors > 0 ? `, ${runResult.errors} error${runResult.errors === 1 ? "" : "s"}` : ""}`}
+            {!runLoading && !error && runResult && runResult.processed === 0 &&
+              "No new emails found"}
+          </span>
         </div>
 
         {error && (

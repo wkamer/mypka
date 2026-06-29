@@ -1506,3 +1506,202 @@ it('ProcessedPanel renders log entries reversed so newest-stored entry appears l
   // Reversed: approval first, disposition last
   expect(text.indexOf('Task "Test" created')).toBeLessThan(text.indexOf('Email archived'));
 });
+
+// ── SLICE 5 — Run Triage ────────────────────────────────────────────────────
+
+it('disables button and changes label to Running... immediately on click', async () => {
+  const user = userEvent.setup();
+  api.get.mockResolvedValue({ emails: [] });
+  // Never resolves — simulates in-progress call
+  api.post.mockReturnValue(new Promise(() => {}));
+
+  renderEmailTriage();
+  // Wait for initial load
+  await waitFor(() => expect(api.get).toHaveBeenCalledWith('/api/email-management/emails'));
+
+  const btn = screen.getByRole('button', { name: /run triage/i });
+  await user.click(btn);
+
+  await waitFor(() => {
+    const runningBtn = screen.getByRole('button', { name: /running/i });
+    expect(runningBtn).toBeDisabled();
+    expect(runningBtn).toHaveTextContent('Running...');
+  });
+});
+
+it('status region shows Running triage... while call is in progress', async () => {
+  const user = userEvent.setup();
+  api.get.mockResolvedValue({ emails: [] });
+  api.post.mockReturnValue(new Promise(() => {}));
+
+  renderEmailTriage();
+  await waitFor(() => expect(api.get).toHaveBeenCalledWith('/api/email-management/emails'));
+
+  const btn = screen.getByRole('button', { name: /run triage/i });
+  await user.click(btn);
+
+  await waitFor(() => {
+    const statusRegion = screen.getByRole('status');
+    expect(statusRegion).toHaveTextContent('Running triage...');
+  });
+});
+
+it('refreshes pending list after successful triage', async () => {
+  const user = userEvent.setup();
+  const email1 = makeEmail('e1', { received_at: '2026-06-15T10:00:00Z' });
+  const email2 = makeEmail('e2', { received_at: '2026-06-14T10:00:00Z' });
+
+  api.get
+    .mockResolvedValueOnce({ emails: [] })                          // initial load
+    .mockResolvedValueOnce({ emails: [email1, email2] });           // after triage
+  api.post.mockResolvedValue({ processed: 2, skipped: 0, errors: 0 });
+
+  renderEmailTriage();
+  await waitFor(() => expect(api.get).toHaveBeenCalledWith('/api/email-management/emails'));
+
+  const btn = screen.getByRole('button', { name: /run triage/i });
+  await user.click(btn);
+
+  await waitFor(() => {
+    expect(screen.getByText(/Sender e1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Sender e2/i)).toBeInTheDocument();
+  });
+});
+
+it('status region shows X emails processed after successful triage', async () => {
+  const user = userEvent.setup();
+  api.get.mockResolvedValue({ emails: [] });
+  api.post.mockResolvedValue({ processed: 3, skipped: 0, errors: 0 });
+
+  renderEmailTriage();
+  await waitFor(() => expect(api.get).toHaveBeenCalledWith('/api/email-management/emails'));
+
+  const btn = screen.getByRole('button', { name: /run triage/i });
+  await user.click(btn);
+
+  await waitFor(() => {
+    const statusRegion = screen.getByRole('status');
+    expect(statusRegion).toHaveTextContent('3 emails processed');
+  });
+});
+
+it('status region shows No new emails found when triage returns 0 processed', async () => {
+  const user = userEvent.setup();
+  api.get.mockResolvedValue({ emails: [] });
+  api.post.mockResolvedValue({ processed: 0, skipped: 0, errors: 0 });
+
+  renderEmailTriage();
+  await waitFor(() => expect(api.get).toHaveBeenCalledWith('/api/email-management/emails'));
+
+  const btn = screen.getByRole('button', { name: /run triage/i });
+  await user.click(btn);
+
+  await waitFor(() => {
+    const statusRegion = screen.getByRole('status');
+    expect(statusRegion).toHaveTextContent('No new emails found');
+  });
+});
+
+it('shows persistent error banner and re-enables button on network failure', async () => {
+  const user = userEvent.setup();
+  api.get.mockResolvedValue({ emails: [] });
+  api.post.mockRejectedValue(new Error('Network error'));
+
+  renderEmailTriage();
+  await waitFor(() => expect(api.get).toHaveBeenCalledWith('/api/email-management/emails'));
+
+  const btn = screen.getByRole('button', { name: /run triage/i });
+  await user.click(btn);
+
+  await waitFor(() => {
+    expect(screen.getByText(/Triage failed/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /run triage/i })).not.toBeDisabled();
+  });
+
+  // Status region is silent on error
+  const statusRegion = screen.getByRole('status');
+  expect(statusRegion).toHaveTextContent('');
+});
+
+it('error banner clears on subsequent successful triage run', async () => {
+  const user = userEvent.setup();
+  api.get.mockResolvedValue({ emails: [] });
+  api.post
+    .mockRejectedValueOnce(new Error('Network error'))
+    .mockResolvedValueOnce({ processed: 1, skipped: 0, errors: 0 });
+
+  renderEmailTriage();
+  await waitFor(() => expect(api.get).toHaveBeenCalledWith('/api/email-management/emails'));
+
+  const btn = screen.getByRole('button', { name: /run triage/i });
+
+  // First click — fails
+  await user.click(btn);
+  await waitFor(() => expect(screen.getByText(/Triage failed/i)).toBeInTheDocument());
+
+  // Second click — succeeds
+  const btnAgain = screen.getByRole('button', { name: /run triage/i });
+  await user.click(btnAgain);
+
+  await waitFor(() => {
+    expect(screen.queryByText(/Triage failed/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('1 email processed');
+  });
+});
+
+it('re-enables button after successful triage', async () => {
+  const user = userEvent.setup();
+  api.get.mockResolvedValue({ emails: [] });
+  api.post.mockResolvedValue({ processed: 1, skipped: 0, errors: 0 });
+
+  renderEmailTriage();
+  await waitFor(() => expect(api.get).toHaveBeenCalledWith('/api/email-management/emails'));
+
+  const btn = screen.getByRole('button', { name: /run triage/i });
+  await user.click(btn);
+
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: /run triage/i })).not.toBeDisabled();
+  });
+});
+
+it('re-enables button after triage error', async () => {
+  const user = userEvent.setup();
+  api.get.mockResolvedValue({ emails: [] });
+  api.post.mockRejectedValue(new Error('Server error'));
+
+  renderEmailTriage();
+  await waitFor(() => expect(api.get).toHaveBeenCalledWith('/api/email-management/emails'));
+
+  const btn = screen.getByRole('button', { name: /run triage/i });
+  await user.click(btn);
+
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: /run triage/i })).not.toBeDisabled();
+  });
+});
+
+it('does not submit a second request when button is clicked while loading', async () => {
+  const user = userEvent.setup();
+  api.get.mockResolvedValue({ emails: [] });
+  // Never resolves — stays in loading state
+  api.post.mockReturnValue(new Promise(() => {}));
+
+  renderEmailTriage();
+  await waitFor(() => expect(api.get).toHaveBeenCalledWith('/api/email-management/emails'));
+
+  const btn = screen.getByRole('button', { name: /run triage/i });
+  await user.click(btn);
+
+  // Button is now disabled (loading)
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: /running/i })).toBeDisabled();
+  });
+
+  // Try clicking the disabled button again — userEvent respects disabled attribute
+  const disabledBtn = screen.getByRole('button', { name: /running/i });
+  await user.click(disabledBtn);
+
+  // api.post must have been called exactly once
+  expect(api.post).toHaveBeenCalledTimes(1);
+});
