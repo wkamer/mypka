@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-29 — Email management: state reconstruction, accessibility + disposition slice. Fixed serializer approved_at bug (executed_at mapping). Built Slice 4+5 (state reconstruction + 10 a11y fixes) and Slice 4 Disposition (Archive/Delete + Processed section). Devon routing rule corrected in memory.
+2026-06-29 — Email management Slice 5 (Run Triage) + triage fixes. Critical bug fixed: Claude CLI subprocess was picking up CLAUDE.md, refusing all emails as prompt injection (cwd="/" fix). Gmail sync now fetches all INBOX emails. Passwordless sudoers rule added for backend restarts.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -15,7 +15,7 @@
 - Tricolarae: S3 MODEL — wacht op Meta product-test data
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
-- Email management Slice 5 (Run Triage live) — not yet started
+- Email management Run Triage — owner must click Run Triage in live dashboard to verify 30 emails process after cwd fix
 - Pattern-level design system bestaat niet — Quinn Question 1 defaultt naar No; overwegen als project
 
 ## Active goals
