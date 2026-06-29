@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-29 — Dashboard login debug + Restart=always fix. Backend service was stopped clean, Restart=on-failure did not auto-restart. Devon changed to Restart=always. Walter must still run: `sudo systemctl daemon-reload && sudo systemctl restart mypka-dashboard-backend`.
+2026-06-29 — GR recap onderneming + gespreksprep Rajko Acimovic. MD-document aangemaakt met volledige GR-methodiek voor een events-onderneming: 4 bouwstenen, knoppen, voorbeelden. Bestedingen-framing gecorrigeerd: kostenreductie is wel degelijk een geldig uitkomst.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
