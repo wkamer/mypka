@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-29 — SOP Canonical Location Migration. Team Knowledge/SOPs/ is now canonical SSOT for team-wide SOPs. 13 SOPs moved, 14 references updated. CLAUDE.md runtime cleanup deferred to next session.
+2026-06-29 — CLAUDE.md Runtime Cleanup (team_task 113). CLAUDE.md rewritten as runtime-only routing instrument (238 → 157 lines). GL-025 created, SOP-020 created, GL-001 and GL-004 updated, Larry/Devon/Kai AGENT.md updated. 11 commits + 1 audit commit. team_task 113 closed.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -17,7 +17,7 @@
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
 - Email management Run Triage — owner must click Run Triage in live dashboard to verify 30 emails process after cwd fix
 - Pattern-level design system: does not exist. Quinn Question 1 defaults to No. Quinn activates unless Question 2 (high-stakes flow) is also clearly No. Consider as a future project.
-- CLAUDE.md runtime cleanup — next session, use review deliverable 20260629_claude-md-runtime-clarity-review-v01.md (team_task 113)
+- SOP-index.md not updated for SOP-020 — separate action needed before next SOP is created
 - Governance pattern: canonical-declaration-before-migration — Iris LC flag, formalize in GL when Owner decides
 
 ## Active goals
