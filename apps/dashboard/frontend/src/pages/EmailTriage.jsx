@@ -33,7 +33,7 @@ export default function EmailTriage() {
     return emailTriageApi
       .getEmails()
       .then((d) => {
-        setPendingEmails(d.emails.filter((e) => e.status !== "processed"));
+        setPendingEmails(d.emails.filter((e) => e.status === "pending"));
         setProcessedEmails(
           d.emails
             .filter((e) => e.status === "processed")
@@ -62,7 +62,9 @@ export default function EmailTriage() {
       } catch (e) {
         // Rollback
         setProcessedEmails((prev) => prev.filter((e) => e.id !== emailId));
-        setPendingEmails((prev) => [...prev, email]);
+        setPendingEmails((prev) =>
+          [...prev, email].sort((a, b) => new Date(b.received_at) - new Date(a.received_at))
+        );
         setOpenEmailId(null);
         setDisposeErrors((prev) => ({ ...prev, [emailId]: e.message }));
         // Remove the disposition log entry (first entry, prepended before the call)

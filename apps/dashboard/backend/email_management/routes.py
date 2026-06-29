@@ -34,7 +34,7 @@ def run_triage(pka_token: str = Cookie(default=None)):
     result = (
         service.users()
         .messages()
-        .list(userId="me", labelIds=["INBOX", "UNREAD"], maxResults=20)
+        .list(userId="me", labelIds=["INBOX"], maxResults=50)
         .execute()
     )
     messages = result.get("messages", [])

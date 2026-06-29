@@ -35,6 +35,7 @@ function makeEmail(id, overrides = {}) {
     sender: `Sender ${id} <sender@test.com>`,
     received_at: '2026-06-28T10:00:00Z',
     triage_status: 'pending',
+    status: 'pending',
     classification: 'Action',
     ai_summary: 'Test summary',
     gmail_url: null,
