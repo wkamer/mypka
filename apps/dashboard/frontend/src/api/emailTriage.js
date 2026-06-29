@@ -9,4 +9,6 @@ export const emailTriageApi = {
     api.patch(`/api/email-management/actions/${actionId}`, body),
   createAction: (emailId, body) =>
     api.post(`/api/email-management/emails/${emailId}/actions`, body),
+  disposeEmail: (emailId, disposition) =>
+    api.post(`/api/email-management/emails/${emailId}/dispose`, { action: disposition }),
 };

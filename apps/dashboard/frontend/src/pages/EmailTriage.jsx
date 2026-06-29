@@ -2,9 +2,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { emailTriageApi } from '../api/emailTriage';
 import { InboxRow } from '../components/EmailTriage';
+import { ProcessedRow } from '../components/EmailTriage/ProcessedRow';
 
 export default function EmailTriage() {
-  const [emails, setEmails] = useState(null);
+  const [pendingEmails, setPendingEmails] = useState([]);
+  const [processedEmails, setProcessedEmails] = useState([]);
+  const [disposeErrors, setDisposeErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const [runLoading, setRunLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,7 +25,6 @@ export default function EmailTriage() {
     });
   }, []);
 
-  // Exclusive accordion: opening a row collapses any other open row.
   const handleToggle = useCallback((id) => {
     setOpenEmailId((prev) => (prev === id ? null : id));
   }, []);
@@ -30,13 +32,48 @@ export default function EmailTriage() {
   const loadEmails = useCallback(() => {
     return emailTriageApi
       .getEmails()
-      .then((d) => setEmails(d.emails))
+      .then((d) => {
+        setPendingEmails(d.emails.filter((e) => e.status !== "processed"));
+        setProcessedEmails(
+          d.emails
+            .filter((e) => e.status === "processed")
+            .sort((a, b) => new Date(b.processed_at || 0) - new Date(a.processed_at || 0))
+        );
+      })
       .catch((e) => setError(e.message));
   }, []);
 
   useEffect(() => {
     loadEmails().finally(() => setLoading(false));
   }, [loadEmails]);
+
+  const handleDispose = useCallback(
+    async (emailId, disposition) => {
+      const email = pendingEmails.find((e) => e.id === emailId);
+      if (!email) return;
+
+      // Optimistic move
+      setPendingEmails((prev) => prev.filter((e) => e.id !== emailId));
+      setProcessedEmails((prev) => [{ ...email, status: "processed" }, ...prev]);
+      setDisposeErrors((prev) => ({ ...prev, [emailId]: null }));
+
+      try {
+        await emailTriageApi.disposeEmail(emailId, disposition);
+      } catch (e) {
+        // Rollback
+        setProcessedEmails((prev) => prev.filter((e) => e.id !== emailId));
+        setPendingEmails((prev) => [...prev, email]);
+        setOpenEmailId(null);
+        setDisposeErrors((prev) => ({ ...prev, [emailId]: e.message }));
+        // Remove the disposition log entry (first entry, prepended before the call)
+        updateEmailSession(emailId, (prev) => ({
+          ...prev,
+          logEntries: (prev.logEntries || []).slice(1),
+        }));
+      }
+    },
+    [pendingEmails, updateEmailSession]
+  );
 
   const handleRunTriage = async () => {
     setRunLoading(true);
@@ -90,26 +127,56 @@ export default function EmailTriage() {
 
         {loading && <p className="text-slate-500 text-sm">Loading...</p>}
 
-        {!loading && emails && emails.length === 0 && !error && (
+        {/* Empty state */}
+        {!loading && pendingEmails.length === 0 && processedEmails.length === 0 && !error && (
           <div className="text-center py-16">
-            <p className="text-slate-500 text-sm">
-              No emails yet. Click Run Triage to start.
-            </p>
+            <p className="text-slate-500 text-sm">No emails yet. Click Run Triage to start.</p>
           </div>
         )}
 
-        {emails && emails.length > 0 && (
-          <div className="bg-slate-800 rounded-lg overflow-hidden divide-y divide-slate-700">
-            {emails.map((email) => (
-              <InboxRow
-                key={email.id}
-                email={email}
-                isOpen={openEmailId === email.id}
-                onToggle={handleToggle}
-                emailSession={emailSessions[email.id]}
-                updateEmailSession={updateEmailSession}
-              />
-            ))}
+        {/* Pending section */}
+        {!loading && pendingEmails.length > 0 && (
+          <div className="mb-6">
+            <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">
+              Pending · {pendingEmails.length}
+            </p>
+            <div className="bg-slate-800 rounded-lg overflow-hidden divide-y divide-slate-700">
+              {pendingEmails.map((email) => (
+                <InboxRow
+                  key={email.id}
+                  email={email}
+                  isOpen={openEmailId === email.id}
+                  onToggle={handleToggle}
+                  emailSession={emailSessions[email.id]}
+                  updateEmailSession={updateEmailSession}
+                  onDispose={(disposition) => handleDispose(email.id, disposition)}
+                  disposeError={disposeErrors[email.id] || null}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Processed section */}
+        {processedEmails.length > 0 && (
+          <div>
+            <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">
+              Processed{" "}
+              <span aria-live="polite" aria-atomic="true">
+                · {processedEmails.length}
+              </span>
+            </p>
+            <div className="bg-slate-800 rounded-lg overflow-hidden divide-y divide-slate-700">
+              {processedEmails.map((email) => (
+                <ProcessedRow
+                  key={email.id}
+                  email={email}
+                  isOpen={openEmailId === email.id}
+                  onToggle={handleToggle}
+                  emailSession={emailSessions[email.id]}
+                />
+              ))}
+            </div>
           </div>
         )}
       </main>

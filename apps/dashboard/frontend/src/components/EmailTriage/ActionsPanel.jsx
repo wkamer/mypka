@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { emailTriageApi } from '../../api/emailTriage';
-import { buildLogEntry } from './formatters';
+import { buildDispositionLogEntry, buildLogEntry } from './formatters';
 import { ActionRowV3 } from './ActionRowV3';
 
 /**
@@ -13,7 +13,7 @@ export function mergeActionSnapshot(actions, action) {
     : [...actions, action];
 }
 
-export function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
+export function ActionsPanel({ emailId, emailSession, updateEmailSession, onDispose }) {
   const [actions, setActions] = useState(null); // null = loading
   const [loadError, setLoadError] = useState(null);
 
@@ -27,6 +27,10 @@ export function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
 
   // Auto-focus: id of the action row that should receive focus
   const [pendingFocusId, setPendingFocusId] = useState(null);
+
+  const allResolved =
+    actions !== null &&
+    actions.every((a) => a.status === "approved" || a.status === "declined");
 
   // Load actions on mount (accordion open)
   useEffect(() => {
@@ -226,6 +230,24 @@ export function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
     }
   }, [emailId, updateEmailSession]);
 
+  const handleArchive = useCallback(() => {
+    const entry = buildDispositionLogEntry("archive", new Date());
+    updateEmailSession(emailId, (prev) => ({
+      ...prev,
+      logEntries: [entry, ...(prev.logEntries || [])],
+    }));
+    onDispose?.("archive");
+  }, [emailId, updateEmailSession, onDispose]);
+
+  const handleDelete = useCallback(() => {
+    const entry = buildDispositionLogEntry("delete", new Date());
+    updateEmailSession(emailId, (prev) => ({
+      ...prev,
+      logEntries: [entry, ...(prev.logEntries || [])],
+    }));
+    onDispose?.("delete");
+  }, [emailId, updateEmailSession, onDispose]);
+
   if (loadError) {
     return (
       <p className="text-red-400 text-xs mt-2">
@@ -292,6 +314,28 @@ export function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
           </ul>
         </div>
       )}
+
+      {/* Disposition buttons — always rendered, disabled until all rows resolved */}
+      <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-slate-700">
+        <button
+          disabled={!allResolved}
+          aria-label="Archive email"
+          aria-disabled={!allResolved}
+          onClick={handleArchive}
+          className="px-3 py-1.5 text-xs rounded bg-slate-700 hover:bg-slate-600 text-slate-100 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-900 focus-visible:ring-slate-400 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Archive
+        </button>
+        <button
+          disabled={!allResolved}
+          aria-label="Delete email"
+          aria-disabled={!allResolved}
+          onClick={handleDelete}
+          className="px-3 py-1.5 text-xs rounded bg-red-900 hover:bg-red-800 text-red-200 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-900 focus-visible:ring-red-400 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Delete
+        </button>
+      </div>
     </div>
   );
 }

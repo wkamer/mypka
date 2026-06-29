@@ -1,7 +1,7 @@
 import { parseSenderName } from './formatters';
-import { ActionsPanel } from './ActionsPanel';
+import { ProcessedPanel } from './ProcessedPanel';
 
-export function InboxRow({ email, isOpen, onToggle, emailSession, updateEmailSession, onDispose, disposeError }) {
+export function ProcessedRow({ email, isOpen, onToggle, emailSession }) {
   const senderName = parseSenderName(email.sender);
 
   const receivedAt = email.received_at
@@ -31,8 +31,11 @@ export function InboxRow({ email, isOpen, onToggle, emailSession, updateEmailSes
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-200 text-sm font-medium truncate">
+            <span className="text-slate-400 text-sm font-medium truncate">
               {senderName}
+            </span>
+            <span className="inline-flex items-center gap-1 text-xs rounded px-1.5 py-0.5 bg-slate-700 text-green-400 font-medium shrink-0">
+              ✓ Processed
             </span>
             {email.gmail_url && (
               <a
@@ -72,9 +75,7 @@ export function InboxRow({ email, isOpen, onToggle, emailSession, updateEmailSes
         </div>
         <svg
           aria-hidden="true"
-          className={`shrink-0 text-slate-500 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`shrink-0 text-slate-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
           xmlns="http://www.w3.org/2000/svg"
           width="14"
           height="14"
@@ -88,11 +89,6 @@ export function InboxRow({ email, isOpen, onToggle, emailSession, updateEmailSes
           <polyline points="6 9 12 15 18 9" />
         </svg>
       </div>
-      {disposeError && (
-        <div className="mx-4 mt-1 mb-2 p-2 rounded bg-red-900 border border-red-700 text-red-200 text-xs">
-          Disposition failed: {disposeError}
-        </div>
-      )}
       {isOpen && (
         <div
           id={`email-panel-${email.id}`}
@@ -106,12 +102,7 @@ export function InboxRow({ email, isOpen, onToggle, emailSession, updateEmailSes
               <p className="text-slate-400 text-xs">{email.summary}</p>
             </div>
           )}
-          <ActionsPanel
-            emailId={email.id}
-            emailSession={emailSession}
-            updateEmailSession={updateEmailSession}
-            onDispose={onDispose}
-          />
+          <ProcessedPanel emailSession={emailSession} />
         </div>
       )}
     </div>

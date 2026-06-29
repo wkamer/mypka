@@ -48,6 +48,27 @@ export function buildLogEntry(type, name, eventDatetime, ts) {
   return `${prefix}  Task "${displayName}" created`;
 }
 
+/**
+ * Builds a disposition log entry string.
+ * @param {"archive"|"delete"} disposition
+ * @param {Date|string} ts
+ * @returns {string} e.g. "29 Jun 2026 14:09  Email archived"
+ */
+export function buildDispositionLogEntry(disposition, ts) {
+  const d = ts instanceof Date ? ts : new Date(ts);
+  const dateStr = d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  const timeStr = d.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const label = disposition === "archive" ? "Email archived" : "Email deleted";
+  return `${dateStr} ${timeStr}  ${label}`;
+}
+
 export function parseSenderName(sender) {
   if (!sender) return "";
   const match = sender.match(/^([^<]+?)\s*</);

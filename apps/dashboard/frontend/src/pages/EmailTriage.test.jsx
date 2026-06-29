@@ -1284,3 +1284,225 @@ it('hides the decorative inbox chevron from assistive technology', async () => {
   const chevron = row.querySelector('svg[aria-hidden="true"]');
   expect(chevron).toBeInTheDocument();
 });
+
+// ── SLICE 4 — Disposition: Archive and Delete ────────────────────────────────
+
+// Component: Archive button has HTML disabled attribute when action row is pending
+it('Archive button has HTML disabled attribute while a pending action row exists', async () => {
+  const user = userEvent.setup();
+  const taskAction = makeTaskAction(1);
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [taskAction] },
+  });
+
+  renderEmailTriage();
+  await openAccordion(user, EMAIL_ID);
+
+  await screen.findByRole('button', { name: /approve/i });
+
+  const archiveBtn = screen.getByRole('button', { name: /archive email/i });
+  expect(archiveBtn).toBeDisabled();
+});
+
+// Component: Delete button has HTML disabled attribute when action row is pending
+it('Delete button has HTML disabled attribute while a pending action row exists', async () => {
+  const user = userEvent.setup();
+  const taskAction = makeTaskAction(1);
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [taskAction] },
+  });
+
+  renderEmailTriage();
+  await openAccordion(user, EMAIL_ID);
+
+  await screen.findByRole('button', { name: /approve/i });
+
+  const deleteBtn = screen.getByRole('button', { name: /delete email/i });
+  expect(deleteBtn).toBeDisabled();
+});
+
+// Unit: buttons active immediately when no action rows
+it('Archive and Delete are enabled immediately when email has no action rows', async () => {
+  const user = userEvent.setup();
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [] },
+  });
+  api.post.mockResolvedValue({ id: EMAIL_ID, triage_status: 'archived' });
+
+  renderEmailTriage();
+  await openAccordion(user, EMAIL_ID);
+
+  await screen.findByRole('button', { name: /\+ task/i });
+
+  const archiveBtn = screen.getByRole('button', { name: /archive email/i });
+  const deleteBtn = screen.getByRole('button', { name: /delete email/i });
+  expect(archiveBtn).not.toBeDisabled();
+  expect(deleteBtn).not.toBeDisabled();
+});
+
+// Component: buttons activate when all rows resolved
+it('Archive and Delete activate when all action rows are approved or declined', async () => {
+  const user = userEvent.setup();
+  const taskAction = makeTaskAction(1);
+  const approvedAction = { ...taskAction, status: 'approved', external_id: 'task-123' };
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [taskAction] },
+  });
+  api.patch.mockResolvedValue(approvedAction);
+  api.post.mockResolvedValue({ id: EMAIL_ID, triage_status: 'archived' });
+
+  renderEmailTriage();
+  await openAccordion(user, EMAIL_ID);
+
+  const approveBtn = await screen.findByRole('button', { name: /approve/i });
+  await user.click(approveBtn);
+
+  await waitFor(() => {
+    const archiveBtn = screen.getByRole('button', { name: /archive email/i });
+    const deleteBtn = screen.getByRole('button', { name: /delete email/i });
+    expect(archiveBtn).not.toBeDisabled();
+    expect(deleteBtn).not.toBeDisabled();
+  });
+});
+
+// Unit: buildDispositionLogEntry archive format
+it('buildDispositionLogEntry returns correct format for archive', async () => {
+  const { buildDispositionLogEntry } = await import('../components/EmailTriage/formatters');
+  const ts = new Date('2026-06-29T14:09:00');
+  const result = buildDispositionLogEntry('archive', ts);
+  expect(result).toMatch(/\d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}  Email archived/);
+  expect(result).toContain('Email archived');
+});
+
+// Unit: buildDispositionLogEntry delete format
+it('buildDispositionLogEntry returns correct format for delete', async () => {
+  const { buildDispositionLogEntry } = await import('../components/EmailTriage/formatters');
+  const ts = new Date('2026-06-29T14:09:00');
+  const result = buildDispositionLogEntry('delete', ts);
+  expect(result).toMatch(/\d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}  Email deleted/);
+  expect(result).toContain('Email deleted');
+});
+
+// Integration: Archive moves email to Processed section
+it('clicking Archive moves the email to the Processed section and removes from Pending', async () => {
+  const user = userEvent.setup();
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [] },
+  });
+  api.post.mockResolvedValue({ id: EMAIL_ID, triage_status: 'archived' });
+
+  renderEmailTriage();
+  await openAccordion(user, EMAIL_ID);
+  await screen.findByRole('button', { name: /\+ task/i });
+
+  const archiveBtn = screen.getByRole('button', { name: /archive email/i });
+  await user.click(archiveBtn);
+
+  await screen.findByText('✓ Processed');
+  await waitFor(() => {
+    expect(screen.queryByRole('button', { name: /archive email/i })).not.toBeInTheDocument();
+  });
+});
+
+// Integration: Delete moves email to Processed section
+it('clicking Delete moves the email to the Processed section and removes from Pending', async () => {
+  const user = userEvent.setup();
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [] },
+  });
+  api.post.mockResolvedValue({ id: EMAIL_ID, triage_status: 'deleted' });
+
+  renderEmailTriage();
+  await openAccordion(user, EMAIL_ID);
+  await screen.findByRole('button', { name: /\+ task/i });
+
+  const deleteBtn = screen.getByRole('button', { name: /delete email/i });
+  await user.click(deleteBtn);
+
+  await screen.findByText('✓ Processed');
+  await waitFor(() => {
+    expect(screen.queryByRole('button', { name: /delete email/i })).not.toBeInTheDocument();
+  });
+});
+
+// Integration: rollback on failure — email returns to Pending with error
+it('rolls back to Pending and shows error band when dispose API fails', async () => {
+  const user = userEvent.setup();
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [] },
+  });
+  api.post.mockRejectedValue(new Error('Gmail API failure'));
+
+  renderEmailTriage();
+  await openAccordion(user, EMAIL_ID);
+  await screen.findByRole('button', { name: /\+ task/i });
+
+  const archiveBtn = screen.getByRole('button', { name: /archive email/i });
+  await user.click(archiveBtn);
+
+  await screen.findByText(/Disposition failed:/i);
+  expect(screen.queryByText('✓ Processed')).not.toBeInTheDocument();
+});
+
+// Integration: disposeErrors cleared on successful retry
+it('error band clears on successful retry', async () => {
+  const user = userEvent.setup();
+  setupMocks({
+    emails: [makeEmail(EMAIL_ID)],
+    actionsByEmailId: { [EMAIL_ID]: [] },
+  });
+  api.post
+    .mockRejectedValueOnce(new Error('Gmail API failure'))
+    .mockResolvedValueOnce({ id: EMAIL_ID, triage_status: 'archived' });
+
+  renderEmailTriage();
+  await openAccordion(user, EMAIL_ID);
+  await screen.findByRole('button', { name: /\+ task/i });
+
+  // First attempt — fails
+  const archiveBtn = screen.getByRole('button', { name: /archive email/i });
+  await user.click(archiveBtn);
+  await screen.findByText(/Disposition failed:/i);
+
+  // Re-open accordion to get to Archive button again (email rolled back to pending)
+  await openAccordion(user, EMAIL_ID);
+  await screen.findByRole('button', { name: /\+ task/i });
+
+  const archiveBtn2 = screen.getByRole('button', { name: /archive email/i });
+  await user.click(archiveBtn2);
+
+  await waitFor(() => {
+    expect(screen.queryByText(/Disposition failed:/i)).not.toBeInTheDocument();
+  });
+  await screen.findByText('✓ Processed');
+});
+
+// Component: ProcessedPanel renders empty state
+it('ProcessedPanel renders No actions recorded when log is empty', async () => {
+  const { ProcessedPanel } = await import('../components/EmailTriage/ProcessedPanel');
+  const { render: r, screen: s } = await import('@testing-library/react');
+  r(<ProcessedPanel emailSession={null} />);
+  expect(s.getByText('No actions recorded.')).toBeInTheDocument();
+});
+
+// Unit: ProcessedPanel renders entries reversed
+it('ProcessedPanel renders log entries reversed so newest-stored entry appears last', async () => {
+  const { ProcessedPanel } = await import('../components/EmailTriage/ProcessedPanel');
+  const { render: r, screen: s } = await import('@testing-library/react');
+  // logEntries stored newest-first: [disposition, approval]
+  const session = {
+    logEntries: ['29 Jun 2026 14:09  Email archived', '29 Jun 2026 14:08  Task "Test" created'],
+  };
+  r(<ProcessedPanel emailSession={session} />);
+  const log = s.getByLabelText('Execution log');
+  const text = log.textContent;
+  // Reversed: approval first, disposition last
+  expect(text.indexOf('Task "Test" created')).toBeLessThan(text.indexOf('Email archived'));
+});
