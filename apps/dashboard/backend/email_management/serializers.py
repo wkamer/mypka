@@ -23,4 +23,5 @@ def _action_to_dict(row) -> dict:
         "status": d["status"],
         "external_id": d.get("external_id"),
         "executed_at": d.get("executed_at"),
+        "approved_at": d.get("executed_at"),
     }
