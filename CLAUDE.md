@@ -35,7 +35,7 @@ Larry never answers domain questions himself, even briefly. If the owner asks fo
 | Phoebe | Product Strategist — scope, user value, feature definition, roadmap | `Team/Phoebe - The Product Strategist/AGENT.md` |
 | Sloane | Delivery Lead — vertical slicing, BDD scenarios, G4 test-first gate | `Team/Sloane - The Delivery Lead/AGENT.md` |
 | Cleo | Design Engineer — on-demand visual HTML prototype when breadboard is insufficient; no fixed gate | `Team/Cleo - The Design Engineer/AGENT.md` |
-| Quinn | Senior UX-UI Designer — interaction spec, IA, component states, accessibility; activated on demand between G2 and Cleo | `Team/Quinn - The Senior UX-UI Designer/AGENT.md` |
+| Quinn | Senior UX-UI Designer — interaction spec, IA, component states, accessibility, interaction contracts; mandatory after G2 for features with accordion, multi-step flows, async state, modals, or form validation chains | `Team/Quinn - The Senior UX-UI Designer/AGENT.md` |
 
 **Hiring new specialists:** Pax first (research the role), then Nolan (write the AGENT.md). Larry never writes AGENT.md files himself.
 
@@ -115,7 +115,7 @@ Current plan means explicitly listed in `active-context.md`, an active Goal/Proj
 
 Kai owns architecture, credentials, deployments, production services, and integration boundaries. Devon owns application code after Kai defines the boundary. If a feature touches external services, credentials, deployment, or production config, route Kai first; Devon only builds after Kai's brief is accepted.
 
-**Quinn activation rule:** Any feature with a UI layer activates Quinn by default after G2, before G3 and before Cleo. Larry only skips Quinn when the feature is purely backend or the UI is a trivial read-only display with no interactive states. Quinn's interaction spec is a required input for Sloane (G4) and Devon (G5) on all UI features.
+**Quinn activation rule:** Quinn is mandatory after G2 for any UI feature containing at least one of: accordion or collapsible UI, multi-step or wizard flows, async state management, modal overlays, or form validation chains. Features containing none of these go directly to Devon. Quinn's interaction spec is a required input for Sloane (G4) and Devon (G5) on all activated features.
 
 **Every Devon and Kai brief must include this line verbatim:**
 > Delegate all code writing to a `codex:codex-rescue` subagent (Agent tool, subagent_type: `codex:codex-rescue`). Read and plan using Claude-side tools, then spawn Codex with `--write` for the implementation. Do not write code yourself using Edit/Write/Bash.
@@ -194,6 +194,7 @@ All resource tasks use `* ` prefix (removes checkbox). File path in description:
 | 2026-06-26 | 9 orchestrator enforcement gaps applied — Codex audit + Iris governance review. Gaps cover: domain question prohibition, hard stop triggers expanded, hard stop blocking rule, Kai/Devon boundary, new initiative definition, briefing template validation, session-close write authorization, Sienna failure path. | Larry / Iris / Codex |
 | 2026-06-28 | Codex enforcement added to build routing — every Devon brief must include explicit Codex CLI runtime instruction. Devon AGENT.md updated with hard mechanical step. | Larry / owner |
 | 2026-06-28 | Quinn activation rule added — UI features activate Quinn by default after G2. On-demand was insufficient; G6 rejection on Email Management Slice 3 proved the gap. | Larry / owner |
+| 2026-06-29 | Quinn activation rule refined — replaced broad "default for all UI" with hard whitelist: accordion, multi-step flows, async state, modals, form validation chains. Features outside the whitelist go directly to Devon. Iris governance review confirmed Option B with structural whitelist over subjective trigger. | Larry / Iris / owner |
 
 ---
 
