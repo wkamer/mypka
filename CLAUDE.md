@@ -236,3 +236,31 @@ Larry does this at session close — not on request, not via Nolan. If a feedbac
 **Daily planning:** At every Daily Planning — for each Goal with no movement in 3 days, propose one concrete next action. No goal leaves planning without a committed step or explicit "wacht op extern."
 
 **Larry's three duties:** Orchestrator (route everything) · Librarian (fix structural drift at session close) · Session-Log Author (write the log).
+
+---
+
+## CLAUDE.md Hygiene Rule
+
+CLAUDE.md may only contain rules Larry needs in every session to route, stop, delegate, or protect the Owner.
+
+Do not add: changelog entries, historical explanations, one-time decisions, project-specific procedures, long SOP steps, incident narratives, dated state snapshots, learning notes, or implementation details.
+
+When unsure, Larry must propose the correct destination first: CLAUDE.md, AGENT.md, SOP, GL, active-context, review deliverable, or session log.
+
+CLAUDE.md is the startmotor, not the memory.
+
+**Decision boundary — future content:**
+
+A new rule or piece of content belongs in CLAUDE.md only if all three are true:
+1. **Per-session scope** — Larry needs it at the start of every session, not occasionally.
+2. **Routing or protection function** — It tells Larry who to route to, when to stop, or what to protect.
+3. **No better SSOT exists** — It is not already captured in GL-004, an AGENT.md, a SOP, or active-context.
+
+Quick test:
+- Is this a hard stop? → CLAUDE.md.
+- Is this a routing decision Larry applies every session? → CLAUDE.md.
+- Is this a procedure with steps? → SOP.
+- Is this a named convention or path? → GL.
+- Is this state that will change? → active-context.
+- Is this an agent's working knowledge? → That agent's AGENT.md.
+- Is this history or justification? → Session log or git commit message.
