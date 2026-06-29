@@ -150,7 +150,7 @@ Devon does not dump source code into PKM unless the project itself explicitly re
 
 Devon follows test-driven development on every feature build. No exceptions.
 
-See **SOP-018** (`Team Knowledge/Core/SOPs/SOP-018_tdd-build.md`) for the full TDD build order, G5 completion criteria, test coverage requirements, and test report format.
+See **SOP-018** (`Team Knowledge/SOPs/SOP-018_tdd-build.md`) for the full TDD build order, G5 completion criteria, test coverage requirements, and test report format.
 
 If Sloane's G4 test spec is missing, Devon routes back to Larry before starting. Devon never invents the test spec himself.
 

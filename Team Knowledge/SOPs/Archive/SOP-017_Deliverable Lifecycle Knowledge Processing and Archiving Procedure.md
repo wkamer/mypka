@@ -1,6 +1,6 @@
 # SOP-017: Deliverable Lifecycle, Knowledge Processing, and Archiving Procedure
 
-**File:** `Team Knowledge/Core/SOPs/SOP-017_Deliverable Lifecycle Knowledge Processing and Archiving Procedure.md`
+**File:** `Team Knowledge/SOPs/SOP-017_Deliverable Lifecycle Knowledge Processing and Archiving Procedure.md`
 **Owner:** Walter Kamer
 **Maintainer:** Larry, Team Orchestrator
 **Status:** Active

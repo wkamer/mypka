@@ -69,11 +69,11 @@ Remaining candidates (B-005C Item 17, Context-mode MCP fix, Penn Dutch strings, 
 |---|---|---|
 | Core AI Team Audit final closure report | `Deliverables/20260603_Core_AI Team Audit Report/core-ai-team-audit-final-closure-report.md` | Authoritative audit closure record |
 | GL-018 — Idea Routing and Implementation Governance Principles | `Team Knowledge/Core/Guidelines/GL-018_Idea Routing and Implementation Governance Principles.md` | Live governance principles |
-| SOP-018 — Idea-to-Implementation Routing Procedure | `Team Knowledge/Core/SOPs/SOP-018_Idea-to-Implementation Routing Procedure.md` | Live routing procedure |
-| SOP-016 — Review Gate Procedure (with RCP amendment) | `Team Knowledge/Core/SOPs/SOP-016_Review Gate Procedure for Governance-Relevant Deliverables.md` | Live review gate procedure |
-| SOP-017 — Deliverable Lifecycle Procedure (with Source Folder Closure amendment) | `Team Knowledge/Core/SOPs/SOP-017_Deliverable Lifecycle Knowledge Processing and Archiving Procedure.md` | Live lifecycle procedure |
+| SOP-018 — Idea-to-Implementation Routing Procedure | `Team Knowledge/SOPs/SOP-018_Idea-to-Implementation Routing Procedure.md` | Live routing procedure |
+| SOP-016 — Review Gate Procedure (with RCP amendment) | `Team Knowledge/SOPs/SOP-016_Review Gate Procedure for Governance-Relevant Deliverables.md` | Live review gate procedure |
+| SOP-017 — Deliverable Lifecycle Procedure (with Source Folder Closure amendment) | `Team Knowledge/SOPs/SOP-017_Deliverable Lifecycle Knowledge Processing and Archiving Procedure.md` | Live lifecycle procedure |
 | GL-017 — Deliverable Lifecycle Principles | `Team Knowledge/Core/Guidelines/GL-017_Deliverable Lifecycle Knowledge Processing and Archiving.md` | Live lifecycle principles |
-| SOP-015 — Proposal Iteration Protocol | `Team Knowledge/Core/SOPs/SOP-015_Proposal Iteration Protocol for System File Changes.md` | Live system file change protocol |
+| SOP-015 — Proposal Iteration Protocol | `Team Knowledge/SOPs/SOP-015_Proposal Iteration Protocol for System File Changes.md` | Live system file change protocol |
 | GL-015 — Memory Domain Routing Protocol | `Team Knowledge/Core/Guidelines/GL-015_Memory Domain Routing Protocol.md` | Live memory routing rules |
 | SOP-017 lifecycle execution report (SOP-017 amendment) | `Deliverables/20260605_Core_SOP-017 Amendment Lifecycle Execution/lifecycle-execution-report-sop-017-source-folder-closure-amendment-v02.md` | Proven lifecycle execution + forward pointer to future graduation candidate D |
 | Idea-to-Implementation Governance Pack design decisions | `Team Knowledge/Core/Documents/Idea-to-Implementation Governance Pack Design Decisions and Amendment History.md` | Governance pack rationale and history |

@@ -122,7 +122,7 @@ Every specialist follows this protocol for every task received via `team_tasks`.
 
 ## Links
 
-- Research SOP (read before every task): `Team Knowledge/Core/SOPs/SOP-002_How to do deep online research.md`
+- Research SOP (read before every task): `Team Knowledge/SOPs/SOP-002_How to do deep online research.md`
 - Team roster: `Team/agent-index.md`
 
 ---

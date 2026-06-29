@@ -6,8 +6,8 @@
 
 > **This is not a GL, SOP, or Workstream.** It is a knowledge reference document. It is not an authoritative source for governance rules. The authoritative sources are:
 > - `Team Knowledge/Core/Guidelines/GL-018_Idea Routing and Implementation Governance Principles.md`
-> - `Team Knowledge/Core/SOPs/SOP-018_Idea-to-Implementation Routing Procedure.md`
-> - `Team Knowledge/Core/SOPs/SOP-016_Review Gate Procedure for Governance-Relevant Deliverables.md` (amended)
+> - `Team Knowledge/SOPs/SOP-018_Idea-to-Implementation Routing Procedure.md`
+> - `Team Knowledge/SOPs/SOP-016_Review Gate Procedure for Governance-Relevant Deliverables.md` (amended)
 >
 > This document is not added to gl-index.md or SOP-index.md.
 
@@ -145,7 +145,7 @@ This is the reusable pattern for implementing a GL/SOP pair plus a SOP amendment
 ### Step 2 — Implement the new SOP
 
 1. Re-confirm the proposed SOP number against the live `SOP-index.md` immediately before implementation.
-2. Create the SOP file in `Team Knowledge/Core/SOPs/` with the exact approved content only (same exclusions as Step 1).
+2. Create the SOP file in `Team Knowledge/SOPs/` with the exact approved content only (same exclusions as Step 1).
 3. Add the SOP entry to `SOP-index.md`.
 4. Read back the SOP file and `SOP-index.md`. Confirm GL from Step 1 is unchanged.
 5. Owner confirms Step 2 complete before Step 3 begins.

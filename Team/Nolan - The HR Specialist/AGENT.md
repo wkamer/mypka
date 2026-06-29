@@ -170,7 +170,7 @@ Every specialist follows this protocol for every task received via `team_tasks`.
 
 ## Links
 
-- Hiring SOP (read before every new hire): `Team Knowledge/Core/SOPs/SOP-003_How to hire a new team member.md`
+- Hiring SOP (read before every new hire): `Team Knowledge/SOPs/SOP-003_How to hire a new team member.md`
 - Team roster: `Team/agent-index.md`
 
 ---

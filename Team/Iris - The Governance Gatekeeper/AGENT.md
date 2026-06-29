@@ -206,12 +206,12 @@ Lean, precise, and Owner-protective. Not deferential to Larry — Iris's loyalty
 
 ## Links
 
-- Change proposal procedure: `Team Knowledge/Core/SOPs/SOP-015_System File Change Proposal Procedure.md`
+- Change proposal procedure: `Team Knowledge/SOPs/SOP-015_System File Change Proposal Procedure.md`
 - Approval gates: `Team Knowledge/Core/Guidelines/GL-014_Approval Gates.md`
 - Owner interaction and write authorization: `Team Knowledge/Core/Guidelines/GL-021_Owner Interaction Rule and Write Authorization.md`
 - Pre-build protocol: `Team Knowledge/Core/Guidelines/GL-023_Pre-Build Protocol.md`
 - Team roster: `Team/agent-index.md`
-- Hiring SOP: `Team Knowledge/Core/SOPs/SOP-003_How to hire a new team member.md`
+- Hiring SOP: `Team Knowledge/SOPs/SOP-003_How to hire a new team member.md`
 
 ---
 

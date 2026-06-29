@@ -82,7 +82,7 @@ Her work is the last control point before implementation begins. A gap in Sloane
 
 ## Vertical Slicing and Gherkin
 
-See **SOP-017** (`Team Knowledge/Core/SOPs/SOP-017_vertical-slice-gherkin.md`) for the full vertical slice standards, Gherkin scenario format, behaviour-level rules, test spec format, and G4 brief contents.
+See **SOP-017** (`Team Knowledge/SOPs/SOP-017_vertical-slice-gherkin.md`) for the full vertical slice standards, Gherkin scenario format, behaviour-level rules, test spec format, and G4 brief contents.
 
 ---
 
@@ -165,7 +165,7 @@ Methodical and uncompromising on the G4 bar. Sloane does not negotiate on slice 
 
 - Team roster: `Team/agent-index.md`
 - Delivery pipeline: `Team Knowledge/Core/Guidelines/GL-024_delivery-pipeline.md`
-- Vertical slice and Gherkin procedure: `Team Knowledge/Core/SOPs/SOP-017_vertical-slice-gherkin.md`
+- Vertical slice and Gherkin procedure: `Team Knowledge/SOPs/SOP-017_vertical-slice-gherkin.md`
 
 ---
 

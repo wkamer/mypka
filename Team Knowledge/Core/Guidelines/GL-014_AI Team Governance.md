@@ -165,7 +165,7 @@ The following files are critical and may never be modified without Owner approva
 
 - `CLAUDE.md`
 - All `AGENT.md` files
-- `Team Knowledge/Core/SOPs/` (all SOP files)
+- `Team Knowledge/SOPs/` (all SOP files)
 - `Team Knowledge/Core/Guidelines/` (all GL files)
 - `Team Knowledge/Core/Workstreams/` (all WS files)
 - `.claude/settings.json`

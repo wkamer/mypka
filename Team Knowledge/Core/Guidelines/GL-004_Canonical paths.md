@@ -28,7 +28,7 @@ Alle paden hieronder zijn relatief aan de vault root.
 | Agent-bestanden | `Team/` |
 | Agent-index | `Team/agent-index.md` |
 | Team Knowledge (alle domeinen) | `Team Knowledge/` |
-| SOPs | `Team Knowledge/Core/SOPs/` |
+| SOPs | `Team Knowledge/SOPs/` |
 | Guidelines | `Team Knowledge/Core/Guidelines/` |
 | Workstreams | `Team Knowledge/Core/Workstreams/` |
 | Scripts | `Team Knowledge/Core/Scripts/` |
@@ -40,7 +40,7 @@ Alle paden hieronder zijn relatief aan de vault root.
 
 **Workstream routing:** Core Workstreams (`Team Knowledge/Core/Workstreams/`) hold cross-domain agent orchestrations managed by Larry or Marcus. Domain Workstreams (`Team Knowledge/<Domain>/Workstreams/`) hold domain-specific operational flows managed by domain specialists.
 
-**Scaffold-afwijking (bewust):** De scaffold gebruikt een platte structuur: `Team Knowledge/SOPs/`, `Team Knowledge/Guidelines/` etc. direct onder `Team Knowledge/`. Walter's setup voegt een `Core/` tussenlaag toe: `Team Knowledge/Core/SOPs/`, `Team Knowledge/Core/Guidelines/` etc. Dit is een doelbewuste keuze. Agents gebruiken altijd de paden uit dit bestand — nooit terugvallen op de scaffold-structuur.
+**Scaffold-afwijking (bewust):** De scaffold gebruikt een platte structuur: `Team Knowledge/SOPs/`, `Team Knowledge/Guidelines/` etc. direct onder `Team Knowledge/`. SOPs volgen nu de scaffold-structuur. Guidelines gebruiken nog de `Core/` tussenlaag: `Team Knowledge/Core/Guidelines/`. Agents gebruiken altijd de paden uit dit bestand — nooit terugvallen op de scaffold-structuur.
 
 ---
 

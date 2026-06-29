@@ -95,7 +95,7 @@ Triggers (one is enough):
 - New slash command created
 - New hook configured
 
-If yes: open `Team Knowledge/Core/SOPs/SOP-001_Disaster recovery.md`, update the relevant step(s) and the *Last updated* line. Write without asking.
+If yes: open `Team Knowledge/SOPs/SOP-001_Disaster recovery.md`, update the relevant step(s) and the *Last updated* line. Write without asking.
 
 If no: skip silently.
 

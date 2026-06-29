@@ -6,8 +6,8 @@
 
 > **This is not a GL, SOP, or Workstream.** It is a regression test reference document. It is not an authoritative source for governance rules. The authoritative sources are:
 > - `Team Knowledge/Core/Guidelines/GL-018_Idea Routing and Implementation Governance Principles.md`
-> - `Team Knowledge/Core/SOPs/SOP-018_Idea-to-Implementation Routing Procedure.md`
-> - `Team Knowledge/Core/SOPs/SOP-016_Review Gate Procedure for Governance-Relevant Deliverables.md` (amended)
+> - `Team Knowledge/SOPs/SOP-018_Idea-to-Implementation Routing Procedure.md`
+> - `Team Knowledge/SOPs/SOP-016_Review Gate Procedure for Governance-Relevant Deliverables.md` (amended)
 >
 > This document is not added to gl-index.md or SOP-index.md.
 >

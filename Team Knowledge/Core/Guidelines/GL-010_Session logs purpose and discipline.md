@@ -19,7 +19,7 @@ An AI team with Session-Logs compounds. By month three, the `session-logs/` fold
 
 | Layer | What it holds | Where |
 |---|---|---|
-| SOPs | How to do repeatable work | `Team Knowledge/Core/SOPs/` |
+| SOPs | How to do repeatable work | `Team Knowledge/SOPs/` |
 | Workstreams | How recurring orchestrations run | `Team Knowledge/Core/Workstreams/` |
 | Guidelines | Static reference rules | `Team Knowledge/Core/Guidelines/` |
 | **Session-Logs** | **What the team did and decided** | `Team Knowledge/Core/session-logs/YYYY/MM/` |
