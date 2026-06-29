@@ -1,14 +1,14 @@
 ---
 name: devon-codex-compliance
-description: Devon repeatedly fails to spawn Codex — Larry should route code tasks directly to codex:codex-rescue instead of briefing Devon
+description: Route code tasks to Devon — Devon reads + plans, then spawns Codex. Never bypass Devon by routing directly to codex:codex-rescue.
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 0af27ef4-4e17-40ac-b98a-4b40e0e05ff1
 ---
 
-Devon does not reliably spawn Codex subagents even when the brief explicitly requires it. This has happened multiple times (commit ca60ade fixes this pattern, but the issue recurs). Bypassing Devon is NOT the fix — Codex invocation belongs inside Devon's role.
+Route all build tasks to Devon. Devon reads the specs, plans the implementation, then spawns a codex:codex-rescue subagent for the actual code writing. Do not bypass Devon by routing directly to codex:codex-rescue — that breaks the intended specialist boundary.
 
-**Why:** Devon's AGENT.md has the Codex-first rule documented in multiple places (top section, Never Does, Critical rules, Learned Rules), but Devon ignores it in practice despite explicit instructions in the brief.
+**Why:** Devon is the senior developer who owns reading, planning, and implementation coordination. Codex handles the raw code writing inside Devon's session. Skipping Devon removes the planning layer and the specialist boundary.
 
-**How to apply:** The fix is in Devon's AGENT.md — the Codex-first step must be made even more impossible to skip. Whenever Devon fails to use Codex, flag it and strengthen the enforcement in Devon's AGENT.md. Do not bypass Devon by routing directly to Codex — that breaks the intended specialist boundary.
+**How to apply:** Brief Devon as normal. Include the mandatory Codex delegation line in every brief: "Delegate all code writing to a codex:codex-rescue subagent. Read and plan using Claude-side tools, then spawn Codex with --write for the implementation." If Devon fails to spawn Codex, flag it and strengthen enforcement in Devon's AGENT.md — the fix is there, not in routing around Devon.

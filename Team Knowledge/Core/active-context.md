@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-29 — Quinn gate refactor. Whitelist (accordion/modals/etc.) vervangen door evidence-based twee-vragengate (Novelty + Risk) op basis van Pax primaire-bron onderzoek. CLAUDE.md en Quinn AGENT.md bijgewerkt. Huidige staat: geen pattern-level design system, Question 1 defaultt naar Yes.
+2026-06-29 — Email management: state reconstruction, accessibility + disposition slice. Fixed serializer approved_at bug (executed_at mapping). Built Slice 4+5 (state reconstruction + 10 a11y fixes) and Slice 4 Disposition (Archive/Delete + Processed section). Devon routing rule corrected in memory.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -10,16 +10,13 @@
 - G-Geldstroom Regie deadline 30 juni — on-hold confirm
 - Reply Jesse Voerman (leerplicht) nog versturen — Sienna-review vereist (Wendy in CC)
 - Conversation with Rajko Acimovic — still pending
-- Dashboard: activate Restart=always — run `sudo systemctl daemon-reload && sudo systemctl restart mypka-dashboard-backend`
-- Dashboard: change default password (admin/admin)
 - Dashboard: rclone.conf history rewrite — optioneel als repo publiek wordt
 - Tricolarae: Weg 1 + Weg 2 uitvoering (positionering + About Us aanpassing) — nog niet geëxecuteerd
 - Tricolarae: S3 MODEL — wacht op Meta product-test data
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
-- Email management S1-S3: all bugs fixed and verified (commits 8c4485e, ed91e40)
-- Email management design review (Quinn Part 2 spec ready) — not yet started
-- Pattern-level design system bestaat niet — Quinn Question 1 defaultt naar Yes; overwegen als project
+- Email management Slice 5 (Run Triage live) — not yet started
+- Pattern-level design system bestaat niet — Quinn Question 1 defaultt naar No; overwegen als project
 
 ## Active goals
 - G-Scheiding volledig afgerond

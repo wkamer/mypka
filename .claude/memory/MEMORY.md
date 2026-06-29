@@ -60,7 +60,7 @@
 - [Code review multi-model](feedback_code_review_multi_model.md) — Reviews: multiple non-context subagents with different models (sonnet/haiku/opus combo) — each catches different issues
 - [Complete all identified fixes](feedback_complete_all_identified_fixes.md) — When multiple fixes identified and owner confirms one, execute all of them — don't wait for a second confirmation per fix
 - [Show files in original language](feedback_show_files_in_original_language.md) — English file? Show the original directly — never paraphrase or translate to Dutch
-- [Devon Codex compliance](feedback_devon_codex_compliance.md) — Devon does not reliably spawn Codex; route code tasks directly to codex:codex-rescue instead
+- [Devon Codex compliance](feedback_devon_codex_compliance.md) — Route build tasks to Devon; Devon reads + plans, then spawns Codex. Never bypass Devon by going directly to codex:codex-rescue.
 - [Persistent data in DB](feedback_persistent_data_in_db.md) — Persistent data always in DB; JS/React in-memory state is never a substitute for refresh-surviving data
 - [Small focused briefs](feedback_small_focused_briefs.md) — One brief = one task; never bundle; owner wants fast iteration cycles
 - [Rebuild after change](feedback_rebuild_after_change.md) — After every frontend change: rebuild + browser verify before reporting done; tests green ≠ working in browser
