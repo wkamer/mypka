@@ -53,6 +53,7 @@ From: {sender}
         capture_output=True,
         text=True,
         timeout=120,
+        cwd="/",
     )
     result.check_returncode()
     return json.loads(result.stdout.strip())

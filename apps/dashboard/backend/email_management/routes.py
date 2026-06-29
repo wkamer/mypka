@@ -49,7 +49,8 @@ def run_triage(pka_token: str = Cookie(default=None)):
             msg_id = msg_ref["id"]
 
             existing = conn.execute(
-                "SELECT id FROM emails WHERE id = ?", (msg_id,)
+                "SELECT id FROM emails WHERE id = ? AND triage_status != 'triage_error'",
+                (msg_id,),
             ).fetchone()
             if existing:
                 skipped += 1
@@ -91,7 +92,7 @@ def run_triage(pka_token: str = Cookie(default=None)):
 
             now = datetime.now(timezone.utc).isoformat()
             conn.execute(
-                """INSERT INTO emails
+                """INSERT OR REPLACE INTO emails
                    (id, thread_id, subject, sender, received_at, snippet,
                     classification, ai_summary, triage_status,
                     created_at, updated_at)
