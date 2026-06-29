@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-28 — Email Management bug fixes + dev workflow governance. Fixed execution log (approved_at/executed_at mismatch), task name persistence (stale backend + SQL fix), and frontend rebuild. Backend restarted. Devon AGENT.md updated: local dev server management rule added. Governance: local dev restarts belong to Devon, not Kai.
+2026-06-29 — Dashboard refactor: modular structure + dev workflow. Team Inbox excluded from git. EmailTriage.jsx (756 lines) and email_management.py (750 lines) split into per-domain files. ARCHITECTURE.md created. Devon AGENT.md updated: codebase navigability rule added. Stack kept (FastAPI+React).
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
