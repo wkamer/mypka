@@ -139,6 +139,8 @@ Voorbeelden:
 
 **Regel:** domein staat in de mapnaam, nooit als submap.
 
+**Deliverable lifecycle:** Active = in `Deliverables/`. Done = in `Deliverables/Archive/`. The folder name is the record. No database registration required.
+
 ---
 
 ## Pad-wijziging protocol
