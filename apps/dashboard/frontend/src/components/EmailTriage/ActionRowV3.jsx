@@ -51,7 +51,7 @@ export function ActionRowV3({
       }`}
     >
       <div className="flex items-start gap-2">
-        <span className="text-xs text-slate-500 uppercase mt-2 w-10 shrink-0 font-medium">
+        <span className="text-xs text-slate-400 uppercase mt-2 w-10 shrink-0 font-medium">
           {action.type}
         </span>
         <div className="flex-1 min-w-0 space-y-1.5">
@@ -85,7 +85,7 @@ export function ActionRowV3({
                 onChange={(e) => onNameChange(e.target.value)}
                 placeholder="Enter name..."
                 aria-label="Action name"
-                className="w-full bg-slate-800 text-slate-200 text-sm px-2 py-1 rounded border border-slate-700 placeholder-slate-600 focus:outline-none focus:border-slate-500"
+                className="w-full bg-slate-800 text-slate-200 text-sm px-2 py-1 rounded border border-slate-700 placeholder-slate-600 focus:outline-none focus:border-slate-500 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-0"
               />
               {action.type === "Event" && (
                 <input
@@ -93,7 +93,7 @@ export function ActionRowV3({
                   value={editDatetime ? editDatetime.slice(0, 16) : ""}
                   onChange={(e) => onDatetimeChange(e.target.value)}
                   aria-label="Event datetime"
-                  className="w-full bg-slate-800 text-slate-200 text-sm px-2 py-1 rounded border border-slate-700 focus:outline-none focus:border-slate-500"
+                  className="w-full bg-slate-800 text-slate-200 text-sm px-2 py-1 rounded border border-slate-700 focus:outline-none focus:border-slate-500 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-0"
                 />
               )}
             </>
@@ -104,14 +104,14 @@ export function ActionRowV3({
             <>
               <button
                 onClick={onApprove}
-                className="text-xs text-green-400 hover:text-green-300 transition-colors"
+                className="text-xs text-green-400 hover:text-green-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-900 focus-visible:ring-green-400 rounded"
                 aria-label="Approve action"
               >
                 Approve
               </button>
               <button
                 onClick={onDecline}
-                className="text-xs text-slate-500 hover:text-slate-400 transition-colors"
+                className="text-xs text-slate-400 hover:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-900 focus-visible:ring-slate-400 rounded"
                 aria-label="Decline action"
               >
                 Decline

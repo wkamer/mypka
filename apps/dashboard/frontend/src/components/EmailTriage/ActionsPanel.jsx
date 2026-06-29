@@ -19,6 +19,7 @@ export function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
 
   // Execution log reconstructed from approved actions plus in-session approvals.
   const [logEntries, setLogEntries] = useState([]); // array of formatted strings
+  const [, setLogStatus] = useState("loading");
 
   // Controlled edit state per action: { [actionId]: { name, event_datetime } }
   const [edits, setEdits] = useState({});
@@ -64,10 +65,10 @@ export function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
         latestEditsRef.current = initial;
 
         const approvedActions = mergedActions
-          .filter((a) => a.status === "approved" && a.executed_at)
-          .sort((a, b) => new Date(b.executed_at) - new Date(a.executed_at));
+          .filter((a) => a.status === "approved" && a.approved_at)
+          .sort((a, b) => new Date(b.approved_at) - new Date(a.approved_at));
         const backendLogEntries = approvedActions.map((a) =>
-          buildLogEntry(a.type, a.name, a.event_datetime, a.executed_at)
+          buildLogEntry(a.type, a.name, a.event_datetime, a.approved_at)
         );
         const ssLog = emailSession?.logEntries || [];
         const merged = [...ssLog];
@@ -75,6 +76,7 @@ export function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
           if (!merged.includes(e)) merged.push(e);
         });
         setLogEntries(merged);
+        setLogStatus("loaded");
       })
       .catch((e) => {
         if (!cancelled) setLoadError(e.message);
@@ -237,6 +239,7 @@ export function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
 
   return (
     <div className="space-y-2 mt-2">
+      <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">Actions</p>
       {actions.map((action) => (
         <ActionRowV3
           key={action.id}
@@ -277,7 +280,7 @@ export function ActionsPanel({ emailId, emailSession, updateEmailSession }) {
           aria-live="polite"
           aria-label="Execution log"
         >
-          <p className="text-slate-500 text-xs font-medium mb-2">
+          <p className="text-slate-400 text-xs font-medium mb-2">
             Execution log
           </p>
           <ul className="space-y-1">

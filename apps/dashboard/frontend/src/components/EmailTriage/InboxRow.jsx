@@ -16,8 +16,18 @@ export function InboxRow({ email, isOpen, onToggle, emailSession, updateEmailSes
   return (
     <div>
       <div
-        className="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer select-none"
+        role="button"
+        tabIndex={0}
+        aria-expanded={isOpen}
+        aria-controls={`email-panel-${email.id}`}
+        className="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-400"
         onClick={() => onToggle(email.id)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onToggle(email.id);
+          }
+        }}
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
@@ -55,12 +65,13 @@ export function InboxRow({ email, isOpen, onToggle, emailSession, updateEmailSes
             <p className="text-slate-400 text-xs truncate">
               {email.subject || "(no subject)"}
             </p>
-            <span className="text-slate-600 text-xs shrink-0 whitespace-nowrap">
+            <span className="text-slate-400 text-xs shrink-0 whitespace-nowrap">
               {receivedAt}
             </span>
           </div>
         </div>
         <svg
+          aria-hidden="true"
           className={`shrink-0 text-slate-500 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
@@ -78,7 +89,10 @@ export function InboxRow({ email, isOpen, onToggle, emailSession, updateEmailSes
         </svg>
       </div>
       {isOpen && (
-        <div className="mx-4 mb-3 border border-slate-700 rounded bg-slate-900 px-4 py-3">
+        <div
+          id={`email-panel-${email.id}`}
+          className="mx-4 mb-3 border border-slate-700 rounded bg-slate-900 px-4 py-3"
+        >
           <ActionsPanel
             emailId={email.id}
             emailSession={emailSession}

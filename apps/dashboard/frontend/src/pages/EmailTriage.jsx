@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { emailTriageApi } from '../api/emailTriage';
 import { InboxRow } from '../components/EmailTriage';
 
@@ -55,14 +56,12 @@ export default function EmailTriage() {
   return (
     <div className="min-h-screen bg-slate-900 p-6">
       <header className="flex items-center gap-4 mb-8">
-        <button
-          onClick={() => {
-            window.location.href = "/dashboard";
-          }}
-          className="text-sm text-slate-400 hover:text-slate-200 transition-colors"
+        <Link
+          to="/dashboard"
+          className="text-sm text-slate-400 hover:text-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 rounded"
         >
           &larr; Back
-        </button>
+        </Link>
         <h1 className="text-xl font-semibold text-slate-100">Email Triage</h1>
       </header>
 
