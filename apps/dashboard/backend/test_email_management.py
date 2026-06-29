@@ -181,8 +181,8 @@ def test_run_triage_empty_inbox():
         "messages": []
     }
 
-    with patch("email_management.build", return_value=mock_svc), \
-         patch("email_management.get_credentials", return_value=MagicMock()):
+    with patch("email_management.routes.build", return_value=mock_svc), \
+         patch("email_management.routes.get_credentials", return_value=MagicMock()):
         res = client.post("/api/email-management/run", cookies=_auth_cookies())
 
     assert res.status_code == 200
@@ -212,9 +212,9 @@ def test_run_triage_inserts_emails():
         _make_ai_result("Information"),
     ]
 
-    with patch("email_management.build", return_value=mock_svc), \
-         patch("email_management.get_credentials", return_value=MagicMock()), \
-         patch("email_management.subprocess.run", side_effect=ai_side_effects):
+    with patch("email_management.routes.build", return_value=mock_svc), \
+         patch("email_management.routes.get_credentials", return_value=MagicMock()), \
+         patch("email_management.ai.subprocess.run", side_effect=ai_side_effects):
         res = client.post("/api/email-management/run", cookies=_auth_cookies())
 
     assert res.status_code == 200
@@ -244,8 +244,8 @@ def test_run_triage_skips_existing():
         "messages": [{"id": "msg1"}, {"id": "msg2"}]
     }
 
-    with patch("email_management.build", return_value=mock_svc), \
-         patch("email_management.get_credentials", return_value=MagicMock()):
+    with patch("email_management.routes.build", return_value=mock_svc), \
+         patch("email_management.routes.get_credentials", return_value=MagicMock()):
         res = client.post("/api/email-management/run", cookies=_auth_cookies())
 
     assert res.status_code == 200
@@ -278,9 +278,9 @@ def test_run_triage_ai_failure_stored_as_error():
             return m
         return _make_ai_result("Information")
 
-    with patch("email_management.build", return_value=mock_svc), \
-         patch("email_management.get_credentials", return_value=MagicMock()), \
-         patch("email_management.subprocess.run", side_effect=ai_side_effect):
+    with patch("email_management.routes.build", return_value=mock_svc), \
+         patch("email_management.routes.get_credentials", return_value=MagicMock()), \
+         patch("email_management.ai.subprocess.run", side_effect=ai_side_effect):
         res = client.post("/api/email-management/run", cookies=_auth_cookies())
 
     assert res.status_code == 200
@@ -376,7 +376,7 @@ def test_patch_action_decline():
     _insert_email("msg1")
     action_id = _insert_action("msg1", "todoist")
 
-    with patch("email_management.execute_todoist_action") as mock_exec:
+    with patch("email_management.routes.execute_todoist_action") as mock_exec:
         res = client.patch(
             f"/api/email-management/actions/{action_id}",
             json={"status": "declined"},
@@ -392,7 +392,7 @@ def test_patch_action_approve_todoist():
     _insert_email("msg1")
     action_id = _insert_action("msg1", "Task")
 
-    with patch("email_management.execute_todoist_action", return_value="todoist-task-123"):
+    with patch("email_management.routes.execute_todoist_action", return_value="todoist-task-123"):
         res = client.patch(
             f"/api/email-management/actions/{action_id}",
             json={"status": "approved"},
@@ -410,7 +410,7 @@ def test_patch_action_approve_calendar():
     _insert_email("msg1")
     action_id = _insert_action("msg1", "Event")
 
-    with patch("email_management.execute_calendar_action", return_value="cal-event-456"):
+    with patch("email_management.routes.execute_calendar_action", return_value="cal-event-456"):
         res = client.patch(
             f"/api/email-management/actions/{action_id}",
             json={"status": "approved"},
@@ -427,7 +427,7 @@ def test_patch_action_approve_archive():
     _insert_email("msg1")
     action_id = _insert_action("msg1", "Task")
 
-    with patch("email_management.execute_todoist_action", return_value="task-789") as mock_exec:
+    with patch("email_management.routes.execute_todoist_action", return_value="task-789") as mock_exec:
         res = client.patch(
             f"/api/email-management/actions/{action_id}",
             json={"status": "approved"},
@@ -445,7 +445,7 @@ def test_patch_action_execution_fails():
     _insert_email("msg1")
     action_id = _insert_action("msg1", "Task")
 
-    with patch("email_management.execute_todoist_action", side_effect=Exception("Todoist unavailable")):
+    with patch("email_management.routes.execute_todoist_action", side_effect=Exception("Todoist unavailable")):
         res = client.patch(
             f"/api/email-management/actions/{action_id}",
             json={"status": "approved"},
@@ -569,7 +569,7 @@ def test_patch_action_approve_with_name_override():
         captured["suggested_title"] = action_row["suggested_title"]
         return "task-override-123"
 
-    with patch("email_management.execute_todoist_action", side_effect=capture_exec):
+    with patch("email_management.routes.execute_todoist_action", side_effect=capture_exec):
         res = client.patch(
             f"/api/email-management/actions/{action_id}",
             json={"status": "approved", "name": "My Custom Task Name"},
@@ -602,7 +602,7 @@ def test_patch_action_approve_event_with_datetime_override():
         captured["calendar_start"] = action_row["calendar_start"]
         return "cal-override-456"
 
-    with patch("email_management.execute_calendar_action", side_effect=capture_exec):
+    with patch("email_management.routes.execute_calendar_action", side_effect=capture_exec):
         res = client.patch(
             f"/api/email-management/actions/{action_id}",
             json={"status": "approved", "event_datetime": "2026-07-02T14:00"},
@@ -634,7 +634,7 @@ def test_dispose_email_requires_resolved_actions():
     conn.close()
 
     # Now disposal succeeds
-    with patch("email_management.execute_archive_action", return_value="msg1"):
+    with patch("email_management.routes.execute_archive_action", return_value="msg1"):
         res = client.post(
             "/api/email-management/emails/msg1/dispose",
             json={"action": "archive"},
@@ -727,7 +727,7 @@ def test_patch_action_approve_saves_name_to_db():
     _insert_email("msg1")
     action_id = _insert_action("msg1", "Task")  # default suggested_title = 'Task Title'
 
-    with patch("email_management.execute_todoist_action", return_value="task-persisted"):
+    with patch("email_management.routes.execute_todoist_action", return_value="task-persisted"):
         res = client.patch(
             f"/api/email-management/actions/{action_id}",
             json={"status": "approved", "name": "Persisted Name"},
@@ -759,7 +759,7 @@ def test_patch_action_approve_saves_event_datetime_to_db():
     action_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
     conn.close()
 
-    with patch("email_management.execute_calendar_action", return_value="cal-persisted"):
+    with patch("email_management.routes.execute_calendar_action", return_value="cal-persisted"):
         res = client.patch(
             f"/api/email-management/actions/{action_id}",
             json={"status": "approved", "event_datetime": "2026-07-05T14:00"},
