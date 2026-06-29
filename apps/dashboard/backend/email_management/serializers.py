@@ -8,6 +8,7 @@ def _email_to_dict(row: sqlite3.Row) -> dict:
     """Convert an emails row to a dict and add the computed gmail_url field."""
     d = dict(row)
     d["gmail_url"] = f"https://mail.google.com/mail/u/0/#all/{d['id']}"
+    d["status"] = d["triage_status"]
     return d
 
 
