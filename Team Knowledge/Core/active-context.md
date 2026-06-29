@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-29 — GR recap onderneming + gespreksprep Rajko Acimovic. MD-document aangemaakt met volledige GR-methodiek voor een events-onderneming: 4 bouwstenen, knoppen, voorbeelden. Bestedingen-framing gecorrigeerd: kostenreductie is wel degelijk een geldig uitkomst.
+2026-06-29 — Quinn gate refactor. Whitelist (accordion/modals/etc.) vervangen door evidence-based twee-vragengate (Novelty + Risk) op basis van Pax primaire-bron onderzoek. CLAUDE.md en Quinn AGENT.md bijgewerkt. Huidige staat: geen pattern-level design system, Question 1 defaultt naar Yes.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -19,6 +19,7 @@
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
 - Email management S1-S3: all bugs fixed and verified (commits 8c4485e, ed91e40)
 - Email management design review (Quinn Part 2 spec ready) — not yet started
+- Pattern-level design system bestaat niet — Quinn Question 1 defaultt naar Yes; overwegen als project
 
 ## Active goals
 - G-Scheiding volledig afgerond
