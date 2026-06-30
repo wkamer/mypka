@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-30 — SOP-020 Index Registration. Carry-forward from session 270. SOP-index.md updated with SOP-020 row. Commit 64048e6 pushed.
+2026-06-30 — Email Triage Fix. Backend PATH fix + markdown fence strip in ai.py. 24/24 inbox emails pending in dashboard. Seed mail verwijderd. Commit 4301673.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -15,7 +15,7 @@
 - Tricolarae: S3 MODEL — wacht op Meta product-test data
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
-- Email management Run Triage — owner must click Run Triage in live dashboard to verify 30 emails process after cwd fix
+- Email management Run Triage — volledig opgelost. 24 inbox emails pending, seed mail verwijderd, markdown-fence fix in ai.py (commit 4301673).
 - Pattern-level design system: does not exist. Quinn Question 1 defaults to No. Quinn activates unless Question 2 (high-stakes flow) is also clearly No. Consider as a future project.
 - Governance pattern: canonical-declaration-before-migration — Iris LC flag, formalize in GL when Owner decides
 
