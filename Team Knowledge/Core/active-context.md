@@ -1,7 +1,7 @@
 # Active Context
 
 ## Last session
-2026-06-30 — Email Triage Fix. Backend PATH fix + markdown fence strip in ai.py. 24/24 inbox emails pending in dashboard. Seed mail verwijderd. Commit 4301673.
+2026-06-30 — Tricolarae personas opgebouwd (Livia + Calla) via dual-channel validatie (Pax + Codex), Revella 5 Rings methodiek. About Us gecleaned: sourcing-claims vervangen door curatie-taal. Personas.md committed en gepusht. Vera: Trendsi-model houdbaar.
 
 ## Open items
 - WhatsApp bericht naar Wendy klaar (coulance stoppen) — Walter stuurt zelf op goed moment
@@ -11,7 +11,9 @@
 - Reply Jesse Voerman (leerplicht) nog versturen — Sienna-review vereist (Wendy in CC)
 - Conversation with Rajko Acimovic — still pending
 - Dashboard: rclone.conf history rewrite — optioneel als repo publiek wordt
-- Tricolarae: Weg 1 + Weg 2 uitvoering (positionering + About Us aanpassing) — nog niet geëxecuteerd
+- Tricolarae: About Us live zetten op Shopify — Walter heeft definitieve tekst
+- Tricolarae: WhatsApp naar Remko (Personas.md ter review)
+- Tricolarae: Sasha copy audit overige store copy op sourcing-taal (product descriptions, meta tags, ad copy)
 - Tricolarae: S3 MODEL — wacht op Meta product-test data
 - Vera: practitioner challenge stap toevoegen aan venture loop protocol (team_task 105)
 - Advisory board beslissing: echte mensen vs. AI-laag als challenger-laag (owner beslissing)
