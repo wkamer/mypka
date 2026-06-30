@@ -60,6 +60,16 @@ Two distinct types of women would buy from Tricolarae. They look similar from th
 
 A third persona (the professional woman who wants calm workwear) was researched and tested. The evidence showed she is not a separate type — she is simply Persona A at the office. No separate persona needed.
 
+### On the names
+
+The two personas are named **Livia** and **Calla**. The names are intentional.
+
+**Livia** comes from Latin — meaning "she who is complete" or "she who has arrived." She has made her decision. She knows who she is and what she wants. The name reflects her state: settled, clear, done searching.
+
+**Calla** comes from Greek *kalos* — meaning "beautiful." Like the calla lily: clean, unadorned, quietly striking. She is moving toward something beautiful. Not there yet, but on her way.
+
+The names can also live on the store — as editorial titles, lookbook chapters, or collection names. *The Livia Edit. The Calla Edit.*
+
 ---
 
 ## Livia — The Converted
