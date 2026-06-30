@@ -1,5 +1,6 @@
 import base64
 import json
+import re
 import subprocess
 
 
@@ -49,14 +50,18 @@ From: {sender}
 {body[:2000]}
 </email_body>"""
     result = subprocess.run(
-        ["claude", "-p", prompt],
+        ["/home/admin/.local/bin/claude", "-p", prompt],
         capture_output=True,
         text=True,
         timeout=120,
         cwd="/",
     )
     result.check_returncode()
-    return json.loads(result.stdout.strip())
+    raw = result.stdout.strip()
+    match = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', raw)
+    if match:
+        raw = match.group(1).strip()
+    return json.loads(raw)
 
 
 def _extract_body(msg: dict) -> str:
